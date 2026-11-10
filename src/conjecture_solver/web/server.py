@@ -23,6 +23,7 @@ from .application import (
     SimjectureWebApplication,
     WebApplicationError,
 )
+from .assets import render_i18n_messages
 
 STATIC_ROOT = Path(__file__).with_name("static")
 MAX_REQUEST_BYTES = 64 * 1024
@@ -50,6 +51,8 @@ STATIC_ASSETS = frozenset(
     {
         "index.html",
         "app.js",
+        "i18n-messages.js",
+        "i18n.js",
         "markdown.js",
         "styles.css",
         "interface.css",
@@ -92,6 +95,11 @@ STATIC_ASSETS = STATIC_ASSETS | frozenset(
     p.relative_to(STATIC_ROOT).as_posix()
     for p in (STATIC_ROOT / "vendor/webawesome-3.14.0").rglob("*")
     if p.is_file() and p.suffix in {".js", ".css", ".svg"}
+)
+STATIC_ASSETS = STATIC_ASSETS | frozenset(
+    p.relative_to(STATIC_ROOT).as_posix()
+    for p in (STATIC_ROOT / "language").glob("*.json")
+    if p.is_file()
 )
 
 
@@ -305,10 +313,15 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             ".css": "text/css; charset=utf-8",
             ".html": "text/html; charset=utf-8",
             ".js": "text/javascript; charset=utf-8",
+            ".json": "application/json; charset=utf-8",
             ".svg": "image/svg+xml",
             ".ico": "image/x-icon",
         }.get(path.suffix, "application/octet-stream")
-        body = path.read_bytes()
+        body = (
+            render_i18n_messages(STATIC_ROOT)
+            if relative == "i18n-messages.js"
+            else path.read_bytes()
+        )
         self._begin(HTTPStatus.OK, content_type, len(body), cache="no-cache")
         self.wfile.write(body)
 

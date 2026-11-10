@@ -72,8 +72,8 @@
     color: #8790a8;
   }
   .workspace-resources summary:hover { background: #ffffff0a; color: #d5dbe8; }
-  .workspace-resources summary > span { transition: transform 0.15s ease; }
-  .workspace-resources:not([open]) summary > span { transform: rotate(-90deg); }
+  .workspace-resources summary > span[aria-hidden] { transition: transform 0.15s ease; }
+  .workspace-resources:not([open]) summary > span[aria-hidden] { transform: rotate(-90deg); }
   .workspace-resources[open] { background: none; }
   /* A collapsed group still shows when it holds the current page or running setup. */
   .workspace-resources:not([open]):has(.nav-item.active) summary { color: #eeeaff; background: #2b2c43; }

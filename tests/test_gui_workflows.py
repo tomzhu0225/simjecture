@@ -165,9 +165,10 @@ def test_connection_failure_replaces_pending_status():
 const assert = require('node:assert/strict');
 const elements = new Map();
 const $ = id => {
- if(!elements.has(id)) elements.set(id,{value:'',textContent:''});
+ if(!elements.has(id)) elements.set(id,{value:''});
  return elements.get(id);
 };
+const SimjectureI18n = {text(node, key, params) {node.message = [key, params];}};
 const state = {};
 let pending;
 const action = (button, fn) => {pending=fn();};
@@ -177,8 +178,10 @@ const api = async () => {throw Error('Connection lost');};
         + """
 (async () => {
  $('settings-form').onsubmit({preventDefault(){}});
+ assert.deepEqual($('connection-result').message,['ui.saving-api-connection', undefined]);
  await assert.rejects(pending,/Connection lost/);
- assert.equal($('connection-result').textContent,'Connection not saved: Connection lost');
+ assert.deepEqual($('connection-result').message,
+   ['ui.connection-not-saved', {p0:'Connection lost'}]);
 })().catch(e => {console.error(e);process.exitCode=1;});
 """
     )

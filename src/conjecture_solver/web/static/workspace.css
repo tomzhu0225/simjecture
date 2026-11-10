@@ -127,7 +127,7 @@ nav {
   padding: 10px 13px;
   border-radius: 6px;
 }
-.nav-item span {
+.nav-item > span[aria-hidden] {
   font-size: 19px;
   width: 20px;
 }
@@ -1118,7 +1118,7 @@ dialog p {
     padding: 6px;
     font-size: 0;
   }
-  .nav-item span {
+  .nav-item > span[aria-hidden] {
     font-size: 21px;
   }
   .shell {
@@ -1506,7 +1506,7 @@ body {
   background: #2b2c43;
   color: #eeeaff;
 }
-.nav-item span {
+.nav-item > span[aria-hidden] {
   font-size: 17px;
 }
 .sidebar-label {
@@ -3126,6 +3126,9 @@ wa-split-panel.project-layout {
   }
   .sidebar .sidebar-bottom {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   #left-sidebar-toggle {
     left: calc(min(var(--navigation-width, 224px), 100vw - 44px) - 10px);

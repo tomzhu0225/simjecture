@@ -147,14 +147,15 @@ function toggleTheme() {
 
 function updateThemeButton() {
   const dark = document.documentElement.dataset.theme === "dark";
-  ui["theme-button"].textContent = dark ? "☀" : "☾";
-  ui["theme-button"].setAttribute("aria-label", dark ? "Use light theme" : "Use dark theme");
-  ui["theme-button"].title = dark ? "Use light theme" : "Use dark theme";
+  SimjectureI18n.content(ui["theme-button"], dark ? "☀" : "☾");
+  SimjectureI18n.attribute(ui["theme-button"], "aria-label", () => dark ? SimjectureI18n.t("ui.use-light-theme") : SimjectureI18n.t("ui.use-dark-theme"));
+  SimjectureI18n.attribute(ui["theme-button"], "title", () => dark ? SimjectureI18n.t("ui.use-light-theme") : SimjectureI18n.t("ui.use-dark-theme"));
 }
 
 async function initialize() {
-  setSync("connecting", "Connecting");
+  setSync("connecting", SimjectureI18n.message("ui.connecting"));
   try {
+    await SimjectureI18n.ready;
     const bootstrap = await api("/api/bootstrap");
     state.campaigns = bootstrap.campaigns || [];
     state.controlToken = bootstrap.control_token;
@@ -176,11 +177,11 @@ async function initialize() {
       await refreshSnapshot(true);
     } else {
       showEmptyState();
-      setSync("online", "Ready");
+      setSync("online", SimjectureI18n.message("ui.ready"));
     }
   } catch (error) {
     showEmptyState();
-    setSync("offline", "Disconnected");
+    setSync("offline", SimjectureI18n.message("ui.disconnected"));
     showToast(error.message, true);
   }
   window.setInterval(poll, 1000);
@@ -215,10 +216,10 @@ async function refreshSnapshot(force) {
     if (request !== state.snapshotRequest || campaign !== state.selectedCampaign) return;
     state.snapshot = payload;
     renderSnapshot(force);
-    setSync("online", "Live");
+    setSync("online", SimjectureI18n.message("ui.live"));
   } catch (error) {
     if (request !== state.snapshotRequest || campaign !== state.selectedCampaign) return;
-    setSync("offline", "Retrying");
+    setSync("offline", SimjectureI18n.message("ui.retrying"));
     if (force) showToast(error.message, true);
   } finally {
     if (request === state.snapshotRequest) state.pollInFlight = false;
@@ -241,7 +242,7 @@ async function selectCampaign(token, { history: updateHistory = true } = {}) {
   document.getElementById("study-navigation").hidden = true;
   const returned = document.getElementById("conversation-return");
   returned.href = "/workspace";
-  returned.textContent = "Workspace";
+  SimjectureI18n.bindText(returned, () => SimjectureI18n.t("ui.workspace"));
   for (const id of ["continue-study-link", "steer-study-link"]) document.getElementById(id).hidden = true;
   state.selectedClaim = null;
   state.selectedStage = null;
@@ -255,7 +256,7 @@ async function selectCampaign(token, { history: updateHistory = true } = {}) {
   state.executionConsoleCache.clear();
   state.executionLoads.clear();
   resetRenderSignatures();
-  setSync("connecting", "Loading");
+  setSync("connecting", SimjectureI18n.message("ui.loading"));
   await refreshSnapshot(true);
 }
 
@@ -273,15 +274,15 @@ function renderCampaignPicker() {
   const previous = state.selectedCampaign;
   clear(select);
   if (!state.campaigns.length) {
-    select.append(option("", "No campaigns found"));
+    select.append(option("", SimjectureI18n.message("ui.no-campaigns-found")));
     select.disabled = true;
     return;
   }
   select.disabled = false;
   for (const campaign of state.campaigns) {
-    const label = `${campaign.display_name || campaign.campaign_id} · ${campaign.execution_status}`;
+    const label = SimjectureI18n.live(() => `${campaign.display_name || campaign.campaign_id} · ${SimjectureI18n.label(campaign.execution_status)}`);
     const item = option(campaign.id, label);
-    item.title = campaign.hypothesis || campaign.path;
+    SimjectureI18n.attribute(item, "title", () => campaign.hypothesis || campaign.path);
     select.append(item);
   }
   if (previous && state.campaigns.some((item) => item.id === previous)) {
@@ -302,15 +303,15 @@ function renderSnapshot(force) {
   const execution = snapshot.execution_status;
   const displayStatus = execution === "terminal" ? snapshot.phase : execution;
   setBadge(ui["campaign-status"], displayStatus, displayStatus);
-  ui["campaign-id"].textContent = data.display_name || snapshot.identity.campaign_id || "unnamed campaign";
+  SimjectureI18n.bindText(ui["campaign-id"], () => (data.display_name || snapshot.identity.campaign_id) || SimjectureI18n.t("ui.unnamed-campaign"));
   renderMarkdown(
     ui["root-hypothesis"],
-    snapshot.identity.hypothesis || "Hypothesis not yet recorded",
+    snapshot.identity.hypothesis || SimjectureI18n.live(() => SimjectureI18n.t("ui.hypothesis-not-yet-recorded")),
     { inline: true, autoMath: true },
   );
   const instruction = snapshot.identity.campaign_instruction;
   ui["campaign-instruction"].hidden = !instruction;
-  if (instruction) renderMarkdown(ui["campaign-instruction"], `**Guidance:** ${instruction}`);
+  if (instruction) renderMarkdown(ui["campaign-instruction"], SimjectureI18n.live(() => SimjectureI18n.t("ui.guidance", {p0: instruction})));
 
   renderCurrentAction(snapshot);
   renderLoopProgress(data);
@@ -385,9 +386,9 @@ function renderLoopProgress(data) {
   clear(container);
   if (["minimal", "frontier"].includes(engine.mode)) {
     const heading = element("div", "loop-heading");
-    heading.append(element("strong", null, "Agent-owned investigation"),
-      element("span", "role-badge", engine.status || "initialized"));
-    container.append(heading, paragraph("loop-detail", engine.current_activity || "Reading durable state"));
+    heading.append(element("strong", null, SimjectureI18n.message("ui.agent-owned-investigation")),
+      element("span", "role-badge", SimjectureI18n.live(() => SimjectureI18n.label(engine.status) || SimjectureI18n.t("status.initialized"))));
+    container.append(heading, paragraph("loop-detail", SimjectureI18n.live(() => engine.current_activity === engine.status ? SimjectureI18n.label(engine.status) : engine.current_activity || SimjectureI18n.t("ui.reading-durable-state"))));
     return;
   }
   const loop = snapshot.loop_state || {
@@ -403,10 +404,10 @@ function renderLoopProgress(data) {
 
   const heading = element("div", "loop-heading");
   const title = element("div", "loop-title");
-  const engineLabel = engine.name === "dsh" ? "DSH · autonomous researcher" : capitalize(loop.role);
+  const engineLabel = SimjectureI18n.live(() => engine.name === "dsh" ? SimjectureI18n.t("ui.dsh-autonomous-researcher") : SimjectureI18n.label(loop.role, capitalize(loop.role)));
   title.append(
     element("span", "role-badge", engineLabel),
-    element("strong", null, `${capitalize(loop.stage)} · cycle ${loop.cycle || 1}`),
+    element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.cycle", {p0: SimjectureI18n.label(loop.stage, capitalize(loop.stage)), p1: (loop.cycle || 1)}))),
   );
   const remainingSeconds = snapshot.configured_wall_seconds == null
     ? null
@@ -414,16 +415,16 @@ function renderLoopProgress(data) {
   const timing = element(
     "span",
     "loop-timing",
-    remainingSeconds == null ? "No wall-time estimate" : `${formatDuration(remainingSeconds)} remaining`,
+    SimjectureI18n.live(() => remainingSeconds == null ? SimjectureI18n.t("ui.no-wall-time-estimate") : SimjectureI18n.t("ui.remaining", {p0: formatDuration(remainingSeconds)})),
   );
   heading.append(title, timing);
   container.append(heading);
 
   const stageLabels = [
-    ["commissioning", "Commission"],
-    ["falsification", "Falsify"],
-    ["repair", "Repair"],
-    ["adjudication", "Judge"],
+    ["commissioning", SimjectureI18n.message("ui.commission")],
+    ["falsification", SimjectureI18n.message("ui.falsify")],
+    ["repair", SimjectureI18n.message("ui.repair")],
+    ["adjudication", SimjectureI18n.message("ui.judge")],
   ];
   const stages = element("div", "loop-stages");
   for (const [stage, label] of stageLabels) {
@@ -435,7 +436,7 @@ function renderLoopProgress(data) {
 
   const track = element("div", `loop-track ${loop.status || "active"}`);
   track.setAttribute("role", "progressbar");
-  track.setAttribute("aria-label", `${loop.role} working in ${loop.stage}`);
+  SimjectureI18n.attribute(track, "aria-label", () => SimjectureI18n.t("ui.working-in", {p0: SimjectureI18n.label(loop.role), p1: SimjectureI18n.label(loop.stage)}));
   if (loop.status === "active") track.setAttribute("aria-busy", "true");
   container.append(track);
 
@@ -446,8 +447,8 @@ function renderLoopProgress(data) {
   const engineDetail = currentEngineEvent ? engineEventSummary(currentEngineEvent) : null;
   const detail = element("div", "loop-detail");
   detail.append(
-    element("span", null, engineDetail || loop.detail || "Research loop active."),
-    element("code", null, loop.active_claim_id || "no active claim"),
+    element("span", null, SimjectureI18n.live(() => (engineDetail || SimjectureI18n.known("ui.searching-for-a-counterexample", loop.detail)) || SimjectureI18n.t("ui.research-loop-active"))),
+    element("code", null, SimjectureI18n.live(() => loop.active_claim_id || SimjectureI18n.t("ui.no-active-claim"))),
   );
   container.append(detail);
 }
@@ -458,34 +459,37 @@ function renderCurrentAction(snapshot) {
   const label = container.querySelector("small");
   const value = container.querySelector("strong");
   if (snapshot.current_action) {
-    symbol.textContent = snapshot.current_action.pending ? "◈" : "◇";
+    SimjectureI18n.content(symbol, snapshot.current_action.pending ? "◈" : "◇");
     const wait = snapshot.current_action.wait_elapsed_seconds == null
       ? ""
       : ` · ${formatDuration(snapshot.current_action.wait_elapsed_seconds)}`;
     const job = snapshot.current_action.durable_job_id
-      ? `job ${snapshot.current_action.durable_job_id.slice(0, 12)}${wait}`
-      : `iteration ${snapshot.current_action.iteration}`;
-    label.textContent = `Current action · ${job}`;
-    renderMarkdown(value, snapshot.current_action.description, { inline: true });
-    value.title = markdownPlainText(snapshot.current_action.description);
+      ? SimjectureI18n.message("ui.current-job", {p0: snapshot.current_action.durable_job_id.slice(0, 12), p1: wait})
+      : SimjectureI18n.live(() => SimjectureI18n.t("ui.iteration-2", {p0: snapshot.current_action.iteration}));
+    SimjectureI18n.bindText(label, () => SimjectureI18n.t("ui.current-action", {p0: job}));
+    const description = snapshot.current_action.description === state.snapshot?.engine?.status
+      ? SimjectureI18n.live(() => SimjectureI18n.label(snapshot.current_action.description))
+      : snapshot.current_action.description;
+    renderMarkdown(value, description, { inline: true });
+    SimjectureI18n.attribute(value, "title", () => markdownPlainText(String(description)));
     return;
   }
   if (snapshot.report) {
-    symbol.textContent = "◆";
-    label.textContent = "Campaign record";
-    value.textContent = "All model actions have ended";
+    SimjectureI18n.content(symbol, "◆");
+    SimjectureI18n.bindText(label, () => SimjectureI18n.t("ui.campaign-record"));
+    SimjectureI18n.bindText(value, () => SimjectureI18n.t("ui.all-model-actions-have-ended"));
   } else if (snapshot.process_live) {
-    symbol.textContent = "◇";
-    label.textContent = "Current action";
-    value.textContent = "Waiting for the next typed model action";
+    SimjectureI18n.content(symbol, "◇");
+    SimjectureI18n.bindText(label, () => SimjectureI18n.t("ui.current-action-2"));
+    SimjectureI18n.bindText(value, () => SimjectureI18n.t("ui.waiting-for-the-next-typed-model-action"));
   } else if (snapshot.phase === "paused") {
-    symbol.textContent = "Ⅱ";
-    label.textContent = "Campaign paused";
-    value.textContent = "Resume from the next action boundary";
+    SimjectureI18n.content(symbol, "Ⅱ");
+    SimjectureI18n.bindText(label, () => SimjectureI18n.t("ui.campaign-paused"));
+    SimjectureI18n.bindText(value, () => SimjectureI18n.t("ui.resume-from-the-next-action-boundary"));
   } else {
-    symbol.textContent = "○";
-    label.textContent = "No live process";
-    value.textContent = "The durable record remains available";
+    SimjectureI18n.content(symbol, "○");
+    SimjectureI18n.bindText(label, () => SimjectureI18n.t("ui.no-live-process"));
+    SimjectureI18n.bindText(value, () => SimjectureI18n.t("ui.the-durable-record-remains-available"));
   }
 }
 
@@ -494,25 +498,29 @@ function renderMetrics(data) {
   const dshUsage = data.engine?.name === "dsh" ? data.engine.token_usage : null;
   const claims = data.claim_graph.nodes || [];
   const counts = countBy(claims, (item) => item.kind || "unknown");
-  ui["metric-claims"].textContent = String(claims.length);
-  ui["metric-claims-detail"].textContent = claims.length
-    ? ["scientific", "instrument", "diagnostic", "control"]
-      .map((kind) => `${counts[kind] || 0} ${kind}`)
-      .join(" · ")
-    : "No registered claims";
-  ui["metric-elapsed"].textContent = data.formatted.elapsed;
-  ui["metric-iterations"].textContent = `${formatInteger(snapshot.iterations)} model turns` +
-    (data.engine?.remaining_seconds != null ? ` · ${Math.ceil(data.engine.remaining_seconds / 60)}m left` : "");
-  ui["metric-tokens"].textContent = compactNumber(
+  SimjectureI18n.content(ui["metric-claims"], String(claims.length));
+  SimjectureI18n.bindText(ui["metric-claims-detail"], () => claims.length ? ["scientific", "instrument", "diagnostic", "control"]
+      .map((kind) => `${counts[kind] || 0} ${SimjectureI18n.label(kind)}`)
+      .join(" · ") : SimjectureI18n.t("ui.no-registered-claims"));
+  SimjectureI18n.content(ui["metric-elapsed"], data.formatted.elapsed);
+  SimjectureI18n.bindText(ui["metric-iterations"], () => SimjectureI18n.t("ui.model-turns", {p0: formatInteger(snapshot.iterations)}) + (data.engine?.remaining_seconds != null ? SimjectureI18n.t("ui.m-left", {p0: Math.ceil(data.engine.remaining_seconds / 60)}) : ""));
+  SimjectureI18n.content(ui["metric-tokens"], compactNumber(
     dshUsage?.total_tokens ?? snapshot.token_usage.total_tokens,
-  );
-  if (data.engine?.usage_available === false) ui["metric-tokens"].textContent =
-    data.engine.status === "running" ? "Pending" : "Unavailable";
-  ui["metric-model"].textContent = data.engine?.model || snapshot.last_model || "No model usage recorded";
-  ui["metric-workspace"].textContent = data.formatted.workspace;
-  ui["metric-heartbeat"].textContent = data.formatted.heartbeat_age
-    ? `Heartbeat ${data.formatted.heartbeat_age}`
-    : `${data.artifacts.length} visible artifacts`;
+  ));
+  if (data.engine?.usage_available === false) SimjectureI18n.bindText(ui["metric-tokens"], () => data.engine.status === "running" ? SimjectureI18n.t("ui.pending") : SimjectureI18n.t("ui.unavailable-2"));
+  SimjectureI18n.bindText(ui["metric-model"], () => (data.engine?.model || snapshot.last_model) || SimjectureI18n.t("ui.no-model-usage-recorded"));
+  SimjectureI18n.content(ui["metric-workspace"], data.formatted.workspace);
+  SimjectureI18n.bindText(ui["metric-heartbeat"], () => data.formatted.heartbeat_age ? SimjectureI18n.t("ui.heartbeat", {p0: heartbeatAge(data)}) : SimjectureI18n.t("ui.visible-artifacts", {p0: data.artifacts.length}));
+}
+
+function heartbeatAge(data) {
+  const seconds = data.snapshot.latest_heartbeat?.age_seconds;
+  if (seconds == null) return SimjectureI18n.known("status.unknown", data.formatted.heartbeat_age);
+  if (SimjectureI18n.getLanguage() === "en") return data.formatted.heartbeat_age;
+  if (seconds < 1) return SimjectureI18n.t("ui.just-now");
+  if (seconds < 60) return SimjectureI18n.t("time.heartbeat-seconds", {p0: Math.floor(seconds)});
+  if (seconds < 3600) return SimjectureI18n.t("time.heartbeat-minutes", {p0: Math.floor(seconds / 60)});
+  return SimjectureI18n.t("time.heartbeat-hours", {p0: Math.floor(seconds / 3600)});
 }
 
 function renderStudyNavigation(data) {
@@ -528,11 +536,11 @@ function renderStudyNavigation(data) {
     space: context?.workspace,
   });
   const returned = document.getElementById("conversation-return");
-  returned.textContent = context ? "Back to this conversation" : "Workspace";
+  SimjectureI18n.bindText(returned, () => context ? SimjectureI18n.t("ui.back-to-this-conversation") : SimjectureI18n.t("ui.workspace"));
   returned.href = context
     ? window.StudyNavigation.workspace(context.project_id, campaign, "interactive", {space:context.workspace})
     : "/workspace";
-  returned.title = context?.project_name || "Open the research workspace";
+  SimjectureI18n.attribute(returned, "title", () => context?.project_name || SimjectureI18n.t("ui.open-the-research-workspace"));
 }
 
 function renderControls(controls) {
@@ -545,7 +553,7 @@ function renderControls(controls) {
         body:JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) throw Error(result.error || "Unable to save run settings");
+      if (!response.ok) throw Error(result.error || SimjectureI18n.t("ui.unable-to-save-run-settings"));
       return result;
     },
     submit:async payload => {
@@ -554,7 +562,7 @@ function renderControls(controls) {
         body:JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) throw Error(result.error || result.message || "Unable to extend study time");
+      if (!response.ok) throw Error(result.error || result.message || SimjectureI18n.t("ui.unable-to-extend-study-time"));
       return result;
     },
     onSaved:async () => { await refreshSnapshot(true); },
@@ -576,7 +584,7 @@ function renderControls(controls) {
   ui["cancel-button"].disabled = !enabled || !controls.can_cancel;
   if (!enabled) {
     for (const button of [ui["pause-button"], ui["resume-button"], ui["cancel-button"]]) {
-      button.title = "This web session is read-only";
+      SimjectureI18n.attribute(button, "title", () => SimjectureI18n.t("ui.this-web-session-is-read-only"));
     }
   }
 }
@@ -584,7 +592,7 @@ function renderControls(controls) {
 function toggleClaimKinds() {
   state.showAllClaims = !state.showAllClaims;
   ui["claim-kind-toggle"].setAttribute("aria-pressed", String(state.showAllClaims));
-  ui["claim-kind-toggle"].textContent = state.showAllClaims ? "All claim kinds" : "Scientific only";
+  SimjectureI18n.bindText(ui["claim-kind-toggle"], () => state.showAllClaims ? SimjectureI18n.t("ui.all-claim-kinds") : SimjectureI18n.t("ui.scientific-only"));
   state.graphSignature = null;
   renderGraph(false);
 }
@@ -746,7 +754,7 @@ function renderGraph(preserveScroll) {
       "data-source": edge.source,
       "data-target": edge.target,
     });
-    label.textContent = edge.relation || "related";
+    SimjectureI18n.bindText(label, () => SimjectureI18n.label(edge.relation || "related"));
     edgeLayer.append(label);
   }
   graph.append(edgeLayer);
@@ -768,9 +776,7 @@ function renderGraph(preserveScroll) {
       role: "button",
       tabindex: "0",
       transform: `translate(${point.x} ${point.y})`,
-      "aria-label": commissioningStage
-        ? `Commissioning stage for ${item.scientific_claim_id}, ${item.status}`
-        : `${kind} claim ${item.id}, ${item.status}: ${scientificPreviewText(item.statement)}`,
+      "aria-label": SimjectureI18n.live(() => commissioningStage ? SimjectureI18n.t("ui.commissioning-stage-for", {p0: item.scientific_claim_id, p1: SimjectureI18n.label(item.status)}) : SimjectureI18n.t("ui.claim", {p0: SimjectureI18n.label(kind), p1: item.id, p2: SimjectureI18n.label(item.status), p3: scientificPreviewText(item.statement)})),
     });
     group.append(svg("rect", {
       class: "node-body",
@@ -792,12 +798,12 @@ function renderGraph(preserveScroll) {
     group.append(content);
     appendSvgText(
       content,
-      commissioningStage ? "commissioning for scientific claim" : kind,
+      SimjectureI18n.live(() => commissioningStage ? SimjectureI18n.t("ui.commissioning-for-scientific-claim") : SimjectureI18n.label(kind)),
       16,
       21,
       "node-id",
     );
-    appendSvgText(content, item.status, point.width - 14, 21, "node-status", "end");
+    appendSvgText(content, SimjectureI18n.live(() => SimjectureI18n.label(item.status)), point.width - 14, 21, "node-status", "end");
     const copy = commissioningStage
       ? `${item.scientific_claim_id}: ${scientificPreviewText(item.scientific_target_statement)}`
       : scientificPreviewText(item.statement || item.id);
@@ -811,14 +817,21 @@ function renderGraph(preserveScroll) {
       48 + index * 17,
       "node-copy",
     ));
-    const counts = commissioningStage
-      ? `${item.claim_ids.length} instrument claim${item.claim_ids.length === 1 ? "" : "s"} · ${item.binding_count} bound program${item.binding_count === 1 ? "" : "s"}${item.guided_available ? " · guided" : ""}`
+    const counts = () => commissioningStage
+      ? SimjectureI18n.t("ui.graph-commissioning-counts", {
+        p0: item.claim_ids.length,
+        p1: SimjectureI18n.getLanguage() === "en" && item.claim_ids.length !== 1 ? "s" : "",
+        p2: item.binding_count,
+        p3: SimjectureI18n.getLanguage() === "en" && item.binding_count !== 1 ? "s" : "",
+        p4: item.guided_available ? SimjectureI18n.t("ui.guided-suffix") : "",
+      })
       : kind === "instrument" && item.owner_id
-        ? `scientific target: ${item.owner_id} · E${item.evidence_count}/S${item.sufficient_evidence_count}/C${item.contract_count}`
+        ? SimjectureI18n.t("ui.graph-scientific-target", {p0: item.owner_id,
+          p1: item.evidence_count, p2: item.sufficient_evidence_count, p3: item.contract_count})
         : `${item.id} · E${item.evidence_count}/S${item.sufficient_evidence_count}/C${item.contract_count}`;
     appendSvgText(
       content,
-      truncateText(counts, scientificClaim ? 43 : commissioningStage ? 43 : 33),
+      SimjectureI18n.live(() => truncateText(counts(), scientificClaim ? 43 : commissioningStage ? 43 : 33)),
       16,
       point.height - 12,
       "node-counts",
@@ -839,6 +852,20 @@ function graphNodeSize(item) {
   if (isCommissioningStage(item)) return { width: 310, height: 118 };
   if (isScientificClaim(item)) return { width: 300, height: 126 };
   return { width: 230, height: 90 };
+}
+
+function graphEdgeLabelWidth(relation) {
+  // Reserve room for each available translation at layout time. Switching
+  // language can then update just the captions, even during a node drag.
+  const raw = relation || "related";
+  let width = 38;
+  for (const locale of Object.keys(SimjectureLanguages)) {
+    const caption = SimjectureI18n.label(raw, raw, locale);
+    let estimate = 0;
+    for (const char of caption) estimate += char.codePointAt(0) > 255 ? 12 : 6;
+    width = Math.max(width, estimate);
+  }
+  return Math.min(width, 150);
 }
 
 function dagreLayoutCandidate(nodes, edges, rankdir) {
@@ -862,7 +889,7 @@ function dagreLayoutCandidate(nodes, edges, rankdir) {
       edge.source,
       edge.target,
       {
-        width: Math.min(150, Math.max(38, String(edge.relation || "").length * 6)),
+        width: graphEdgeLabelWidth(edge.relation),
         height: 16,
       },
       `edge-${index}`,
@@ -1163,7 +1190,7 @@ function renderInspector() {
   const container = ui["claim-inspector"];
   clear(container);
   if (!state.snapshot) {
-    container.append(paragraph("panel-placeholder", "Select a claim or stage to inspect it."));
+    container.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.selectClaim"));
     setBadge(ui["claim-status"], "", "—");
     return;
   }
@@ -1175,19 +1202,19 @@ function renderInspector() {
     }
   }
   if (!state.selectedClaim) {
-    container.append(paragraph("panel-placeholder", "Select a claim or stage to inspect it."));
+    container.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.selectClaim"));
     setBadge(ui["claim-status"], "", "—");
     return;
   }
   const detail = state.snapshot.claim_details[state.selectedClaim];
   if (!detail) {
-    container.append(paragraph("panel-placeholder", "Claim details are not available yet."));
+    container.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noClaimDetails"));
     return;
   }
   const node = claimGraphNode(state.selectedClaim);
   const kind = detail.kind || (detail.id === "claim_root" ? "scientific" : "unknown");
   const supporting = kind !== "scientific";
-  ui["inspector-kind"].textContent = `${capitalize(kind)} claim`;
+  SimjectureI18n.bindText(ui["inspector-kind"], () => SimjectureI18n.t("ui.claim-2", {p0: SimjectureI18n.label(kind, capitalize(kind))}));
   setBadge(ui["claim-status"], detail.status, detail.status);
   container.append(markdownBlock(
     detail.statement || detail.id,
@@ -1197,22 +1224,22 @@ function renderInspector() {
 
   const metadata = element("div", "claim-metadata");
   for (const value of [detail.id, detail.kind, detail.relation]) {
-    if (value) metadata.append(element("span", "metadata-chip", value));
+    if (value) metadata.append(element("span", "metadata-chip", value === detail.id ? value : SimjectureI18n.live(() => SimjectureI18n.label(value, value))));
   }
   if (Number.isInteger(detail.created_iteration)) {
-    metadata.append(element("span", "metadata-chip", `created: iteration ${detail.created_iteration}`));
+    metadata.append(element("span", "metadata-chip", SimjectureI18n.live(() => SimjectureI18n.t("ui.created-iteration", {p0: detail.created_iteration}))));
   }
   if (Number.isInteger(detail.updated_iteration)) {
-    metadata.append(element("span", "metadata-chip", `updated: iteration ${detail.updated_iteration}`));
+    metadata.append(element("span", "metadata-chip", SimjectureI18n.live(() => SimjectureI18n.t("ui.updated-iteration", {p0: detail.updated_iteration}))));
   }
   if (detail.parent_id) {
-    const parent = element("button", "metadata-chip", `parent: ${detail.parent_id}`);
+    const parent = element("button", "metadata-chip", SimjectureI18n.live(() => SimjectureI18n.t("ui.parent", {p0: detail.parent_id})));
     parent.type = "button";
     parent.addEventListener("click", () => selectClaim(detail.parent_id));
     metadata.append(parent);
   }
   if (supporting && node?.owner_id) {
-    const owner = element("button", "metadata-chip", `scientific target: ${node.owner_id}`);
+    const owner = element("button", "metadata-chip", SimjectureI18n.live(() => SimjectureI18n.t("ui.scientific-target", {p0: node.owner_id})));
     owner.type = "button";
     owner.addEventListener("click", () => selectClaim(node.owner_id));
     metadata.append(owner);
@@ -1222,59 +1249,59 @@ function renderInspector() {
   if (supporting && node?.owner_id) {
     const target = state.snapshot.claim_details[node.owner_id];
     if (target) {
-      const section = inspectorSection("Scientific target");
-      section.append(claimLinkCard(target, "scientific claim qualified by this record"));
+      const section = inspectorSection(SimjectureI18n.message("ui.scientific-target-2"));
+      section.append(claimLinkCard(target, SimjectureI18n.message("ui.scientific-claim-qualified-by-this-record")));
       container.append(section);
     }
   }
 
-  if (detail.rationale) container.append(inspectorSection("Rationale", detail.rationale));
-  if (detail.closed_reason) container.append(inspectorSection("Closure", detail.closed_reason));
+  if (detail.rationale) container.append(inspectorSection(SimjectureI18n.message("ui.rationale"), detail.rationale));
+  if (detail.closed_reason) container.append(inspectorSection(SimjectureI18n.message("ui.closure"), detail.closed_reason));
 
   const childClaims = (state.snapshot.claim_graph.nodes || []).filter(
     (item) => item.parent_id === detail.id,
   );
   if (childClaims.length) {
-    const section = inspectorSection(`Child claims · ${childClaims.length}`);
+    const section = inspectorSection(SimjectureI18n.live(() => SimjectureI18n.t("ui.child-claims", {p0: childClaims.length})));
     for (const child of childClaims) {
-      section.append(claimLinkCard(child, `${child.kind || "unknown"} · ${child.relation || "related"}`));
+      section.append(claimLinkCard(child, SimjectureI18n.live(() => `${SimjectureI18n.label(child.kind || "unknown")} · ${SimjectureI18n.label(child.relation || "related")}`)));
     }
     container.append(section);
   }
 
   const contractSection = inspectorSection(
-    `Evidence contracts · ${detail.evidence_contracts?.length || 0}`,
+    SimjectureI18n.live(() => SimjectureI18n.t("ui.evidence-contracts", {p0: (detail.evidence_contracts?.length || 0)})),
   );
   if (detail.evidence_contracts?.length) {
     detail.evidence_contracts.forEach((contract, index) => {
       const card = element("div", "contract-card");
-      card.append(element("strong", null, `Contract v${contract.version ?? index + 1}`));
+      card.append(element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.contract-v", {p0: (contract.version ?? (index + 1))}))));
       const fields = [
-        ["Observable", contract.observable],
-        ["Expected outcomes", contract.expected_outcomes],
-        ["Decision rule", contract.decision_rule],
-        ["Required observation", contract.required_observation],
-        ["Uncertainty", contract.uncertainty_criterion],
-        ["Inconclusive when", contract.inconclusive_conditions],
+        ["observable", SimjectureI18n.message("ui.observable"), contract.observable],
+        ["expected-outcomes", SimjectureI18n.message("ui.expected-outcomes"), contract.expected_outcomes],
+        ["decision-rule", SimjectureI18n.message("ui.decision-rule"), contract.decision_rule],
+        ["required-observation", SimjectureI18n.message("ui.required-observation"), contract.required_observation],
+        ["uncertainty", SimjectureI18n.message("ui.uncertainty"), contract.uncertainty_criterion],
+        ["inconclusive-when", SimjectureI18n.message("ui.inconclusive-when"), contract.inconclusive_conditions],
       ];
-      for (const [label, copy] of fields) {
+      for (const [key, label, copy] of fields) {
         if (!copy) continue;
-        card.append(persistentDetails(`contract:${detail.id}:${index}:${label}`, label, copy));
+        card.append(persistentDetails(`contract:${detail.id}:${index}:${key}`, label, copy));
       }
       contractSection.append(card);
     });
   } else {
-    contractSection.append(paragraph("inspector-empty", "No evidence contract is recorded for this claim."));
+    contractSection.append(window.SimjectureI18n.text(paragraph("inspector-empty", ""), "monitor.noEvidenceContract"));
   }
   container.append(contractSection);
 
-  const evidenceSection = inspectorSection(`Evidence · ${detail.evidence?.length || 0}`);
+  const evidenceSection = inspectorSection(SimjectureI18n.live(() => SimjectureI18n.t("ui.evidence-2", {p0: (detail.evidence?.length || 0)})));
   if (detail.evidence?.length) {
     detail.evidence.forEach((evidence, index) => {
       evidenceSection.append(evidenceCard(evidence, `${detail.id}:${index}`));
     });
   } else {
-    evidenceSection.append(paragraph("inspector-empty", "No evidence is linked to this claim yet."));
+    evidenceSection.append(window.SimjectureI18n.text(paragraph("inspector-empty", ""), "monitor.noEvidence"));
   }
   container.append(evidenceSection);
 }
@@ -1282,29 +1309,29 @@ function renderInspector() {
 function renderCommissioningInspector(container, stage) {
   const target = state.snapshot.claim_details[stage.scientific_claim_id];
   const guided = state.snapshot.commissioning?.guided || { available: false };
-  ui["inspector-kind"].textContent = "Workflow stage";
+  SimjectureI18n.bindText(ui["inspector-kind"], () => SimjectureI18n.t("ui.workflow-stage"));
   setBadge(ui["claim-status"], stage.status, stage.status);
   container.append(markdownBlock(
-    `Commissioning gate for \`${stage.scientific_claim_id}\``,
+    SimjectureI18n.live(() => SimjectureI18n.t("ui.commissioning-gate-for", {p0: stage.scientific_claim_id})),
     "claim-statement",
   ));
 
   const metadata = element("div", "claim-metadata");
   metadata.append(
-    element("span", "metadata-chip", "commissioning"),
-    element("span", "metadata-chip", `${stage.claim_ids.length} instrument claims`),
-    element("span", "metadata-chip", `${stage.binding_count} bound programs`),
+    element("span", "metadata-chip", SimjectureI18n.message("status.commissioning")),
+    element("span", "metadata-chip", SimjectureI18n.live(() => SimjectureI18n.t("ui.instrument-claims", {p0: stage.claim_ids.length}))),
+    element("span", "metadata-chip", SimjectureI18n.live(() => SimjectureI18n.t("ui.bound-programs", {p0: stage.binding_count}))),
   );
   container.append(metadata);
 
   if (target) {
-    const section = inspectorSection("Scientific target");
-    section.append(claimLinkCard(target, "scientific claim"));
+    const section = inspectorSection(SimjectureI18n.message("ui.scientific-target-2"));
+    section.append(claimLinkCard(target, SimjectureI18n.message("ui.scientific-claim")));
     container.append(section);
   }
 
   if (stage.guided_available && guided.available) {
-    const section = inspectorSection("Guided starting point");
+    const section = inspectorSection(SimjectureI18n.message("ui.guided-starting-point"));
     if (guided.name) section.append(element("strong", null, guided.name));
     if (guided.description) section.append(markdownBlock(guided.description));
     const chips = element("div", "claim-metadata compact");
@@ -1315,7 +1342,7 @@ function renderCommissioningInspector(container, stage) {
     if (guided.operator_validation) {
       section.append(persistentDetails(
         `stage:${stage.id}:operator-validation`,
-        "Operator validation",
+        SimjectureI18n.live(() => SimjectureI18n.t("ui.operator-validation")),
         guided.operator_validation,
       ));
     }
@@ -1326,21 +1353,21 @@ function renderCommissioningInspector(container, stage) {
         item.append(markdownBlock(limitation));
         limitations.append(item);
       }
-      section.append(element("h4", null, "Starting-point limitations"), limitations);
+      section.append(element("h4", null, SimjectureI18n.message("ui.starting-point-limitations")), limitations);
     }
     container.append(section);
   }
 
-  const claimSection = inspectorSection(`Commissioning claims · ${stage.claim_ids.length}`);
+  const claimSection = inspectorSection(SimjectureI18n.live(() => SimjectureI18n.t("ui.commissioning-claims", {p0: stage.claim_ids.length})));
   if (stage.claim_ids.length) {
     for (const claimId of stage.claim_ids) {
       const claim = state.snapshot.claim_details[claimId];
-      if (claim) claimSection.append(claimLinkCard(claim, "instrument · instrument_of"));
+      if (claim) claimSection.append(claimLinkCard(claim, SimjectureI18n.live(() => `${SimjectureI18n.label("instrument")} · ${SimjectureI18n.label("instrument_of", "instrument_of")}`)));
     }
   } else {
     claimSection.append(paragraph(
       "inspector-empty",
-      "No campaign-generated instrument claim has been registered for this stage yet.",
+      SimjectureI18n.message("ui.no-campaign-generated-instrument-claim-has-been-registered-for-this-"),
     ));
   }
   container.append(claimSection);
@@ -1348,7 +1375,7 @@ function renderCommissioningInspector(container, stage) {
   const executions = (state.snapshot.executions?.items || []).filter(
     (item) => stage.claim_ids.includes(item.active_claim_id),
   );
-  const executionSection = inspectorSection(`Bound executions · ${executions.length}`);
+  const executionSection = inspectorSection(SimjectureI18n.live(() => SimjectureI18n.t("ui.bound-executions", {p0: executions.length})));
   if (executions.length) {
     for (const execution of executions) {
       const button = element("button", "linked-claim-card");
@@ -1360,7 +1387,7 @@ function renderCommissioningInspector(container, stage) {
       header.append(badge);
       button.append(
         header,
-        paragraph(null, `Iteration ${execution.iteration} · ${execution.active_claim_id}`),
+        paragraph(null, SimjectureI18n.live(() => SimjectureI18n.t("ui.iteration", {p0: execution.iteration, p1: execution.active_claim_id}))),
       );
       button.addEventListener("click", () => {
         state.selectedExecution = execution.id;
@@ -1372,7 +1399,7 @@ function renderCommissioningInspector(container, stage) {
   } else {
     executionSection.append(paragraph(
       "inspector-empty",
-      "No recorded capability execution is bound to these commissioning claims.",
+      SimjectureI18n.message("ui.no-recorded-capability-execution-is-bound-to-these-commissioning-cla"),
     ));
   }
   container.append(executionSection);
@@ -1405,7 +1432,7 @@ function evidenceCard(evidence, keyPrefix) {
     link.rel = "noopener";
     header.append(link);
   } else {
-    header.append(element("strong", null, path || "Evidence record"));
+    header.append(element("strong", null, SimjectureI18n.live(() => path || SimjectureI18n.t("ui.evidence-record"))));
   }
   const sufficient = evidence.observation_sufficient;
   if (typeof sufficient === "boolean") {
@@ -1416,7 +1443,7 @@ function evidenceCard(evidence, keyPrefix) {
   card.append(header);
   if (evidence.note) card.append(markdownBlock(evidence.note));
   if (evidence.observation_note) {
-    card.append(persistentDetails(`evidence:${keyPrefix}:assessment`, "Observation assessment", evidence.observation_note));
+    card.append(persistentDetails(`evidence:${keyPrefix}:assessment`, SimjectureI18n.live(() => SimjectureI18n.t("ui.observation-assessment")), evidence.observation_note));
   }
   return card;
 }
@@ -1444,18 +1471,18 @@ function renderExecutions() {
   const projection = state.snapshot.executions || { items: [], total: 0, status_counts: {} };
   const items = projection.items || [];
   const counts = projection.status_counts || {};
-  const summary = [
-    projection.total ? `${projection.total} total` : null,
-    counts.running ? `${counts.running} running` : null,
-    counts.succeeded ? `${counts.succeeded} succeeded` : null,
-    counts.failed ? `${counts.failed} failed` : null,
-    projection.truncated ? `${projection.visible} recent shown` : null,
+  const summary = () => [
+    projection.total ? SimjectureI18n.t("ui.total", {p0: projection.total}) : null,
+    counts.running ? SimjectureI18n.t("ui.running-2", {p0: counts.running}) : null,
+    counts.succeeded ? SimjectureI18n.t("ui.succeeded", {p0: counts.succeeded}) : null,
+    counts.failed ? SimjectureI18n.t("ui.failed", {p0: counts.failed}) : null,
+    projection.truncated ? SimjectureI18n.t("ui.recent-shown", {p0: projection.visible}) : null,
   ].filter(Boolean).join(" · ");
-  ui["execution-summary"].textContent = summary || (projection.total ? `${projection.total} recorded` : "No executions");
+  SimjectureI18n.bindText(ui["execution-summary"], () => summary() || (projection.total ? SimjectureI18n.t("ui.recorded", {p0: projection.total}) : SimjectureI18n.t("ui.no-executions")));
 
   if (!items.length) {
-    list.append(paragraph("panel-placeholder", "No numerical execution has been recorded."));
-    consolePanel.append(element("div", "console-empty", "The first simulation or calculation will appear here with its real state and heartbeat."));
+    list.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noExecution"));
+    consolePanel.append(window.SimjectureI18n.text(element("div", "console-empty"), "monitor.firstExecutionHelp"));
     state.selectedExecution = null;
     return;
   }
@@ -1472,14 +1499,14 @@ function renderExecutions() {
     const badge = element("span", "status-badge");
     setBadge(badge, item.status, item.status);
     header.append(badge);
-    const metadata = [
-      `iteration ${item.iteration}`,
+    const metadata = () => [
+      SimjectureI18n.t("ui.iteration-2", {p0: item.iteration}),
       item.stage,
       item.active_claim_id,
       item.machine,
-      item.transport_status === "unreachable" ? "SSH connection unavailable" : null,
+      item.transport_status === "unreachable" ? SimjectureI18n.t("ui.ssh-connection-unavailable") : null,
     ].filter(Boolean).join(" · ");
-    button.append(header, paragraph(null, item.description), element("small", null, metadata));
+    button.append(header, paragraph(null, item.description), element("small", null, SimjectureI18n.live(metadata)));
     button.addEventListener("click", () => {
       state.selectedExecution = item.id;
       renderExecutions();
@@ -1520,7 +1547,7 @@ async function loadExecutionConsole(item, cacheKey) {
     if (state.selectedExecution === item.id) renderExecutions();
   } catch (error) {
     state.executionConsoleCache.set(cacheKey, null);
-    showToast(`Execution console unavailable: ${error.message}`, true);
+    showToast(SimjectureI18n.live(() => SimjectureI18n.t("ui.execution-console-unavailable", {p0: error.message})), true);
     if (state.selectedExecution === item.id) renderExecutions();
   } finally {
     state.executionLoads.delete(cacheKey);
@@ -1531,7 +1558,7 @@ function renderExecutionConsole(container, item) {
   const heading = element("div", "console-heading");
   const copy = element("div");
   copy.append(element("h3", null, item.label));
-  copy.append(paragraph(null, `Iteration ${item.iteration} · ${item.action_name.replaceAll("_", " ")}`));
+  copy.append(paragraph(null, SimjectureI18n.live(() => SimjectureI18n.t("ui.iteration", {p0: item.iteration, p1: item.action_name.replaceAll("_", " ")}))));
   const badge = element("span", "status-badge");
   setBadge(badge, item.status, item.status);
   heading.append(copy, badge);
@@ -1539,7 +1566,7 @@ function renderExecutionConsole(container, item) {
 
   const progress = element("div", `progress-track ${item.status}`);
   progress.setAttribute("role", "progressbar");
-  progress.setAttribute("aria-label", `Execution ${item.status}`);
+  SimjectureI18n.attribute(progress, "aria-label", () => SimjectureI18n.t("ui.execution", {p0: SimjectureI18n.label(item.status)}));
   if (item.status !== "running") {
     progress.setAttribute("aria-valuemin", "0");
     progress.setAttribute("aria-valuemax", "1");
@@ -1549,10 +1576,10 @@ function renderExecutionConsole(container, item) {
 
   const stats = element("div", "execution-stats");
   const values = [
-    ["Elapsed", item.elapsed_wall_seconds == null ? "—" : formatDuration(item.elapsed_wall_seconds)],
-    ["Stdout", item.stdout_bytes == null ? "—" : formatBytes(item.stdout_bytes)],
-    ["Stderr", item.stderr_bytes == null ? "—" : formatBytes(item.stderr_bytes)],
-    ["Workspace", item.workspace_bytes == null ? "—" : formatBytes(item.workspace_bytes)],
+    [SimjectureI18n.message("ui.elapsed"), item.elapsed_wall_seconds == null ? "—" : formatDuration(item.elapsed_wall_seconds)],
+    [SimjectureI18n.message("ui.stdout"), item.stdout_bytes == null ? "—" : formatBytes(item.stdout_bytes)],
+    [SimjectureI18n.message("ui.stderr"), item.stderr_bytes == null ? "—" : formatBytes(item.stderr_bytes)],
+    [SimjectureI18n.message("ui.workspace"), item.workspace_bytes == null ? "—" : formatBytes(item.workspace_bytes)],
   ];
   for (const [label, value] of values) {
     const stat = element("div");
@@ -1562,39 +1589,33 @@ function renderExecutionConsole(container, item) {
   container.append(stats);
 
   const binding = element("p", "execution-binding");
-  const bindingParts = [
-    item.active_claim_id ? `claim ${item.active_claim_id}` : "no claim binding",
-    item.stage ? `stage ${item.stage}` : null,
-    item.model ? `model ${item.model}` : null,
-    item.route ? `route ${item.route}` : null,
-    item.returncode == null ? null : `return code ${item.returncode}`,
-    item.timed_out ? "timed out" : null,
-    item.machine ? `machine ${item.machine}` : null,
-    item.remote_job ? `job ${item.remote_job}` : null,
+  const bindingParts = () => [
+    item.active_claim_id ? SimjectureI18n.t("ui.claim-3", {p0: item.active_claim_id}) : SimjectureI18n.t("ui.no-claim-binding"),
+    item.stage ? SimjectureI18n.t("ui.stage", {p0: item.stage}) : null,
+    item.model ? SimjectureI18n.t("ui.model-3", {p0: item.model}) : null,
+    item.route ? SimjectureI18n.t("ui.route", {p0: item.route}) : null,
+    item.returncode == null ? null : SimjectureI18n.t("ui.return-code", {p0: item.returncode}),
+    item.timed_out ? SimjectureI18n.t("ui.timed-out") : null,
+    item.machine ? SimjectureI18n.t("ui.machine-2", {p0: item.machine}) : null,
+    item.remote_job ? SimjectureI18n.t("ui.job-2", {p0: item.remote_job}) : null,
     item.assigned_gpu_ids?.length ? `GPU ${item.assigned_gpu_ids.join(", ")}` : null,
-    item.transport_status === "unreachable" ? "SSH unavailable; remote execution may continue" : null,
+    item.transport_status === "unreachable" ? SimjectureI18n.t("ui.ssh-unavailable-remote-execution-may-continue") : null,
   ].filter(Boolean);
-  binding.textContent = bindingParts.join(" · ");
+  SimjectureI18n.bindText(binding, () => bindingParts().join(" · "));
   container.append(binding);
 
-  let output = item.console_excerpt;
-  if (item.console_available && item.console_excerpt === undefined) {
-    output = "Loading the bounded console record…";
-  }
-  if (!output && item.status === "running") {
-    output = [
-      "$ execution in progress",
+  const output = SimjectureI18n.live(() => {
+    if (item.console_excerpt) return item.console_excerpt;
+    if (item.console_available && item.console_excerpt === undefined) return SimjectureI18n.t("ui.loading-the-bounded-console-record");
+    if (item.status === "running") return [
+      SimjectureI18n.t("ui.execution-in-progress"),
       item.argv?.length ? `$ ${item.argv.join(" ")}` : null,
-      item.elapsed_wall_seconds == null ? "Waiting for the first command heartbeat…" : `Heartbeat received after ${formatDuration(item.elapsed_wall_seconds)}.`,
-      item.stdout_bytes == null ? null : `stdout captured: ${formatBytes(item.stdout_bytes)}`,
-      item.stderr_bytes == null ? null : `stderr captured: ${formatBytes(item.stderr_bytes)}`,
+      item.elapsed_wall_seconds == null ? SimjectureI18n.t("ui.waiting-for-the-first-command-heartbeat") : SimjectureI18n.t("ui.heartbeat-received-after-p0", {p0:formatDuration(item.elapsed_wall_seconds)}),
+      item.stdout_bytes == null ? null : SimjectureI18n.t("ui.stdout-captured-p0", {p0:formatBytes(item.stdout_bytes)}),
+      item.stderr_bytes == null ? null : SimjectureI18n.t("ui.stderr-captured-p0", {p0:formatBytes(item.stderr_bytes)}),
     ].filter(Boolean).join("\n");
-  }
-  if (!output) {
-    output = item.argv?.length
-      ? `$ ${item.argv.join(" ")}\n\nNo console excerpt was retained for this execution.`
-      : "No console excerpt was retained for this execution.";
-  }
+    return (item.argv?.length ? `$ ${item.argv.join(" ")}\n\n` : "") + SimjectureI18n.t("ui.no-console-excerpt-was-retained-for-this-execution");
+  });
   container.append(element("pre", "console-output", output));
 }
 
@@ -1607,7 +1628,7 @@ function renderResearchTrace() {
   const snapshot = state.snapshot.snapshot;
   const engine = state.snapshot.engine || {};
   const route = document.getElementById("study-route");
-  if (route) route.textContent = `${engine.mode || "legacy"} · ${engine.name || "native"}${engine.model ? " / " + engine.model : ""}${engine.execution_backend ? " · " + engine.execution_backend : ""}`;
+  if (route) SimjectureI18n.content(route, `${engine.mode || "legacy"} · ${engine.name || "native"}${engine.model ? " / " + engine.model : ""}${engine.execution_backend ? " · " + engine.execution_backend : ""}`);
   const usage = engine.name === "dsh"
     ? {
         prompt_tokens: engine.token_usage?.input_tokens,
@@ -1617,10 +1638,10 @@ function renderResearchTrace() {
       }
     : (snapshot.token_usage || {});
   const usageRows = [
-    ["Input", compactNumber(usage.prompt_tokens)],
-    ["Output", compactNumber(usage.completion_tokens)],
-    ["Reasoning", engine.usage_details?.reasoning_usage_complete === false ? "Not fully reported" : compactNumber(usage.reasoning_tokens)],
-    ["Cached", engine.usage_details?.cache_usage_complete === false ? "Not fully reported" : compactNumber(usage.cached_tokens)],
+    [SimjectureI18n.message("ui.input"), compactNumber(usage.prompt_tokens)],
+    [SimjectureI18n.message("ui.output"), compactNumber(usage.completion_tokens)],
+    [SimjectureI18n.message("ui.reasoning"), SimjectureI18n.live(() => engine.usage_details?.reasoning_usage_complete === false ? SimjectureI18n.t("ui.not-fully-reported-2") : compactNumber(usage.reasoning_tokens))],
+    [SimjectureI18n.message("ui.cached"), SimjectureI18n.live(() => engine.usage_details?.cache_usage_complete === false ? SimjectureI18n.t("ui.not-fully-reported-2") : compactNumber(usage.cached_tokens))],
   ];
   for (const [label, value] of usageRows) {
     const cell = element("div");
@@ -1630,50 +1651,50 @@ function renderResearchTrace() {
   }
   if (engine.provider_attention) panel.append(element("p", "warning-list", engine.provider_attention));
   if (engine.recorded_error) panel.append(element("p", "warning-list",
-    `Supervisor stopped early: ${engine.recorded_error}. Recorded status: ${engine.recorded_status}. ${formatDuration(engine.stopped_with_remaining_seconds)} remained at the stop.`));
+    SimjectureI18n.live(() => SimjectureI18n.t("ui.supervisor-stopped-early-recorded-status-remained-at-the-stop", {p0: engine.recorded_error, p1: engine.recorded_status, p2: formatDuration(engine.stopped_with_remaining_seconds)}))));
   if (Object.keys(engine.diagnostic_errors || {}).length) {
     const diagnostics = element("section", "research-diagnostics");
-    diagnostics.append(element("h3", null, "Harness diagnostics"),
-      element("p", "field-help", "Context or report generation is degraded. Scientific receipts and review remain authoritative."));
+    diagnostics.append(element("h3", null, SimjectureI18n.message("ui.harness-diagnostics")),
+      element("p", "field-help", SimjectureI18n.message("ui.context-or-report-generation-is-degraded-scientific-receipts-and-rev")));
     for (const [component, detail] of Object.entries(engine.diagnostic_errors)) diagnostics.append(
-      element("p", "warning-list", `${component}: ${detail.error} · ${detail.count} occurrence${detail.count === 1 ? "" : "s"}`));
+      element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.occurrence", {p0: component, p1: detail.error, p2: detail.count, p3: (SimjectureI18n.getLanguage() === "en" && !(detail.count === 1) ? "s" : "")}))));
     panel.append(diagnostics);
   }
   if (engine.usage_details) {
     const details = engine.usage_details;
     panel.append(element("p", "field-help",
-      `${details.request_count_complete === false ? "Per-request counts unavailable from native CLI" : `${details.requests || 0} tracked requests`} · ${details.requests_without_usage || 0} tracked requests without usage yet · ${formatDuration(engine.provider_wait_seconds || 0)} in provider retry waits. ${details.cost_note}`));
+      SimjectureI18n.live(() => SimjectureI18n.t("ui.tracked-requests-without-usage-yet-in-provider-retry-waits", {p0: (details.request_count_complete === false ? SimjectureI18n.t("ui.per-request-counts-unavailable-from-native-cli") : SimjectureI18n.t("ui.tracked-requests", {p0: (details.requests || 0)})), p1: (details.requests_without_usage || 0), p2: formatDuration(engine.provider_wait_seconds || 0), p3: SimjectureI18n.known("ui.usage-cost-note", details.cost_note)}))));
     if (details.unreported_native_threads || details.unidentified_calls) panel.append(element("p", "warning-list",
-      `Reported totals are a minimum: ${details.unreported_native_threads || 0} native threads and ${details.unidentified_calls || 0} unidentified calls have unreported usage. A later cumulative worker counter can recover interrupted turns.`));
+      SimjectureI18n.live(() => SimjectureI18n.t("ui.reported-totals-are-a-minimum-native-threads-and-unidentified-calls-", {p0: (details.unreported_native_threads || 0), p1: (details.unidentified_calls || 0)}))));
     if (details.legacy_unmeasured_calls) panel.append(element("p", "field-help",
-      `${details.legacy_unmeasured_calls} historical calls lacked final usage receipts before coverage tracking. Their outstanding usage cannot be inferred as zero.`));
+      SimjectureI18n.live(() => SimjectureI18n.t("ui.historical-calls-lacked-final-usage-receipts-before-coverage-trackin", {p0: details.legacy_unmeasured_calls}))));
     for (const [role, totals] of Object.entries(details.by_role || {})) {
-      panel.append(element("p", "field-help", `${role}: ${compactNumber(totals.input_tokens)} input / ${totals.cache_usage_complete === false ? "unknown" : compactNumber(totals.cached_input_tokens)} cached / ${totals.uncached_input_tokens == null ? "unknown" : compactNumber(totals.uncached_input_tokens)} uncached / ${compactNumber(totals.output_tokens)} output tokens`));
+      panel.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.input-cached-uncached-output-tokens", {p0: role, p1: compactNumber(totals.input_tokens), p2: (totals.cache_usage_complete === false ? SimjectureI18n.t("status.unknown") : compactNumber(totals.cached_input_tokens)), p3: (totals.uncached_input_tokens == null ? SimjectureI18n.t("status.unknown") : compactNumber(totals.uncached_input_tokens)), p4: compactNumber(totals.output_tokens)}))));
     }
   }
   if (engine.worker_wait?.status === "waiting" && engine.status === "running") {
     const waiting = element("section", "research-waiting");
-    waiting.append(element("h3", null, "Worker awaiting feedback"),
+    waiting.append(element("h3", null, SimjectureI18n.message("ui.worker-awaiting-feedback")),
       element("p", null, engine.worker_wait.reason),
-      element("p", "field-help", "Worker inference is parked. Experiments and host supervision continue; the original campaign deadline remains in force. New review results or operator guidance wake the worker."));
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.workerWaitHelp"));
     panel.append(waiting);
   }
   if (engine.mode === "minimal" || engine.report_assessments?.length) {
     const reports = element("section", "report-assessments");
-    reports.append(element("h3", null, "Independent report assessments"),
-      element("p", "field-help", "Reports can be reviewed while the investigation runs, including inconclusive findings. Report acceptance does not approve the hypothesis or promote exploratory evidence."));
+    reports.append(element("h3", null, SimjectureI18n.message("ui.independent-report-assessments")),
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.reportReviewHelp"));
     for (const request of (engine.report_assessments || []).slice(-5)) {
       const label = request.assessment?.decision || request.status;
-      reports.append(element("strong", null, `Report ${label.replaceAll("_", " ")} · frozen version`));
+      reports.append(element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.report-frozen-version", {p0: SimjectureI18n.label(label, label.replaceAll("_", " "))}))));
       if (request.assessment?.summary) reports.append(element("p", null, request.assessment.summary));
       for (const issue of request.assessment?.issues || []) reports.append(element("p", "warning-list", issue));
       if (request.error) reports.append(element("p", "warning-list", request.error));
-      const link = element("a", null, "Open frozen report");
+      const link = element("a", null, SimjectureI18n.message("ui.open-frozen-report"));
       link.href = artifactUrl(request.report); link.target = "_blank"; link.rel = "noopener";
       reports.append(link);
     }
     if (state.allowMutations && state.snapshot.controls?.can_assess_report) {
-      const button = element("button", "quiet", "Assess current report");
+      const button = element("button", "quiet", SimjectureI18n.message("ui.assess-current-report"));
       button.type = "button";
       button.disabled = (engine.report_assessments || []).some(r => ["queued", "running"].includes(r.status));
       button.addEventListener("click", async () => {
@@ -1688,18 +1709,18 @@ function renderResearchTrace() {
   if (engine.instrument_requirement?.prefixes?.length) {
     const rule = engine.instrument_requirement;
     panel.append(element("p", "field-help",
-      `Instrument family: any of ${rule.prefixes.join(" or ")}. ${rule.satisfied ? `Matched by ${rule.matching_capabilities.join(", ")}` : "No matching instrument available"}. Scientific qualification is reviewed separately.`));
+      SimjectureI18n.live(() => SimjectureI18n.t("ui.instrument-family-any-of-scientific-qualification-is-reviewed-separa", {p0: rule.prefixes.join(SimjectureI18n.t("ui.or")), p1: (rule.satisfied ? SimjectureI18n.t("ui.matched-by", {p0: rule.matching_capabilities.join(", ")}) : SimjectureI18n.t("ui.no-matching-instrument-available"))}))));
   }
   if (engine.finalization?.reserve_seconds) {
     const finish = engine.finalization, section = element("section", "research-director");
-    section.append(element("h3", null, "Report & finalization"),
-      element("p", null, `${finish.phase || "research"} · report ${(finish.report_status || "not_started").replaceAll("_", " ")}`),
-      element("p", "field-help", `Numerical work ends by ${new Date(finish.compute_deadline * 1000).toLocaleTimeString()}. ${formatDuration(finish.reserve_seconds)} is reserved for writing and independent report review. Report acceptance does not approve scientific claims.`));
+    section.append(element("h3", null, SimjectureI18n.message("ui.report-finalization")),
+      element("p", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.report", {p0: SimjectureI18n.label(finish.phase || "research"), p1: SimjectureI18n.label(finish.report_status || "not_started", (finish.report_status || "not_started").replaceAll("_", " "))}))),
+      element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.numerical-work-ends-by-is-reserved-for-writing-and-independent-repor", {p0: new Date(finish.compute_deadline * 1000).toLocaleTimeString(), p1: formatDuration(finish.reserve_seconds)}))));
     if (finish.assessment?.summary) section.append(element("p", null, finish.assessment.summary));
     for (const issue of finish.assessment?.issues || []) section.append(element("p", "warning-list", issue));
     if (finish.error) section.append(element("p", "warning-list", finish.error));
     if (finish.report) {
-      const link = element("a", null, "Open frozen report");
+      const link = element("a", null, SimjectureI18n.message("ui.open-frozen-report"));
       link.href = artifactUrl(finish.report); link.target = "_blank"; link.rel = "noopener";
       section.append(link);
     }
@@ -1707,98 +1728,96 @@ function renderResearchTrace() {
   }
   if (engine.director_policy?.enabled || engine.director_decisions?.length) {
     const director = element("section", "research-director");
-    director.append(element("h3", null, "Research director · strategy & control"),
-      element("p", "field-help", "Stops individual experiments and requests replans. Scientific claim acceptance remains separate."));
+    director.append(element("h3", null, SimjectureI18n.message("ui.research-director-strategy-control")),
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.directorHelp"));
     const route = engine.director_route || {};
-    if (engine.background_review) director.append(element("p", "field-help", "Reviewing alongside the worker · separate context"));
-    if (route.model) director.append(element("p", "field-help", `Director route: ${[route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}`));
-    if (engine.resource_limits?.max_experiment_bytes) director.append(element("p", "field-help", `Storage allowance: ${formatBytes(engine.resource_limits.max_experiment_bytes)} per experiment and file · ${formatBytes(engine.resource_limits.max_total_bytes)} shared study allowance. ${engine.resource_policy?.director_can_increase ? "Director may increase allowances with a recorded reason." : "Storage increases require operator delegation."}`));
+    if (engine.background_review) director.append(element("p", "field-help", SimjectureI18n.message("ui.reviewing-alongside-the-worker-separate-context")));
+    if (route.model) director.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.director-route", {p0: [route.backend, route.model, route.reasoning_effort].filter(Boolean).join(" · ")}))));
+    if (engine.resource_limits?.max_experiment_bytes) director.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.storage-allowance-per-experiment-and-file-shared-study-allowance", {p0: formatBytes(engine.resource_limits.max_experiment_bytes), p1: formatBytes(engine.resource_limits.max_total_bytes), p2: (engine.resource_policy?.director_can_increase ? SimjectureI18n.t("ui.director-may-increase-allowances-with-a-recorded-reason") : SimjectureI18n.t("ui.storage-increases-require-operator-delegation"))}))));
     const registration = engine.registration || {};
     if (registration.limits) {
-      director.append(element("p", "field-help", `Instrument registration: ${formatDuration(registration.limits.timeout_seconds)} per probe · up to ${registration.limits.max_attempts} attempt(s). ${registration.policy?.director_can_tune ? "Director may tune deadlines and retries." : "Tuning requires operator delegation."} Compute cutoff and frozen identities remain enforced.`));
-      for (const attempt of registration.recent_attempts || []) director.append(element("p", ["responded", "verified"].includes(attempt.status) ? "field-help" : "warning-list", `${attempt.capability} on ${attempt.machine} · probe ${attempt.attempt}/${attempt.max_attempts} · ${attempt.status} · ${formatDuration(attempt.elapsed_seconds)}${attempt.error ? ` · ${attempt.error}` : ""}`));
+      director.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.instrument-registration-per-probe-up-to-attempt-s-compute-cutoff-and", {p0: formatDuration(registration.limits.timeout_seconds), p1: registration.limits.max_attempts, p2: (registration.policy?.director_can_tune ? SimjectureI18n.t("ui.director-may-tune-deadlines-and-retries") : SimjectureI18n.t("ui.tuning-requires-operator-delegation"))}))));
+      for (const attempt of registration.recent_attempts || []) director.append(element("p", ["responded", "verified"].includes(attempt.status) ? "field-help" : "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.on-probe", {p0: attempt.capability, p1: attempt.machine, p2: attempt.attempt, p3: attempt.max_attempts, p4: SimjectureI18n.label(attempt.status), p5: formatDuration(attempt.elapsed_seconds), p6: (attempt.error ? ` · ${attempt.error}` : "")}))));
     }
     if (engine.director_policy?.enabled) {
       const policy = engine.director_policy;
-      director.append(element("p", "field-help", `Strategy review interval: ${formatDuration(policy.interval_seconds || 300)}. Healthy experiments with unchanged work may wait up to ${formatDuration(policy.unchanged_review_seconds || policy.interval_seconds || 300)}; operational checks continue.`));
-      if (engine.director_next_review_at) director.append(element("p", "field-help", `Unchanged strategy · next model review by ${new Date(engine.director_next_review_at * 1000).toLocaleTimeString()}. New evidence or an operational risk brings the review forward.`));
+      director.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.strategy-review-interval-healthy-experiments-with-unchanged-work-may", {p0: formatDuration(policy.interval_seconds || 300), p1: formatDuration(policy.unchanged_review_seconds || policy.interval_seconds || 300)}))));
+      if (engine.director_next_review_at) director.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.unchanged-strategy-next-model-review-by-new-evidence-or-an-operation", {p0: new Date(engine.director_next_review_at * 1000).toLocaleTimeString()}))));
     }
-    if (!engine.director_decisions?.length) director.append(element("p", "field-help", "Enabled · awaiting the first strategy review."));
+    if (!engine.director_decisions?.length) director.append(element("p", "field-help", SimjectureI18n.message("ui.enabled-awaiting-the-first-strategy-review")));
     for (const d of engine.director_decisions || []) {
       const card = element("article", "trace-event"), copy = element("div", "trace-copy");
-      copy.append(element("strong", null, `${d.decision === "replan" ? "Stop / replan" : "Continue strategy"} · budget ${d.budget_feasibility} · science ${d.scientific_feasibility}`),
-        element("p", null, d.rationale), element("p", null, `Next action: ${d.next_action}`));
-      if (d.wake_worker) copy.append(element("p", "field-help", "Worker wake-up requested · prepare or analyze work while experiments continue."));
-      if (d.worker_wait_action?.status === "parked") copy.append(element("p", "field-help", "Worker parked until feedback · campaign clock and experiments continue."));
-      if (d.worker_wait_action?.status === "rejected") copy.append(element("p", "warning-list", `Worker wait rejected: ${d.worker_wait_action.error}`));
-      if (d.report_assessment_action?.request) copy.append(element("p", "field-help", `Independent report assessment requested: ${d.report_assessment_action.request.id}`));
-      if (d.report_assessment_action?.status === "rejected") copy.append(element("p", "warning-list", `Report assessment rejected: ${d.report_assessment_action.error}`));
+      copy.append(element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.budget-science", {p0: (d.decision === "replan" ? SimjectureI18n.t("ui.stop-replan") : SimjectureI18n.t("ui.continue-strategy")), p1: d.budget_feasibility, p2: d.scientific_feasibility}))),
+        element("p", null, d.rationale), element("p", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.next-action", {p0: d.next_action}))));
+      if (d.wake_worker) copy.append(element("p", "field-help", SimjectureI18n.message("ui.worker-wake-up-requested-prepare-or-analyze-work-while-experiments-c")));
+      if (d.worker_wait_action?.status === "parked") copy.append(element("p", "field-help", SimjectureI18n.message("ui.worker-parked-until-feedback-campaign-clock-and-experiments-continue")));
+      if (d.worker_wait_action?.status === "rejected") copy.append(element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.worker-wait-rejected", {p0: d.worker_wait_action.error}))));
+      if (d.report_assessment_action?.request) copy.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.independent-report-assessment-requested", {p0: d.report_assessment_action.request.id}))));
+      if (d.report_assessment_action?.status === "rejected") copy.append(element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.report-assessment-rejected", {p0: d.report_assessment_action.error}))));
       if (d.storage_action?.status === "granted") {
         const grant = d.storage_action.adjustment;
-        copy.append(element("p", "field-help", `Storage increase granted: ${formatBytes(grant.before.max_experiment_bytes)} → ${formatBytes(grant.after.max_experiment_bytes)} per experiment and file; ${formatBytes(grant.before.max_total_bytes)} → ${formatBytes(grant.after.max_total_bytes)} shared study allowance. Applies to new experiments; prior reservations and deadline unchanged. Worker resumed.`), element("p", "field-help", grant.request.reason));
-      } else if (d.storage_action?.status === "rejected") copy.append(element("p", "warning-list", `Storage increase rejected: ${d.storage_action.error}`));
+        copy.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.storage-increase-granted-per-experiment-and-file-shared-study-allowa", {p0: formatBytes(grant.before.max_experiment_bytes), p1: formatBytes(grant.after.max_experiment_bytes), p2: formatBytes(grant.before.max_total_bytes), p3: formatBytes(grant.after.max_total_bytes)}))), element("p", "field-help", grant.request.reason));
+      } else if (d.storage_action?.status === "rejected") copy.append(element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.storage-increase-rejected", {p0: d.storage_action.error}))));
       if (d.registration_action?.status === "granted") {
         const grant = d.registration_action.adjustment;
-        copy.append(element("p", "field-help", `Registration tuning granted: ${formatDuration(grant.before.timeout_seconds)} → ${formatDuration(grant.after.timeout_seconds)} per probe; ${grant.before.max_attempts} → ${grant.after.max_attempts} attempt(s). Worker resumed; compute cutoff and frozen identities unchanged.`), element("p", "field-help", grant.request.reason));
-      } else if (d.registration_action?.status === "rejected") copy.append(element("p", "warning-list", `Registration tuning rejected: ${d.registration_action.error}`));
-      for (const action of d.control_actions || []) copy.append(element("p", "field-help", `Stop requested: ${action.experiment} · ${action.status} · ${action.cancellation_confirmed ? "stop confirmed" : "awaiting confirmation"}${action.error ? ` · recorded control error: ${action.error}` : ""} · partial data retained when available`));
-      copy.append(element("p", "field-help", d.acknowledgement ? `Worker ${d.acknowledgement.response}: ${d.acknowledgement.reason}` : d.decision === "replan" ? "Awaiting worker plan or challenge" : "No replan acknowledgement required"));
+        copy.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.registration-tuning-granted-per-probe-attempt-s-worker-resumed-compu", {p0: formatDuration(grant.before.timeout_seconds), p1: formatDuration(grant.after.timeout_seconds), p2: grant.before.max_attempts, p3: grant.after.max_attempts}))), element("p", "field-help", grant.request.reason));
+      } else if (d.registration_action?.status === "rejected") copy.append(element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.registration-tuning-rejected", {p0: d.registration_action.error}))));
+      for (const action of d.control_actions || []) copy.append(element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.stop-requested-partial-data-retained-when-available", {p0: action.experiment, p1: SimjectureI18n.label(action.status), p2: (action.cancellation_confirmed ? SimjectureI18n.t("ui.stop-confirmed") : SimjectureI18n.t("ui.awaiting-confirmation")), p3: (action.error ? SimjectureI18n.t("ui.recorded-control-error", {p0: action.error}) : "")}))));
+      copy.append(element("p", "field-help", SimjectureI18n.live(() => d.acknowledgement ? SimjectureI18n.t("ui.worker-2", {p0: d.acknowledgement.response, p1: d.acknowledgement.reason}) : (d.decision === "replan" ? SimjectureI18n.t("ui.awaiting-worker-plan-or-challenge") : SimjectureI18n.t("ui.no-replan-acknowledgement-required")))));
       card.append(element("span", "event-mark", d.decision === "replan" ? "↻" : "✓"), copy);director.append(card);
     }
     panel.append(director);
   }
   if (engine.solver_development?.policy) {
     const development = element("section", "solver-development"), policy = engine.solver_development.policy;
-    development.append(element("h3", null, "Solver development"), element("p", "field-help",
-      policy.allowed === true ? "Experimental solver development allowed · private forks, protected reference installations, independent qualification."
-        : policy.allowed === false ? "Experimental solver development disabled · use supplied solver implementations. Experiment and analysis scripting remains available."
-        : "Existing study · source permissions follow its saved operator instructions."));
-    development.append(element("p", "field-help", "Method approval applies to its reviewed source and scope. Instrument readiness is separate from production-method approval and scientific claim acceptance."));
+    development.append(element("h3", null, SimjectureI18n.message("ui.solver-development")), element("p", "field-help",
+      SimjectureI18n.live(() => policy.allowed === true ? SimjectureI18n.t("ui.experimental-solver-development-allowed-private-forks-protected-refe") : (policy.allowed === false ? SimjectureI18n.t("ui.experimental-solver-development-disabled-use-supplied-solver-impleme") : SimjectureI18n.t("ui.existing-study-source-permissions-follow-its-saved-operator-instruct")))));
+    development.append(window.SimjectureI18n.text(element("p", "field-help"), "monitor.methodApprovalHelp"));
     for (const build of engine.solver_development.builds || []) {
       const card = element("article", "trace-event"), copy = element("div", "trace-copy"), change = build.development;
-      copy.append(element("strong", null, build.name), element("p", "field-help", change ? `${change.change_type} change · parent ${change.parent_capability || "new instrument"}` : "Registered instrument · development provenance not declared"));
-      if (change) copy.append(element("p", null, change.rationale), element("p", "field-help", `Preserved assumptions: ${change.preserved_assumptions}`), element("p", "field-help", `Validation plan: ${change.validation_plan}`));
-      if (!build.method_reviews?.length) copy.append(element("p", "field-help", "Qualification pending · no reviewed method for this build."));
-      for (const review of build.method_reviews || []) copy.append(element("p", "field-help", `${review.scope === "instrument" ? "Instrument readiness" : "Production method"} · ${review.decision === "continue" ? "approved within reviewed scope" : review.decision === "revise" ? "revision required" : "review pending"} · ${review.source}`));
-      if (build.registration_path) { const link = element("a", null, "View registered build provenance"); link.href = artifactUrl(build.registration_path); link.target = "_blank"; link.rel = "noopener"; copy.append(link); }
+      copy.append(element("strong", null, build.name), element("p", "field-help", SimjectureI18n.live(() => change ? SimjectureI18n.t("ui.change-parent", {p0: change.change_type, p1: (change.parent_capability || SimjectureI18n.t("ui.new-instrument"))}) : SimjectureI18n.t("ui.registered-instrument-development-provenance-not-declared"))));
+      if (change) copy.append(element("p", null, change.rationale), element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.preserved-assumptions", {p0: change.preserved_assumptions}))), element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.validation-plan", {p0: change.validation_plan}))));
+      if (!build.method_reviews?.length) copy.append(element("p", "field-help", SimjectureI18n.message("ui.qualification-pending-no-reviewed-method-for-this-build")));
+      for (const review of build.method_reviews || []) copy.append(element("p", "field-help", SimjectureI18n.live(() => `${(review.scope === "instrument" ? SimjectureI18n.t("ui.instrument-readiness") : SimjectureI18n.t("ui.production-method"))} · ${(review.decision === "continue" ? SimjectureI18n.t("ui.approved-within-reviewed-scope") : (review.decision === "revise" ? SimjectureI18n.t("ui.revision-required") : SimjectureI18n.t("ui.review-pending")))} · ${review.source}`)));
+      if (build.registration_path) { const link = element("a", null, SimjectureI18n.message("ui.view-registered-build-provenance")); link.href = artifactUrl(build.registration_path); link.target = "_blank"; link.rel = "noopener"; copy.append(link); }
       card.append(element("span", "event-mark", "⌘"), copy); development.append(card);
     }
     panel.append(development);
   }
   if (engine.receipt_progress?.length || engine.execution_costs?.length || engine.live_experiments?.length) {
     const coverage = element("section", "scientific-progress");
-    coverage.append(element("h3", null, "Scientific coverage & cost"),
-      element("p", "field-help", "Live timing is operational telemetry. Recorded metrics have researcher-declared targets and units. Claim approval remains separate."));
+    coverage.append(element("h3", null, SimjectureI18n.message("ui.scientific-coverage-cost")),
+      window.SimjectureI18n.text(element("p", "field-help"), "monitor.telemetryHelp"));
     for (const e of engine.live_experiments || []) {
       const t = e.telemetry, copy = element("div", "trace-copy"), card = element("article", "trace-event");
-      copy.append(element("strong", null, `${e.id} · ${e.status}`));
-      if (t?.available) copy.append(element("p", null, `${t.quantity}: ${t.value} ${t.unit} / target ${t.target} ${t.unit}`),
-        element("p", "field-help", `Elapsed ${formatDuration(t.elapsed_seconds)} · estimated additional ${t.estimated_additional_seconds == null ? "unknown" : formatDuration(t.estimated_additional_seconds)} · ${t.authority}`));
-      else copy.append(element("p", "field-help", t?.error || "Awaiting operational timing telemetry"));
-      if (e.cancel_requested) copy.append(element("p", "warning-list", `Stop requested: ${e.stop_reason || "operator control"}`));
+      copy.append(element("strong", null, SimjectureI18n.live(() => `${e.id} · ${SimjectureI18n.label(e.status)}`)));
+      if (t?.available) copy.append(element("p", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.target", {p0: t.quantity, p1: t.value, p2: t.unit, p3: t.target, p4: t.unit}))),
+        element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.elapsed-estimated-additional", {p0: formatDuration(t.elapsed_seconds), p1: (t.estimated_additional_seconds == null ? SimjectureI18n.t("status.unknown") : formatDuration(t.estimated_additional_seconds)), p2: t.authority}))));
+      else copy.append(element("p", "field-help", SimjectureI18n.live(() => t?.error || SimjectureI18n.t("ui.awaiting-operational-timing-telemetry"))));
+      if (e.cancel_requested) copy.append(element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.stop-requested", {p0: (e.stop_reason || SimjectureI18n.t("ui.operator-control"))}))));
       card.append(element("span", "event-mark", "◷"), copy);coverage.append(card);
     }
     for (const row of engine.receipt_progress || []) {
       const card = element("article", "trace-event");
       const copy = element("div", "trace-copy");
-      copy.append(element("strong", null, `${row.quantity}: ${row.value} ${row.unit} / target ${row.target} ${row.unit}`));
+      copy.append(element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.target", {p0: row.quantity, p1: row.value, p2: row.unit, p3: row.target, p4: row.unit}))));
       if (row.measured_wall_seconds != null) copy.append(element("p", "field-help",
-        `Measured execution: ${formatDuration(row.measured_wall_seconds)} · ${row.machine || "local"}`));
+        SimjectureI18n.live(() => SimjectureI18n.t("ui.measured-execution", {p0: formatDuration(row.measured_wall_seconds), p1: (row.machine || "local")}))));
       const cost = (engine.execution_costs || []).find(c => c.id === row.experiment);
       if (cost?.end_to_end_seconds != null) copy.append(element("p", "field-help",
-        `Submission to result: ${formatDuration(cost.end_to_end_seconds)} · includes admission, transfer and result collection.`));
+        SimjectureI18n.live(() => SimjectureI18n.t("ui.submission-to-result-includes-admission-transfer-and-result-collecti", {p0: formatDuration(cost.end_to_end_seconds)}))));
       if (row.integrity !== "verified") {
-        copy.append(element("p", "warning-list", `Recorded value integrity failed: ${row.integrity_error || "inspect the receipt"}`));
+        copy.append(element("p", "warning-list", SimjectureI18n.live(() => SimjectureI18n.t("ui.recorded-value-integrity-failed", {p0: (row.integrity_error || SimjectureI18n.t("ui.inspect-the-receipt"))}))));
       } else {
-        const parts = [row.series, row.target_reached ? "Metric target reached" : "Metric target outstanding"];
+        const parts = [row.series, row.target_reached ? SimjectureI18n.live(() => SimjectureI18n.t("ui.metric-target-reached")) : SimjectureI18n.live(() => SimjectureI18n.t("ui.metric-target-outstanding"))];
         if (row.estimated_additional_seconds != null) {
-          parts.push(`Estimated additional time: ${formatDuration(row.estimated_additional_seconds)}`);
-          if (row.exceeds_remaining_budget) parts.push("Exceeds remaining wall budget");
+          parts.push(SimjectureI18n.live(() => SimjectureI18n.t("ui.estimated-additional-time", {p0: formatDuration(row.estimated_additional_seconds)})));
+          if (row.exceeds_remaining_budget) parts.push(SimjectureI18n.live(() => SimjectureI18n.t("ui.exceeds-remaining-wall-budget")));
         }
-        copy.append(element("p", row.exceeds_remaining_budget ? "warning-list" : "field-help", parts.filter(Boolean).join(" · ")));
+        copy.append(element("p", row.exceeds_remaining_budget ? "warning-list" : "field-help", SimjectureI18n.live(() => parts.filter(Boolean).join(" · "))));
         if (row.estimated_additional_seconds != null) copy.append(element("p", "field-help", row.estimate_note));
       }
-      const link = element("a", null, "View recorded metric");
+      const link = element("a", null, SimjectureI18n.message("ui.view-recorded-metric"));
       link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.experiment}/workspace/${row.output}`)}`;
       link.target = "_blank"; link.rel = "noopener";
       copy.append(link);
@@ -1811,20 +1830,20 @@ function renderResearchTrace() {
       const card = element("article", "trace-event");
       const copy = element("div", "trace-copy");
       copy.append(element("strong", null, [row.source, ...(row.args || [])].filter(Boolean).join(" ")),
-        element("p", "field-help", `Measured execution: ${formatDuration(row.wall_seconds)} · ${row.machine} · ${row.status} · ${row.stage || "recorded"}`));
+        element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.measured-execution-2", {p0: formatDuration(row.wall_seconds), p1: row.machine, p2: SimjectureI18n.label(row.status), p3: SimjectureI18n.label(row.stage || "recorded")}))));
       if (row.end_to_end_seconds != null) copy.append(element("p", "field-help",
-        `Submission to result: ${formatDuration(row.end_to_end_seconds)} · includes admission, transfer and result collection.`));
-      const link = element("a", null, "View execution receipt");
+        SimjectureI18n.live(() => SimjectureI18n.t("ui.submission-to-result-includes-admission-transfer-and-result-collecti", {p0: formatDuration(row.end_to_end_seconds)}))));
+      const link = element("a", null, SimjectureI18n.message("ui.view-execution-receipt"));
       link.href = `/api/artifact?campaign=${encodeURIComponent(state.selectedCampaign)}&path=${encodeURIComponent(`experiments/${row.id}.json`)}`;
       link.target = "_blank"; link.rel = "noopener"; copy.append(link);
       card.append(element("span", "event-mark", "◷"), copy); coverage.append(card);
     }
-    coverage.append(element("p", "field-help", "Execution wall time excludes provider calls, preflight checks and artifact transfers. Targets and forecasts remain advisory."));
+    coverage.append(window.SimjectureI18n.text(element("p", "field-help"), "monitor.coverageHelp"));
     panel.append(coverage);
   }
   if (snapshot.warnings?.length) {
     const warnings = element("ul", "warning-list");
-    snapshot.warnings.forEach((warning) => warnings.append(element("li", null, warning)));
+    snapshot.warnings.forEach((warning) => warnings.append(element("li", null, SimjectureI18n.live(() => SimjectureI18n.known("ui.no-completed-turn-usage", warning)))));
     panel.append(warnings);
   }
   const engineEvents = engine.name === "dsh"
@@ -1834,22 +1853,22 @@ function renderResearchTrace() {
     const row = element("article", "trace-event");
     const mark = element("span", "event-mark", eventSymbol(event.kind));
     const copy = element("div", "trace-copy");
-    copy.append(element("p", null, engineEventSummary(event)));
-    const metadata = [
-      event.turn ? `turn ${event.turn}` : null,
-      event.step ? `step ${event.step}` : null,
+    copy.append(element("p", null, SimjectureI18n.live(() => engineEventSummary(event))));
+    const metadata = () => [
+      event.turn ? SimjectureI18n.t("ui.event-turn", {p0: event.turn}) : null,
+      event.step ? SimjectureI18n.t("ui.event-step", {p0: event.step}) : null,
       event.tool,
       event.provider && event.model ? `${event.provider}/${event.model}` : event.model,
-      event.status,
+      SimjectureI18n.label(event.status),
     ].filter(Boolean).join(" · ");
-    copy.append(element("small", null, metadata));
+    copy.append(element("small", null, SimjectureI18n.live(metadata)));
     row.append(mark, copy);
     panel.append(row);
   }
   const events = [...(snapshot.recent_events || [])].reverse();
   if (!events.length) {
     if (!engineEvents.length) {
-      panel.append(paragraph("panel-placeholder", "No model or tool actions have been recorded yet."));
+      panel.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noActions"));
     }
     return;
   }
@@ -1858,18 +1877,18 @@ function renderResearchTrace() {
     const mark = element("span", "event-mark", eventSymbol(event.kind));
     const copy = element("div", "trace-copy");
     copy.append(markdownBlock(event.summary));
-    const metadata = [
-      event.iteration ? `iteration ${event.iteration}` : null,
+    const metadata = () => [
+      event.iteration ? SimjectureI18n.t("ui.iteration-2", {p0: event.iteration}) : null,
       event.action_name || event.kind,
-      event.research_role ? `role ${event.research_role}` : null,
+      event.research_role ? SimjectureI18n.t("ui.event-role", {p0: SimjectureI18n.label(event.research_role)}) : null,
       event.model,
       event.route,
       event.outcome && event.kind !== "assistant" ? event.outcome : null,
     ].filter(Boolean).join(" · ");
-    copy.append(element("small", null, metadata));
+    copy.append(element("small", null, SimjectureI18n.live(metadata)));
     if (event.research_note) {
       const details = element("details", "review-detail");
-      details.append(element("summary", null, "Review rationale"),
+      details.append(element("summary", null, SimjectureI18n.message("ui.review-rationale")),
         markdownBlock(event.research_note, "research-note"));
       details.open = event.outcome === "needs_revision" || event.outcome === "failed";
       copy.append(details);
@@ -1882,35 +1901,35 @@ function renderResearchTrace() {
 function engineEventSummary(event) {
   if (event.kind === "job") {
     const stage = String(event.tool || "").includes("run_evidence_capability")
-      ? "Evidence capability"
+      ? SimjectureI18n.t("ui.evidence-capability")
       : String(event.tool || "").includes("run_workbench_capability")
-        ? "Workbench capability"
+        ? SimjectureI18n.t("ui.workbench-capability")
         : String(event.tool || "").includes("run_python")
-          ? "Python calculation"
-          : "Scientific";
+          ? SimjectureI18n.t("ui.python-calculation")
+          : SimjectureI18n.t("ui.scientific");
     const elapsed = event.wait_elapsed_seconds == null
       ? ""
-      : ` for ${formatDuration(event.wait_elapsed_seconds)}`;
-    return `${stage} job ${event.status}${elapsed}.`;
+      : SimjectureI18n.t("ui.for", {p0: formatDuration(event.wait_elapsed_seconds)});
+    return SimjectureI18n.t("ui.job", {p0: stage, p1: SimjectureI18n.label(event.status), p2: elapsed});
   }
   if (event.kind === "tool") {
-    return `${event.status === "running" ? "Calling" : "Tool call"} ${event.tool || event.call_id || "typed Simjecture tool"}: ${event.status}.`;
+    return `${(event.status === "running" ? SimjectureI18n.t("ui.calling") : SimjectureI18n.t("ui.tool-call"))} ${((event.tool || event.call_id) || SimjectureI18n.t("ui.typed-simjecture-tool"))}: ${SimjectureI18n.label(event.status)}.`;
   }
   if (event.kind === "retry") {
-    const delay = event.delay_ms == null ? "" : ` after ${formatDuration(event.delay_ms / 1000)}`;
-    return `Model request retry ${event.retry || ""} ${event.status}${delay}.`.replace(/\s+/g, " ");
+    const delay = event.delay_ms == null ? "" : SimjectureI18n.t("ui.after", {p0: formatDuration(event.delay_ms / 1000)});
+    return SimjectureI18n.t("ui.model-request-retry", {p0: event.retry || "", p1: SimjectureI18n.label(event.status), p2: delay}).replace(/\s+/g, " ");
   }
   if (event.kind === "compaction") {
-    const size = event.shadowed_tokens == null ? "" : ` (${formatInteger(event.shadowed_tokens)} tokens condensed)`;
+    const size = event.shadowed_tokens == null ? "" : SimjectureI18n.t("ui.p0-tokens-condensed", {p0:formatInteger(event.shadowed_tokens)});
     const error = event.error ? `: ${event.error}` : "";
-    return `DSH conversation compaction ${event.status}${size}${error}.`;
+    return SimjectureI18n.t("ui.dsh-conversation-compaction", {p0: SimjectureI18n.label(event.status), p1: size, p2: error});
   }
-  if (event.kind === "route") return `Model route selected: ${event.provider}/${event.model}.`;
-  if (event.kind === "session") return `Durable DSH session ${event.status}.`;
-  if (event.kind === "agent") return `Autonomous researcher is ${event.status}.`;
-  if (event.kind === "model") return `Model ${event.status}.`;
-  if (event.kind === "turn") return `DSH turn ${event.status}.`;
-  return `${capitalize(event.kind || "engine")} ${event.status || "updated"}.`;
+  if (event.kind === "route") return SimjectureI18n.t("ui.model-route-selected", {p0: event.provider, p1: event.model});
+  if (event.kind === "session") return SimjectureI18n.t("ui.durable-dsh-session", {p0: SimjectureI18n.label(event.status)});
+  if (event.kind === "agent") return SimjectureI18n.t("ui.autonomous-researcher-is", {p0: SimjectureI18n.label(event.status)});
+  if (event.kind === "model") return SimjectureI18n.t("ui.model-2", {p0: SimjectureI18n.label(event.status)});
+  if (event.kind === "turn") return SimjectureI18n.t("ui.dsh-turn", {p0: SimjectureI18n.label(event.status)});
+  return `${SimjectureI18n.label(event.kind || "engine", capitalize(event.kind || "engine"))} ${SimjectureI18n.label(event.status || "updated")}.`;
 }
 
 function renderArtifacts() {
@@ -1919,7 +1938,7 @@ function renderArtifacts() {
   if (!state.snapshot) return;
   const artifacts = state.snapshot.artifacts || [];
   if (!artifacts.length) {
-    panel.append(paragraph("panel-placeholder", "No browser-visible artifacts have been recorded yet."));
+    panel.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noArtifacts"));
     return;
   }
   const grid = element("div", "artifact-grid");
@@ -1937,13 +1956,11 @@ function renderArtifacts() {
     }
     const copy = element("div", "artifact-copy");
     copy.append(element("strong", null, artifact.name));
-    const claimed = artifact.claimed_by?.length
-      ? ` · evidence for ${artifact.claimed_by.join(", ")}`
-      : "";
+    const claimed = SimjectureI18n.live(() => artifact.claimed_by?.length ? SimjectureI18n.t("ui.evidence-for", {p0: artifact.claimed_by.join(", ")}) : "");
     const meta = element("small", artifact.claimed_by?.length ? "claim-links" : null);
-    meta.textContent = `${artifact.size_label}${claimed}`;
+    SimjectureI18n.bindText(meta, () => `${artifact.size_label}${claimed}`);
     copy.append(meta);
-    const link = element("a", null, artifact.preview === "download" ? "Open artifact" : "Preview artifact");
+    const link = element("a", null, SimjectureI18n.live(() => artifact.preview === "download" ? SimjectureI18n.t("ui.open-artifact") : SimjectureI18n.t("ui.preview-artifact")));
     link.href = artifactUrl(artifact.path);
     link.target = "_blank";
     link.rel = "noopener";
@@ -1960,12 +1977,12 @@ function renderConclusion() {
   if (!state.snapshot) return;
   const report = state.snapshot.snapshot.report;
   if (!report) {
-    panel.append(paragraph("panel-placeholder", "The campaign has not written a terminal conclusion."));
+    panel.append(window.SimjectureI18n.text(paragraph("panel-placeholder", ""), "monitor.noConclusion"));
     return;
   }
   const conclusion = element("article", "conclusion");
   conclusion.append(markdownBlock(
-    report.final_answer || "No final answer was recorded.",
+    report.final_answer || SimjectureI18n.live(() => SimjectureI18n.t("ui.no-final-answer-was-recorded")),
     "conclusion-markdown",
   ));
   panel.append(conclusion);
@@ -2006,7 +2023,7 @@ async function launchCampaign(event) {
   };
   if (payload.mode === "minimal") payload.allow_solver_development = document.getElementById("launch-solver-development").value === "allow";
   ui["launch-button"].disabled = true;
-  ui["launch-button"].textContent = "Launching…";
+  SimjectureI18n.bindText(ui["launch-button"], () => SimjectureI18n.t("ui.launching"));
   ui["new-run-error"].hidden = true;
   try {
     const result = await api("/api/campaigns", { method: "POST", body: payload });
@@ -2024,13 +2041,13 @@ async function launchCampaign(event) {
     resetRenderSignatures();
     renderCampaignPicker();
     await refreshSnapshot(true);
-    showToast(`Launched ${result.campaign_id}`);
+    showToast(SimjectureI18n.live(() => SimjectureI18n.t("ui.launched", {p0: result.campaign_id})));
   } catch (error) {
-    ui["new-run-error"].textContent = error.message;
+    SimjectureI18n.content(ui["new-run-error"], error.message);
     ui["new-run-error"].hidden = false;
   } finally {
     ui["launch-button"].disabled = false;
-    ui["launch-button"].textContent = "Launch campaign";
+    SimjectureI18n.bindText(ui["launch-button"], () => SimjectureI18n.t("ui.launch-campaign"));
   }
 }
 
@@ -2038,7 +2055,7 @@ async function controlCampaign(action) {
   if (!state.selectedCampaign || !state.allowMutations) return;
   if (action === "cancel") {
     const confirmed = window.confirm(
-      "Stop the verified campaign process? Partial workspace files remain non-evidentiary.",
+      SimjectureI18n.t("ui.stop-the-verified-campaign-process-partial-workspace-files-remain-no"),
     );
     if (!confirmed) return;
   }
@@ -2049,7 +2066,9 @@ async function controlCampaign(action) {
       `/api/campaigns/${encodeURIComponent(state.selectedCampaign)}/control/${action}`,
       { method: "POST", body: {} },
     );
-    showToast(result.message);
+    showToast(SimjectureI18n.live(() => action === "assess-report" && result.request
+      ? SimjectureI18n.t("ui.report-assessment-response", {p0: SimjectureI18n.label(result.request.status)})
+      : SimjectureI18n.known("ui.campaign-resumed-response", result.message)));
     await refreshSnapshot(true);
   } catch (error) {
     showToast(error.message, true);
@@ -2180,9 +2199,9 @@ async function api(path, options = {}) {
   try {
     payload = await response.json();
   } catch (_) {
-    throw new Error(`The local server returned HTTP ${response.status}`);
+    throw new Error(SimjectureI18n.t("ui.the-local-server-returned-http", {p0: response.status}));
   }
-  if (!response.ok) throw new Error(payload.error || `Request failed with HTTP ${response.status}`);
+  if (!response.ok) throw new Error(payload.error || SimjectureI18n.t("ui.request-failed-with-http", {p0: response.status}));
   return payload;
 }
 
@@ -2190,12 +2209,12 @@ function setSync(kind, label) {
   const target = ui["sync-state"];
   target.classList.remove("online", "offline");
   if (kind === "online" || kind === "offline") target.classList.add(kind);
-  target.querySelector("span").textContent = label;
+  SimjectureI18n.content(target.querySelector("span"), label);
 }
 
 function showToast(message, error = false) {
   window.clearTimeout(state.toastTimer);
-  ui.toast.textContent = message;
+  SimjectureI18n.content(ui.toast, message);
   ui.toast.classList.toggle("error", error);
   ui.toast.hidden = false;
   state.toastTimer = window.setTimeout(() => { ui.toast.hidden = true; }, 4200);
@@ -2203,7 +2222,7 @@ function showToast(message, error = false) {
 
 function setBadge(target, status, label) {
   target.dataset.status = status || "unknown";
-  target.textContent = String(label || status || "—").replaceAll("_", " ");
+  SimjectureI18n.bindText(target, () => SimjectureI18n.label(label || status || "—", String(label || status || "—").replaceAll("_", " ")));
 }
 
 function inspectorSection(title, copy = null) {
@@ -2270,20 +2289,20 @@ function appendSvgText(parent, copy, x, y, className, anchor = "start") {
     y: String(y),
     "text-anchor": anchor,
   });
-  text.textContent = copy;
+  SimjectureI18n.content(text, copy);
   parent.append(text);
 }
 
 function svg(tag, attributes = {}) {
   const node = document.createElementNS(SVG_NS, tag);
-  for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+  for (const [key, value] of Object.entries(attributes)) ["aria-label","title"].includes(key) ? SimjectureI18n.attribute(node,key,() => value) : node.setAttribute(key, value);
   return node;
 }
 
 function element(tag, className = null, text = null) {
   const node = document.createElement(tag);
   if (className) node.className = className;
-  if (text !== null && text !== undefined) node.textContent = String(text);
+  if (text !== null && text !== undefined) SimjectureI18n.content(node, text);
   return node;
 }
 
@@ -2292,12 +2311,10 @@ function paragraph(className, text) {
 }
 
 function renderMarkdown(target, copy, options = {}) {
-  if (window.SimjectureMarkdown) {
-    window.SimjectureMarkdown.render(target, copy, options);
-  } else {
-    target.textContent = String(copy ?? "");
-  }
-  return target;
+  return SimjectureI18n.render(target, copy, value => {
+    if (window.SimjectureMarkdown) window.SimjectureMarkdown.render(target, value, options);
+    else target.textContent = value;
+  });
 }
 
 function markdownBlock(copy, className = null, options = {}) {
@@ -2403,7 +2420,7 @@ function updateLaunchRoute() {
   const backend = document.getElementById("launch-backend");
   const model = document.getElementById("launch-model");
   model.required = backend.value !== "codex-glm";
-  model.placeholder = backend.value === "codex-glm" ? "glm-5.3 (default)" : "Enter the backend model ID";
+  SimjectureI18n.attribute(model, "placeholder", () => backend.value === "codex-glm" ? SimjectureI18n.t("ui.glm-5-3-default") : SimjectureI18n.t("ui.enter-the-backend-model-id"));
 }
 document.getElementById("launch-backend").addEventListener("change", updateLaunchRoute);
 updateLaunchRoute();
