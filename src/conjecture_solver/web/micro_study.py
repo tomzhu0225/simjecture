@@ -19,8 +19,11 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..research_service import put
-from ..review_assets import INLINE_SOURCE_BYTES, freeze_file
+from ..review_assets import INLINE_PACKET_BYTES, INLINE_SOURCE_BYTES, freeze_file
 from ..workspace_agent import contained, run_agent
+
+FINISHED_STUDY = {"completed", "cancelled", "budget_exhausted"}
+STOPPED_STUDY = FINISHED_STUDY | {"paused", "paused_external_error", "interrupted"}
 
 
 class MicroStudySpec(BaseModel):
@@ -40,6 +43,7 @@ class IndependentReviewSpec(BaseModel):
     claim: str = Field(min_length=8, max_length=4000)
     criteria: str = Field(default="", max_length=4000)
     evidence_files: list[str] = Field(min_length=1, max_length=32)
+    reviewer_model: str = Field(default="", max_length=200)
 
 
 class IndependentReviewVerdict(BaseModel):
@@ -68,22 +72,20 @@ def review_work(workspace, identifier: str, payload: dict) -> dict:
     spec = IndependentReviewSpec.model_validate(payload)
     directory = workspace.directory(identifier)
     files_root = (directory / "files").resolve()
-    with workspace.lock():
-        project = json.loads((directory / "project.json").read_text())
-        config = workspace.project_connection(project)
-        review_config = (
-            config
-            if config.get("backend") == "builtin"
-            else (
-                workspace.api_config()
-                | {
-                    "backend": "builtin",
-                    "model": workspace.api_config().get("model") or config.get("model"),
-                }
-            )
-        )
-        if not review_config.get("base_url") or not review_config.get("model"):
+    project = json.loads((directory / "project.json").read_text())
+    review_config = workspace.project_connection(project)
+    if review_config.get("backend") != "builtin":
+        review_config = workspace.api_config()
+        if not review_config.get("base_url"):
             raise ValueError("Configure an API endpoint and model for independent review")
+        review_config = review_config | {"backend": "builtin"}
+    model = spec.reviewer_model or review_config.get("judge_model") or review_config.get("model")
+    if not model:
+        model = workspace.models("builtin")["default"]
+    if not model:
+        raise ValueError("Pass reviewer_model with a chat model ID from the review API endpoint")
+    review_config = review_config | {"model": model}
+    with workspace.lock():
         reviews_root = directory / "reviews"
         reviews_root.mkdir(exist_ok=True)
         number = len(list(reviews_root.glob("*/packet.json"))) + 1
@@ -91,16 +93,25 @@ def review_work(workspace, identifier: str, payload: dict) -> dict:
         review_dir = reviews_root / review_id
         review_dir.mkdir(parents=True, exist_ok=False)
         manifest, inline_sources = {}, {}
-        for rel in spec.evidence_files:
-            source = contained(files_root, rel)
-            if source.is_symlink() or not source.is_file():
+        inline_bytes = 0
+        for rel in dict.fromkeys(spec.evidence_files):
+            source = files_root / rel
+            contained(files_root, rel)
+            if Path(rel).is_absolute() or source.is_symlink() or not source.is_file():
                 raise ValueError(f"Evidence file {rel} must be a regular project file")
             frozen = freeze_file(review_dir, source)
             manifest[rel] = frozen
             if frozen["bytes"] <= INLINE_SOURCE_BYTES:
-                inline_sources[rel] = source.read_text(encoding="utf-8", errors="replace")
+                content = (review_dir / frozen["path"]).read_text(
+                    encoding="utf-8", errors="replace"
+                )
+                size = len(json.dumps(content).encode())
+                if inline_bytes + size <= INLINE_PACKET_BYTES:
+                    inline_sources[rel] = content
+                    inline_bytes += size
         packet = dict(
             review_id=review_id,
+            reviewer_model=model,
             claim=spec.claim,
             criteria=spec.criteria or "Verify evidence, controls, and assumptions critically.",
             evidence_manifest=manifest,
@@ -112,18 +123,18 @@ def review_work(workspace, identifier: str, payload: dict) -> dict:
         "You are Simjecture's independent skeptical reviewer auditing interactive work.\n"
         "Examine whether the frozen evidence files justify the stated claim.\n"
         "Check for missing controls, unverified assumptions, or overclaims.\n"
-        "For files larger than 32 KB not included in inline_sources, call "
+        "For any file omitted from inline_sources, call "
         "read_review_asset(sha256=..., offset=..., max_bytes=...) using the SHA256 in "
         "evidence_manifest.\n"
-        f"REVIEW PACKET:\n{json.dumps(packet, indent=2)}\n\n"
         "Respond with a JSON object matching this exact schema:\n"
-        f"{json.dumps(IndependentReviewVerdict.model_json_schema())}"
+        f"{json.dumps(IndependentReviewVerdict.model_json_schema())}\n"
+        f"REVIEW PACKET:\n{json.dumps(packet, ensure_ascii=False)}"
     )
     raw = run_agent(
         prompt,
         review_dir,
         review_config,
-        model=review_config.get("judge_model") or review_config["model"],
+        model=model,
         wall_seconds=180,
         judge=True,
         review_root=review_dir,
@@ -194,6 +205,11 @@ def materialize_micro_study(workspace, identifier: str, spec: MicroStudySpec, ap
             "Project input files are in project_inputs/. Execute a focused, self-contained "
             "verification study and record receipts before concluding."
         )
+        if spec.instrument:
+            instruction += (
+                f"\nDeclared instrument requirement: {spec.instrument}. "
+                "Document its use in answering the question for independent review."
+            )
         request = NativeStudyRequest(
             hypothesis=spec.question,
             instruction=instruction,
@@ -263,12 +279,18 @@ def collect_micro_study_summary(directory: Path, root: Path, record: dict) -> di
 
     live = study_status(root)
     report_data = load(root / "research_report.json")
-    results_file = working_report(root, live.get("finalization")) or (root / "research/RESULTS.md")
-    results_rel = (
-        results_file.relative_to(root).as_posix()
-        if results_file.exists()
-        else "research/RESULTS.md"
-    )
+    results_file = working_report(root, live.get("finalization"))
+    if results_file is None:
+        results_file = next(
+            (
+                root / name
+                for name in ("STUDY_LEDGER.md", "research_report.json", "research.json")
+                if (root / name).is_file()
+            ),
+            None,
+        )
+    results_rel = results_file.relative_to(root).as_posix() if results_file else None
+    study_link = f"study:{record['campaign']}/{results_rel}" if results_rel else None
     ledger_text = (
         (root / "STUDY_LEDGER.md").read_text(encoding="utf-8", errors="replace")[:8000]
         if (root / "STUDY_LEDGER.md").is_file()
@@ -282,7 +304,7 @@ def collect_micro_study_summary(directory: Path, root: Path, record: dict) -> di
         "",
         f"- **Question:** {record['question']}",
         f"- **Status:** `{live['status']}`",
-        f"- **Study link:** `study:{record['campaign']}/{results_rel}`",
+        *([f"- [Open study record]({study_link})"] if study_link else []),
         f"- **Experiments recorded:** {exp_count}",
         "",
     ]
@@ -290,7 +312,13 @@ def collect_micro_study_summary(directory: Path, root: Path, record: dict) -> di
         lines += ["## Report Summary", str(report_data["summary"]), ""]
     if ledger_text:
         lines += ["## Ledger Excerpt", ledger_text, ""]
-    (directory / "files" / summary_file).write_text("\n".join(lines))
+    target = directory / "files" / summary_file
+    temporary = target.with_name(f".{uuid.uuid4().hex}.tmp")
+    try:
+        temporary.write_text("\n".join(lines) + "\n")
+        temporary.replace(target)
+    finally:
+        temporary.unlink(missing_ok=True)
     return dict(
         campaign=record["campaign"],
         campaign_id=record["campaign_id"],
@@ -300,9 +328,47 @@ def collect_micro_study_summary(directory: Path, root: Path, record: dict) -> di
         experiments=live.get("experiments", {}),
         report=report_data,
         summary_file=summary_file,
-        study_link=f"study:{record['campaign']}/{results_rel}",
+        study_link=study_link,
         path=str(root),
     )
+
+
+def summary_revision(root):
+    from ..study_status import supervisor_directory
+
+    sources = [
+        root / name
+        for name in (
+            "research.json",
+            "research_report.json",
+            "STUDY_LEDGER.md",
+            "finalization.json",
+        )
+    ]
+    sources.append(supervisor_directory(root) / "state.json")
+    revision = []
+    for source in sources:
+        try:
+            revision.append(source.stat().st_mtime_ns)
+        except FileNotFoundError:
+            revision.append(None)
+    return revision
+
+
+def export_micro_study_summary(workspace, identifier, record):
+    from .workspace import load
+
+    directory = workspace.directory(identifier)
+    with workspace.lock():
+        root = Path(record["path"])
+        revision = summary_revision(root)
+        result = collect_micro_study_summary(directory, root, record)
+        project_path = directory / "project.json"
+        project = load(project_path)
+        study = next(s for s in project["studies"] if s["campaign"] == record["campaign"])
+        study.update(summary_status=result["status"], summary_revision=revision)
+        put(project_path, project)
+    return result
 
 
 def run_micro_study(workspace, identifier: str, payload: dict, application=None) -> dict:
@@ -310,17 +376,9 @@ def run_micro_study(workspace, identifier: str, payload: dict, application=None)
     from ..study_status import study_status
 
     spec = MicroStudySpec.model_validate(payload)
-    directory = workspace.directory(identifier)
     root, record = materialize_micro_study(workspace, identifier, spec, application=application)
     if not spec.wait:
-        return collect_micro_study_summary(directory, root, record)
-    terminal = {
-        "completed",
-        "cancelled",
-        "budget_exhausted",
-        "interrupted",
-        "paused_external_error",
-    }
+        return export_micro_study_summary(workspace, identifier, record)
     deadline = time.time() + spec.minutes * 60.0 + 30.0
     last_activity = None
     while time.time() < deadline:
@@ -330,7 +388,7 @@ def run_micro_study(workspace, identifier: str, payload: dict, application=None)
             last_activity = act
             with contextlib.suppress(ValueError, OSError):
                 workspace.progress_update(identifier, f"Micro-study {record['campaign_id']}: {act}")
-        if live["status"] in terminal:
+        if live["status"] in STOPPED_STUDY:
             break
         time.sleep(0.5)
-    return collect_micro_study_summary(directory, root, record)
+    return export_micro_study_summary(workspace, identifier, record)

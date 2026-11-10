@@ -662,7 +662,12 @@ function renderProject(force = false) {
         ),
       );
       const content = el("div", undefined, "message-content");
-      md(content, message.content);
+      if (message.running && message.preview && !message.content) {
+        content.textContent = message.preview;
+        content.classList.add("live-answer");
+      } else {
+        md(content, message.content);
+      }
       article.append(content);
       globalThis.WorkspaceKnowledge?.renderCitations(article, message.knowledge_citations);
       const tools = (message.events || []).filter(
@@ -672,12 +677,8 @@ function renderProject(force = false) {
         const details = el("details");
         details.dataset.turn = message.turn;
         details.open = openSteps.has(message.turn);
-        details.append(
-          el(
-            "summary",
-            `${tools.filter((e) => e.type === "tool").length} actions · view activity`,
-          ),
-        );
+        const actionCount = tools.filter((e) => e.type === "tool").length;
+        details.append(el("summary", `${actionCount} action${actionCount === 1 ? "" : "s"} · view activity`));
         const trace = el("div", undefined, "trace");
         for (const item of tools) {
           trace.append(el("p", item.type === "tool" ? item.name : item.text));

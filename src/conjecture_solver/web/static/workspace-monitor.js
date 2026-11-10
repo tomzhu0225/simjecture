@@ -31,11 +31,61 @@ window.WorkspaceMonitor = {
       render(project());
       return update();
     }
+    const subagents = $("subagent-panel");
+    let subagentRevision = "";
+    document.addEventListener("pointerdown", (event) => {
+      if (subagents.open && !subagents.contains(event.target)) subagents.open = false;
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || !subagents.open) return;
+      if (subagents.contains(document.activeElement)) $("subagent-toggle").focus();
+      subagents.open = false;
+    });
+    function renderSubagents(p, jobs, fresh) {
+      const tasks = jobs.filter((job) => job.subagent).reverse();
+      const revision = JSON.stringify([p.id, tasks.map((j) => [j.id, j.kind, j.name, j.status])]);
+      if (revision === subagentRevision) return;
+      subagentRevision = revision;
+      subagents.hidden = tasks.length === 0;
+      if (fresh) subagents.open = true;
+      const active = tasks.filter((j) => ["queued", "running"].includes(j.status));
+      $("subagent-count").textContent = active.length ? `${active.length} active` : String(tasks.length);
+      const list = $("subagent-list");
+      const rows = new Map([...list.children].map((a) => [a.dataset.id, a]));
+      let cursor = list.firstChild;
+      for (const job of tasks) {
+        let row = rows.get(job.id);
+        if (!row) {
+          row = node("a", undefined, "subagent-row");
+          row.dataset.id = job.id;
+          row.append(node("span"), node("small"));
+          row.addEventListener("click", () => {
+            subagents.open = false;
+            window.WorkspacePanels?.set("right", false);
+          });
+        }
+        row.href = link(p.id, {
+          view: "interactive", [job.kind === "command" ? "command" : "simulation"]: job.id,
+        });
+        row.firstChild.textContent = job.name;
+        row.lastChild.textContent = job.status.replaceAll("_", " ");
+        row.dataset.status = job.status;
+        if (row !== cursor) list.insertBefore(row, cursor);
+        cursor = row.nextSibling;
+      }
+      while (cursor) {
+        const next = cursor.nextSibling;
+        cursor.remove();
+        cursor = next;
+      }
+    }
     function render(p) {
       if (!p) return;
       const jobs = p.simulations || [];
       if (currentProject !== p.id) {
         currentProject = p.id;
+        subagents.open = false;
+        $("subagent-list").replaceChildren();
         selected = { simulations: null, commands: null };
         announced = new Set(jobs.map((j) => j.id));
         detailRevision = {};
@@ -68,11 +118,11 @@ window.WorkspaceMonitor = {
             entries.at(-1)?.id ||
             null;
       }
-      const fresh = [...simulations]
-        .reverse()
-        .find((j) => !announced.has(j.id));
+      const newJobs = jobs.filter((job) => !announced.has(job.id));
+      renderSubagents(p, jobs, newJobs.some((job) => job.subagent));
+      for (const job of newJobs) announced.add(job.id);
+      const fresh = newJobs.filter((job) => job.kind === "simulation" && !job.subagent).at(-1);
       if (fresh) {
-        announced.add(fresh.id);
         selected.simulations = fresh.id;
         detailRevision.simulations = "";
         $("inspector-tabs").setAttribute("active", "simulations");

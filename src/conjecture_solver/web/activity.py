@@ -100,6 +100,8 @@ def native_activity(path, turn, live):
     activity = None
     commands = {}
     actions = {}
+    preview = ""
+    block_text = ""
     for event in read_events(path):
         item = event.get("item", {})
         kind = item.get("type")
@@ -139,18 +141,42 @@ def native_activity(path, turn, live):
             )
         elif kind == "agent_message":
             activity = dict(state="responding", label="Writing a response", source="CLI activity")
+            if live and not event.get("parent_tool_use_id") and isinstance(item.get("text"), str):
+                preview = item["text"][-16000:]
         # Anthropic-compatible public stream events (Grok and some CLI adapters).
         stream = event.get("event") if isinstance(event.get("event"), dict) else event
         delta = stream.get("delta", {})
+        public_message = live and not event.get("parent_tool_use_id")
+        if public_message and stream.get("type") in {"message_start", "content_block_start"}:
+            block = stream.get("content_block", {})
+            block_text = block.get("text", "") if block.get("type") == "text" else ""
+            if block_text:
+                preview = block_text[-16000:]
         if delta.get("type") in {"thinking_delta", "reasoning_delta"}:
             activity = dict(state="thinking", label="Thinking", source="CLI activity")
         elif delta.get("type") == "text_delta":
             activity = dict(state="responding", label="Writing a response", source="CLI activity")
+            if public_message and isinstance(delta.get("text"), str):
+                block_text = (block_text + delta["text"])[-16000:]
+                preview = block_text
         blocks = (
             event.get("message", {}).get("content", [])
             if isinstance(event.get("message"), dict)
             else []
         )
+        if public_message and event.get("type") == "assistant":
+            full_text = "\n".join(
+                b["text"]
+                for b in blocks
+                if isinstance(b, dict)
+                and b.get("type") == "text"
+                and isinstance(b.get("text"), str)
+            )
+            if full_text:
+                preview = full_text[-16000:]
+                activity = dict(
+                    state="responding", label="Writing a response", source="CLI activity"
+                )
         for block in blocks:
             if not isinstance(block, dict):
                 continue
@@ -194,6 +220,8 @@ def native_activity(path, turn, live):
             elif step == "tool":
                 activity = dict(state="working", label="Using a tool", source="CLI activity")
     if activity is not None:
+        if preview:
+            activity["preview"] = preview
         activity["recent_actions"] = list(actions.values())[-8:]
     if not live:
         for command in commands.values():

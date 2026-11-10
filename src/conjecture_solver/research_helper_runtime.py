@@ -46,13 +46,13 @@ def owned_alive(identity):
     return bool(current and current["starttime"] == str(identity["starttime"]))
 
 
-def stop_native(directory):
+def stop_native(directory, *, turn="turn-00001"):
     """Reap the recorded native session, including children surviving its leader.
 
     PID plus Linux start time survives exec without authorizing a reused PID.
     Helpers must not daemonize or detach tools into other sessions.
     """
-    path = directory / "turn-00001/child_identity.json"
+    path = directory / turn / "child_identity.json"
     if not path.is_file():
         return
     identity = json.loads(path.read_text())

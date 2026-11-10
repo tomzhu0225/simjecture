@@ -20,6 +20,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from pathlib import Path
@@ -72,13 +73,14 @@ def normalize_tasks(payload: dict) -> list[SubagentTaskSpec]:
     return specs
 
 
-def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path) -> dict:
+def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path, *, selected=None):
     project = Path(project).resolve()
-    selected = selected_inputs(project, spec.input_files)
+    if selected is None:
+        selected = selected_inputs(project, spec.input_files)
     directory = project / "simulations"
     directory.mkdir(exist_ok=True)
     slug = re.sub(r"[^a-z0-9]+", "-", spec.name.lower()).strip("-")[:56] or "subagent"
-    with (directory / ".lock").open("a") as lock:
+    with (directory / ".lock").open("a") as lock, contextlib.ExitStack() as cleanup:
         fcntl.flock(lock, fcntl.LOCK_EX)
         number = len(list(directory.glob("*/request.json"))) + 1
         identifier = f"{number:03d}-subagent-{slug}"
@@ -87,15 +89,21 @@ def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path
             identifier = f"{number:03d}-subagent-{slug}"
         root = directory / identifier
         root.mkdir()
+        cleanup.callback(shutil.rmtree, root)
         work = root / "workspace"
         (work / "inputs").mkdir(parents=True, exist_ok=True)
         inputs, input_manifest = [], {}
         for path, relative in selected:
-            for dest in (work / relative, work / "inputs" / relative):
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(path, dest)
-            stat = (work / relative).stat()
-            with (work / relative).open("rb") as stream:
+            frozen = work / "inputs" / relative
+            frozen.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, frozen)
+            working = frozen
+            if relative.parts[0] not in {"inputs", "CONTEXT.json", "HELPER_RESULT.json"}:
+                working = work / relative
+                working.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(frozen, working)
+            stat = working.stat()
+            with frozen.open("rb") as stream:
                 digest = hashlib.file_digest(stream, "sha256").hexdigest()
             name = relative.as_posix()
             inputs.append(name)
@@ -148,6 +156,7 @@ def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path
                 stdin=subprocess.DEVNULL,
                 start_new_session=True,
             )
+        cleanup.pop_all()  # The controller now owns the durable request and its workspace.
         identity = read_process_identity(process.pid, cmd, run_directory=root)
         if identity:
             put(root / "process.json", identity.model_dump(mode="json"))
@@ -156,12 +165,10 @@ def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path
 
 
 def subagent_snapshot(project: Path, identifier: str) -> dict:
-    base = snapshot(project, identifier, include_files=True)
-    root = resolve(Path(project), identifier)
-    handoff = read(root / "subagent_result.json")
-    if handoff:
-        base["subagent_result"] = handoff
-    return base
+    result = snapshot(project, identifier, include_files=True)
+    if not result.get("subagent"):
+        raise ValueError("Choose a subagent task")
+    return result
 
 
 def launch_subagents(
@@ -172,18 +179,30 @@ def launch_subagents(
     specs = normalize_tasks(payload)
     wait = bool(payload.get("wait", True))
     launched = []
-    for spec in specs:
-        conn_path = connection_factory()
-        launched.append(launch_subagent(project, spec, conn_path))
+    selections = [selected_inputs(project, spec.input_files) for spec in specs]
+    try:
+        for spec, selected in zip(specs, selections, strict=True):
+            conn_path = connection_factory()
+            try:
+                launched.append(launch_subagent(project, spec, conn_path, selected=selected))
+            except Exception:
+                conn_path.unlink(missing_ok=True)
+                raise
+    except Exception:
+        for task in launched:
+            put(resolve(project, task["id"]) / "control.json", {"command": "cancel"})
+        raise
     if wait:
-        deadline = time.time() + max(s.timeout_seconds for s in specs) + 15
+        deadline = time.monotonic() + max(s.timeout_seconds for s in specs) + 15
         ids = [item["id"] for item in launched]
-        while time.time() < deadline:
-            current = [subagent_snapshot(project, i) for i in ids]
-            if all(item["status"] in TERMINAL and not item.get("live") for item in current):
-                return {"tasks": current, "completed": True}
+        completed = False
+        while time.monotonic() < deadline:
+            states = [snapshot(project, i, summary=True) for i in ids]
+            completed = all(task["status"] in TERMINAL and not task["live"] for task in states)
+            if completed:
+                break
             time.sleep(0.25)
-        return {"tasks": [subagent_snapshot(project, i) for i in ids], "completed": False}
+        return {"tasks": [subagent_snapshot(project, i) for i in ids], "completed": completed}
     return {"tasks": launched, "completed": False}
 
 
@@ -227,54 +246,78 @@ def import_subagent_outputs(
     project = Path(project).resolve()
     root = resolve(project, identifier)
     request = read(root / "request.json")
+    if not request.get("subagent"):
+        raise ValueError("Choose a subagent task")
+    if files == []:
+        return []
     handoff = read(root / "subagent_result.json")
     if not handoff or handoff.get("status") not in {"completed", "blocked"}:
         raise ValueError("Subagent has no validated handoff deliverables to import")
     artifacts = handoff.get("artifacts") or {}
     targets = list(artifacts) if files is None else [output_path(f).as_posix() for f in files]
     if not targets:
-        raise ValueError("Specify at least one validated deliverable to import")
-    for name in targets:
-        if name not in artifacts:
-            raise ValueError(f"Deliverable {name} is not in the validated subagent handoff")
+        return []
+    if len(set(targets)) != len(targets):
+        raise ValueError("Select each deliverable only once")
     work = Path(request["work_directory"]).resolve()
     dest_root = (project / "files").resolve()
-    imported = []
-    for name in targets:
-        info = artifacts[name]
-        source = work / relative_path(name)
-        if source.is_symlink() or not source.resolve().is_relative_to(work):
-            raise ValueError("Subagent artifact escapes its workspace")
-        if sha(source) != info["sha256"]:
-            raise ValueError(f"Subagent artifact {name} changed after handoff")
-        dest = dest_root / relative_path(name)
-        if not dest.resolve().is_relative_to(dest_root) or dest.is_symlink():
-            raise ValueError("Import destination must remain inside conversation files")
-        if dest.exists() and not overwrite:
-            raise ValueError(
-                f"File {name} already exists in conversation files; set overwrite=True"
+    folder = project / "subagent_imports"
+    folder.mkdir(exist_ok=True)
+    receipts = []
+    with tempfile.TemporaryDirectory(prefix=".subagent-import-", dir=dest_root) as temp:
+        staging = Path(temp)
+        changes = []
+        for index, name in enumerate(targets):
+            if name not in artifacts:
+                raise ValueError(f"Deliverable {name} is not in the validated subagent handoff")
+            info = artifacts[name]
+            source = work / relative_path(name)
+            dest = dest_root / relative_path(name)
+            if source.is_symlink() or not source.resolve().is_relative_to(work):
+                raise ValueError("Subagent artifact escapes its workspace")
+            if not dest.resolve().is_relative_to(dest_root) or dest.is_symlink():
+                raise ValueError("Import destination must remain inside conversation files")
+            if dest.exists() and not overwrite:
+                raise ValueError(f"File {name} already exists in conversation files")
+            staged = staging / f"file-{index}"
+            with regular_file(source) as src, staged.open("xb") as dst:
+                shutil.copyfileobj(src, dst)
+            if sha(staged) != info["sha256"]:
+                raise ValueError(f"Subagent artifact {name} changed after handoff")
+            receipt = dict(
+                subagent=identifier,
+                artifact=name,
+                destination=name,
+                **info,
+                imported_at=time.time(),
+                scientific_status="exploration",
             )
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        mode = "wb" if overwrite else "xb"
-        with regular_file(source) as src, dest.open(mode) as dst:
-            shutil.copyfileobj(src, dst)
-        if sha(dest) != info["sha256"]:
-            dest.unlink(missing_ok=True)
-            raise ValueError("Subagent artifact changed during import")
-        receipt = dict(
-            subagent=identifier,
-            artifact=name,
-            destination=name,
-            **info,
-            imported_at=time.time(),
-            scientific_status="exploration",
-        )
-        folder = project / "subagent_imports"
-        folder.mkdir(exist_ok=True)
-        key = fingerprint(dict(subagent=identifier, artifact=name))[:20]
-        put(folder / f"{identifier}-{key}.json", receipt)
-        imported.append(receipt)
-    return imported
+            key = fingerprint(dict(subagent=identifier, artifact=name))[:20]
+            staged_receipt = staging / f"receipt-{index}"
+            put(staged_receipt, receipt)
+            changes.extend(
+                [
+                    (staged, dest, overwrite),
+                    (staged_receipt, folder / f"{identifier}-{key}.json", True),
+                ]
+            )
+            receipts.append(receipt)
+
+        # Workspace imports share a lock. Publish only verified bytes and restore
+        # earlier files and receipts if a later destination cannot be published.
+        with contextlib.ExitStack() as rollback:
+            for staged, dest, replace in changes:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                if replace and dest.exists():
+                    backup = staging / (staged.name + ".bak")
+                    os.link(dest, backup)
+                    os.replace(staged, dest)
+                    rollback.callback(os.replace, backup, dest)
+                else:
+                    os.link(staged, dest)
+                    rollback.callback(dest.unlink, missing_ok=True)
+            rollback.pop_all()
+    return receipts
 
 
 def build_subagent_prompt(request: dict, work: Path) -> str:
@@ -284,12 +327,8 @@ def build_subagent_prompt(request: dict, work: Path) -> str:
     return (
         "You are an isolated interactive subagent working on a bounded task for the parent "
         "conversation.\n"
-        f"Working directory: {work}\n"
         "Read CONTEXT.json and any copied input files in the working directory (preserved under "
         "inputs/). Never modify CONTEXT.json or files inside inputs/.\n"
-        f"Task assignment: {request['task']}\n"
-        f"Completion criteria: {request['completion_criteria']}\n"
-        f"Required deliverables (relative to {work}): {json.dumps(request['expected_outputs'])}\n"
         f"{skill_context()}\n"
         "Write all required deliverable files in the working directory, then write "
         "HELPER_RESULT.json matching this exact JSON schema before finishing:\n"
@@ -297,6 +336,10 @@ def build_subagent_prompt(request: dict, work: Path) -> str:
         "Use status='completed' only when all required deliverables exist and completion "
         "criteria are satisfied; list all deliverable paths in artifacts and checks performed "
         "in checks. Otherwise use status='blocked' and list blockers in unresolved.\n"
+        f"Working directory: {work}\n"
+        f"Task assignment: {request['task']}\n"
+        f"Completion criteria: {request['completion_criteria']}\n"
+        f"Required deliverables: {json.dumps(request['expected_outputs'])}\n"
         f"Time remaining: {remaining:.0f} seconds."
     )
 
@@ -311,8 +354,6 @@ def run_subagent(root: Path) -> int:
     connection_file = Path(request["connection_file"])
     state = dict(status="running", started_at=time.time(), updated_at=time.time())
     put(root / "state.json", state)
-    prompt = build_subagent_prompt(request, work)
-    (root / "prompt.txt").write_text(prompt)
     timeout = max(5.0, request["created_at"] + request["timeout_seconds"] - time.time())
     deadline = request["created_at"] + request["timeout_seconds"]
     stopped = False
@@ -327,6 +368,7 @@ def run_subagent(root: Path) -> int:
     try:
         from ..console_log import ConsoleLog
 
+        (root / "prompt.txt").write_text(build_subagent_prompt(request, work))
         cmd = [
             sys.executable,
             "-m",
@@ -358,6 +400,8 @@ def run_subagent(root: Path) -> int:
                 if time.time() >= deadline:
                     state["status"] = "timed_out"
                     break
+                if console.error:
+                    raise OSError(f"Cannot retain subagent output: {console.error}")
                 time.sleep(0.2)
             if child.poll() is None:
                 os.killpg(child.pid, signal.SIGTERM)
@@ -380,7 +424,7 @@ def run_subagent(root: Path) -> int:
             with contextlib.suppress(ProcessLookupError):
                 os.killpg(child.pid, signal.SIGKILL)
             child.wait()
-        stop_native(root)
+        stop_native(root, turn="cli/turn")
         connection_file.unlink(missing_ok=True)
         state.update(finished_at=time.time(), updated_at=time.time())
         put(root / "state.json", state)

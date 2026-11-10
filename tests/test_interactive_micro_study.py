@@ -146,3 +146,119 @@ def test_run_micro_study_materializes_and_exports_summary(tmp_path: Path, monkey
     loaded = workspace.project(project["id"])
     assert len(loaded["studies"]) == 1
     assert loaded["studies"][0]["micro_study"] is True
+
+
+@pytest.fixture
+def review_api():
+    from tests.test_workspace_protocol import api
+
+    yield from api.__wrapped__()
+
+
+@pytest.mark.parametrize("reviewer_model", ["", "alternate-api-model"])
+def test_cli_review_uses_endpoint_model_and_frozen_text(
+    tmp_path, monkeypatch, review_api, reviewer_model
+):
+    from conjecture_solver.web import micro_study
+    from tests.test_workspace_protocol import response
+
+    url, requests, replies = review_api
+    workspace = Workspace(tmp_path / ".workspace")
+    workspace.save_api({"base_url": url})
+    project = workspace.create({"name": "Review snapshot"})
+    monkeypatch.setattr(
+        workspace,
+        "project_connection",
+        lambda _: {
+            "backend": "grok",
+            "model": "native-model",
+        },
+    )
+    monkeypatch.setattr(workspace, "models", lambda backend: {"default": "api-reviewer"})
+    project_id = project["id"]
+    evidence = workspace.directory(project_id) / "files/evidence.txt"
+    evidence.write_text("original measurement")
+    freeze = micro_study.freeze_file
+
+    def freeze_then_update(root, source):
+        frozen = freeze(root, source)
+        source.write_text("new measurement")
+        return frozen
+
+    monkeypatch.setattr(micro_study, "freeze_file", freeze_then_update)
+    replies.append(
+        response(
+            text=json.dumps(
+                dict(
+                    status="accepted",
+                    summary="The supplied measurement supports the stated claim.",
+                )
+            )
+        )
+    )
+    result = workspace.review_work(
+        project_id,
+        {
+            "claim": "The original measurement was recorded.",
+            "evidence_files": ["evidence.txt"],
+            "reviewer_model": reviewer_model,
+        },
+    )
+    assert result["status"] == "accepted"
+    assert len(requests) == 1 and requests[0]["model"] == (reviewer_model or "api-reviewer")
+    assert requests[0]["tool_choice"] == "auto"
+    packet = workspace.directory(project_id) / "reviews" / result["review_id"] / "packet.json"
+    assert (
+        json.loads(packet.read_text())["inline_sources"]["evidence.txt"] == "original measurement"
+    )
+    assert "new measurement" not in json.dumps(requests)
+
+
+def test_background_study_link_and_final_summary_survive_restart(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from conjecture_solver.web.application import SimjectureWebApplication
+
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    workspace = app.workspace
+    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1"})
+    project = workspace.create(
+        {
+            "name": "Background study",
+            "agent": {
+                "backend": "builtin",
+                "model": "test-model",
+            },
+        }
+    )
+
+    def start(plan):
+        root = Path(plan.output_directory)
+        (root / "supervisor").mkdir(exist_ok=True)
+        put(root / "supervisor/state.json", {"status": "running"})
+        return SimpleNamespace(close=lambda: None)
+
+    monkeypatch.setattr("conjecture_solver.mvp_launch.start_managed_campaign", start)
+    result = Workspace(workspace.root).run_micro_study(
+        project["id"],
+        {
+            "question": "Does the measurement match the reference?",
+            "success_criteria": "Measure the difference.",
+            "minutes": 5,
+            "wait": False,
+        },
+    )
+    root = Path(result["path"])
+    assert app.resolve_campaign(result["campaign"]) == root
+    summary = workspace.directory(project["id"]) / "files" / result["summary_file"]
+    assert "`running`" in summary.read_text()
+    assert (root / result["study_link"].partition("/")[2]).is_file()
+    put(root / "research_report.json", {"summary": "The measurement matches the reference."})
+    put(root / "supervisor/state.json", {"status": "completed"})
+    Workspace(workspace.root).deliver_study_reports()
+    assert "`completed`" in summary.read_text()
+    assert "The measurement matches" in summary.read_text()
+    assert workspace.project(project["id"])["studies"][0]["summary_status"] == "completed"
+    put(root / "research_report.json", {"summary": "The final ledger was flushed."})
+    workspace.deliver_study_reports()
+    assert "The final ledger was flushed." in summary.read_text()

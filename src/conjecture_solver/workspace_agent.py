@@ -834,6 +834,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
             claim: str,
             evidence_files: list[str],
             criteria: str = "",
+            reviewer_model: str = "",
         ) -> str:
             """Run an on-demand independent skeptical review over frozen SHA-256 project files.
             Saves an immutable review packet and writes a REVIEW_<id>.md report in project files.
@@ -842,10 +843,16 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 claim: The scientific or technical claim to audit against the evidence.
                 evidence_files: Project-relative file paths (1 to 32) supporting the claim.
                 criteria: Specific controls or assumptions the reviewer should verify.
+                reviewer_model: Optional chat model ID at the configured API endpoint.
             """
             result = workspace.review_work(
                 project,
-                dict(claim=claim, evidence_files=evidence_files, criteria=criteria),
+                dict(
+                    claim=claim,
+                    evidence_files=evidence_files,
+                    criteria=criteria,
+                    reviewer_model=reviewer_model,
+                ),
             )
             emit("review", review_id=result["review_id"], status=result["status"])
             return json.dumps(result)
@@ -966,7 +973,10 @@ def run_agent(
         while attempt < 2:
             if time.time() >= deadline:
                 raise ValueError("Independent review deadline exhausted")
-            options = {"tools_to_call_from": review_tools} if review_tools else {}
+            # Reviewers may read more evidence or return a plain JSON verdict.
+            options = (
+                {"tools_to_call_from": review_tools, "tool_choice": "auto"} if review_tools else {}
+            )
             response = llm.generate(messages, **options)
             if response.token_usage:
                 emit(
@@ -1165,6 +1175,9 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         interactive_activity=True,
     )
     supervisor = AgentSupervisor(args)
+    # An isolated helper's controller also owns the native CLI's separate session.
+    if workspace is None:
+        supervisor.record_review_identity = True
     from .workspace_sessions import load_session, save_session
 
     session = load_session(root.parent, config) if workspace else {}
@@ -1177,7 +1190,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
     emit("tool", name=config["backend"], arguments={"task": "Working in project files"})
     emit("activity", state="connecting", label="Connecting to " + config["backend"])
     # Native CLI agents can access the same durable brief and installation bridge.
-    prompt += (
+    bridge = (
         "\nTo prepare an autonomous study, write a JSON object to STUDY_BRIEF.json in "
         "the project files directory, with question, success_criteria, constraints, "
         "hours (0.01 to 168), completion_policy ('answer' or 'repair'). "
@@ -1194,7 +1207,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         "Include machine_ids when using prepared remote workers."
     )
     if workspace:
-        prompt += (
+        bridge += (
             f"\nUse {sys.executable} for the workspace bridge and project file analysis. "
             "Scientific runtimes may have separate interpreters. "
             "For research software inventory, reuse the local Python bridge: "
@@ -1217,7 +1230,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "Reprepare after changing configuration. "
             "These commands prepare machines; their outputs are not research evidence."
         )
-        prompt += (
+        bridge += (
             "\nDuring extended work share public progress with w.progress_update("
             f"{root.parent.name!r}, 'Current stage, observed finding/blocker, and next action'). "
             "Use this at meaningful milestones; do not expose private reasoning. "
@@ -1227,15 +1240,16 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "job with permanent inputs/outputs and a live browser monitor. "
             f"w.simulation({root.parent.name!r}, 'run-id') reads status, output and files. "
             "For parallel multi-task delegation in isolated workspaces use w.start_subagents("
-            f"{root.parent.name!r}, {{'tasks':[{{'name':'Task name','task':'Assignment',"
-            "'completion_criteria':'Criteria','outputs':['result.json'],'input_files':[]}}],"
-            "'wait':True}}) and w.subagent_status("
+            f"{root.parent.name!r}, {{'tasks':[{{'name':'Grid check','task':'Compare two grids.',"
+            "'completion_criteria':'Save the measured errors.','outputs':['result.json'],"
+            "'input_files':[]}],'wait':True}) and w.subagent_status("
             f"{root.parent.name!r}, 'subagent-id', import_files=['result.json']). "
             "For a self-contained bounded autonomous study inside a turn use w.run_micro_study("
-            f"{root.parent.name!r}, {{'question':'Claim','success_criteria':'Criteria',"
-            "'minutes':15,'wait':True}}), or for an on-demand independent skeptical audit of "
-            f"project files use w.review_work({root.parent.name!r}, {{'claim':'Claim',"
-            "'evidence_files':['result.json']}}). "
+            f"{root.parent.name!r}, {{'question':'Is mass conserved?',"
+            "'success_criteria':'Measure mass drift.','minutes':15,'wait':True}), "
+            f"or independently review files with w.review_work({root.parent.name!r}, "
+            "{'claim':'Mass is conserved.','evidence_files':['result.json']}). "
+            "If needed, set reviewer_model to a chat model ID at the review API endpoint. "
             "Use this for numerical runs instead of untracked background shell processes. "
             "Save run-specific analysis and figures in that run's returned work_directory; "
             "keep cross-run reports and comparisons in the shared project files directory. "
@@ -1262,7 +1276,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "or change boundaries just to get a run."
         )
     try:
-        rc = supervisor.launch(output, prompt)
+        rc = supervisor.launch(output, bridge + "\n\n" + prompt)
     finally:
         if workspace and supervisor.state.get("worker_cursor"):
             save_session(root.parent, config, cursor=supervisor.state["worker_cursor"])
@@ -1271,6 +1285,8 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         try:
             event = json.loads(line)
         except ValueError:
+            continue
+        if event.get("parent_tool_use_id"):
             continue
         item = event.get("item", {})
         if item.get("type") == "agent_message":

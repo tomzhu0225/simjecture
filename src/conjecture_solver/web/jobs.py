@@ -189,6 +189,11 @@ def file_role(path, name, request):
     """Distinguish workspace results from the project snapshot retained as inputs."""
     if request.get("kind") == "command":
         return "shared"
+    if request.get("subagent"):
+        if name == "CONTEXT.json" or name.startswith("inputs/"):
+            return "input"
+        if name == "HELPER_RESULT.json":
+            return "output"
     if name not in request.get("inputs", []):
         return "output"
     original = request.get("input_manifest", {}).get(name)
