@@ -60,19 +60,43 @@ display boundary only when the server wording matches the catalog. Custom or
 newer descriptions and unrecognized server messages remain in their original language.
 
 For contributors, `web/static/language/en.json` and `zh-CN.json` contain the
-English and Chinese dictionaries, keyed by the same semantic message IDs.
+English and Chinese dictionaries, keyed by the same stable message IDs. Existing
+IDs include semantic names such as `workspace.homeIntro` and keys derived from
+English copy such as `ui.campaign-id`. Keep an ID stable when its
+wording changes; prefer concise semantic names for new entries.
 `language/manifest.json` maps language codes to their native display names; it
 also supplies both language selectors. To add a language, add its JSON dictionary
 and a manifest entry. No page-rendering changes are needed for existing keys.
-Use meaningful interpolation names such as `{count}` and `{model}` and retain
-matching placeholders across languages. English is the fallback dictionary.
+Existing interpolations include positional names (`{p0}`, `{p1}`) as well as
+descriptive names. Both use the same parameter-object API; names must match the
+call site and every language's entry. Prefer meaningful names such as `{count}`
+and `{model}` for new entries. English is the fallback dictionary.
 
-`i18n-messages.js` loads the manifest and dictionaries once; `i18n.js` retains the
-existing translation and DOM-binding API. Both page initializers await
+The local and hosted servers include the complete English dictionary in the
+`i18n-messages.js` response. If `language/en.json` is missing or unreadable
+at startup, the servers use the copy packaged with the Web service. If only
+some entries are missing or invalid, valid entries still take precedence.
+This also works on a first visit when the browser cannot fetch any locale JSON.
+
+Edit English copy in `web/static/language/en.json`. Refresh the packaged copy
+from the repository root with the following command. The catalog test checks
+that both files contain identical keys and text.
+
+```sh
+cp src/conjecture_solver/web/static/language/en.json src/conjecture_solver/web/english_fallback.json
+```
+
+The loader fetches the manifest and optional dictionaries once; `i18n.js` retains
+the existing translation and DOM-binding API. Both page initializers await
 `SimjectureI18n.ready`, so delayed requests cannot start a partially translated
 application. The selector is disabled until initialization completes. Loading an
-optional dictionary can fail without preventing English fallback. Existing
-languages switch synchronously after initialization. A much larger language set
+optional dictionary or the manifest can fail without preventing startup. The
+selector offers languages with usable dictionaries. If a saved language is
+unavailable, the page opens in English and retries that preference on the next
+visit. Missing or invalid entries in a partial dictionary use English. All
+catalogued interface text, including dynamic messages and accessibility attributes,
+still has its full English fallback even if every locale JSON request fails.
+Existing languages switch synchronously after initialization. A much larger language set
 could use loading on demand later; the current two dictionaries need no bundler,
 framework or runtime dependency.
 
@@ -95,7 +119,9 @@ Dynamic DOM helpers use `SimjectureI18n.content(node, value)`:
 - Use `SimjectureI18n.attribute(node, "aria-label", () => ...)` for live attributes.
 - Pass research data as ordinary strings. It is never searched for translations.
 - Use `label(rawEnum, englishDisplay)` only for displayed enum labels; keep option
-  values, datasets, state and API payloads raw. `known(key, serverText)` is reserved
+  values, datasets, state and API payloads raw. The default English display keeps
+  the raw token, including underscores; pass an explicit fallback only when that
+  view already formats it. `known(key, serverText)` is reserved
   for explicitly identified built-in UI descriptions, with raw fallback.
 
 Changing language updates bound text/attributes in place, preserving inputs,
@@ -105,6 +131,20 @@ adapter; research Markdown keeps its normal renderer. Bindings use a `WeakMap`,
 with no global mutation observer. Missing Chinese entries fall back to English;
 an unknown key is displayed unchanged. No build step or extra runtime dependency
 is required.
+
+The Simplified Chinese catalog distinguishes domain concepts consistently:
+
+| English concept | Simplified Chinese |
+| --- | --- |
+| study / campaign | 研究 / 研究活动 |
+| instrument / tool / capability | 仪器 / 工具 / 能力 |
+| judge / review | 裁决 / 评审 (审阅 for reading a document) |
+| commissioning | 调试验证 |
+| qualifies / verified | 资格认定 / 已验证 |
+
+Here, an instrument may be a numerical program or method, not just physical
+hardware. These are display terms; stored identifiers and scientific records
+remain unchanged.
 
 Run the repeatable source audit from the repository root:
 

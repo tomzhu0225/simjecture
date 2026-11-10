@@ -163,7 +163,7 @@ window.WorkspaceMonitor = {
           ) {
             const b = a.cloneNode(true);
             b.className = "sidebar-run";
-            SimjectureI18n.bindText(b.querySelector("small"), () => SimjectureI18n.label(job.status));
+            SimjectureI18n.bindText(b.querySelector("small"), () => SimjectureI18n.label(job.status, job.status.replaceAll("_", " ")));
             b.onclick = () => window.WorkspacePanels?.set("right", false);
             $("sidebar-run-list").append(b);
           }

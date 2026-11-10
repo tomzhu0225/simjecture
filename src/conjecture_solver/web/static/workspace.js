@@ -1156,6 +1156,7 @@ async function refreshBenchmarks() {
 }
 
 const toolLabels = {
+  "lean": ["Lean", SimjectureI18n.message("ui.formal-theorem-checking"), "LN", "Analysis & data"],
   "conjecture-1": ["Conjecture 1", SimjectureI18n.message("ui.scientific-attention"), "C1", "Workflow assistance"],
   "elmer": ["Elmer", SimjectureI18n.message("ui.finite-element-simulation"), "FE", "CAD & simulation"],
   "freecad": ["FreeCAD", SimjectureI18n.message("ui.parametric-cad"), "CAD", "CAD & simulation"],
@@ -1560,8 +1561,10 @@ function researchToolCard(tool) {
   const p=toolPresentation(tool),card=el("article",undefined,"research-tool-card");card.dataset.tool=tool.id;card.dataset.state=p.kind;
   const top=el("div",undefined,"research-tool-top"),name=el("div",undefined,"research-tool-name");
   name.append(el("h3",p.name),el("small",p.category));
-  top.append(el("span",p.glyph,"research-tool-icon"),name,el("span",SimjectureI18n.live(() => SimjectureI18n.label(p.status)),`tool-status ${p.kind}`));
-  const description=el("p",toolDescription(tool),"research-tool-description");SimjectureI18n.attribute(description, "title", () => toolDescription(tool));
+  top.append(el("span",p.glyph,"research-tool-icon"),name,el("span",p.status,`tool-status ${p.kind}`));
+  const copy = toolDescription(tool);
+  const description = el("p", copy, "research-tool-description");
+  SimjectureI18n.attribute(description, "title", () => copy);
   card.append(top,description);
   if(toolRunning(tool))card.append(toolRunView(tool));
   else card.append(el("div",p.note,`research-tool-note${p.kind === "attention" ? " attention" : ""}`));
@@ -1625,6 +1628,18 @@ function renderToolOptions(tool) {
 $("connect-research-tool").onclick=()=>$("custom-tool-dialog").showModal();
 for(const id of ["close-custom-tool","cancel-custom-tool"])$(id).onclick=()=>$("custom-tool-dialog").close();
 $("tools-open-machines").onclick=()=>view("machines");
+function matchesToolSearch(tool, terms) {
+  if (!terms.length) return true;
+  const { name, category } = toolPresentation(tool);
+  const group = toolCategory(tool);
+  const searchable = [
+    tool.id, tool.name, name, category, group, SimjectureI18n.label(group),
+    tool.description, toolDescription(tool),
+    ...(tool.variants || []).flatMap(variant => [variant.label, variant.name, variant.description]),
+  ].filter(Boolean).join(" ").toLocaleLowerCase();
+  return terms.every(term => searchable.includes(term));
+}
+
 function filterToolCatalog() {
   const terms=$("tool-search").value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   const category=$("tool-category").value;
@@ -1634,11 +1649,9 @@ function filterToolCatalog() {
   for(const tool of tools){
     const card=cards.get(tool.id);
     if(!card)continue;
-    const p=toolPresentation(tool);
-    const searchable=[tool.id,tool.name,p.name,p.category,toolCategory(tool),tool.description,toolDescription(tool),
-      ...(tool.variants || []).flatMap(v=>[v.label,v.name,v.description])].filter(Boolean).join(" ").toLocaleLowerCase();
-    const matches=terms.every(term=>searchable.includes(term)) && (category==="all" || category===toolCategory(tool)) &&
-      (hosted || state.toolFilter==="all" || (state.toolFilter==="installed" ? tool.installed : !tool.installed));
+    const matches = (category === "all" || category === toolCategory(tool))
+      && (hosted || state.toolFilter === "all" || (state.toolFilter === "installed" ? tool.installed : !tool.installed))
+      && matchesToolSearch(tool, terms);
     card.hidden=!matches;
     if(matches)counts[toolSection(tool)]++;
   }
@@ -1654,6 +1667,9 @@ function filterToolCatalog() {
   for(const button of document.querySelectorAll("[data-tool-filter]"))button.setAttribute("aria-pressed",String(button.dataset.toolFilter===state.toolFilter));
 }
 $("tool-search").addEventListener("input",filterToolCatalog);
+window.addEventListener("simjecture-language", () => {
+  if ($("tool-search").value.trim()) filterToolCatalog();
+});
 $("tool-category").addEventListener("change",filterToolCatalog);
 for(const button of document.querySelectorAll("[data-tool-filter]"))button.onclick=()=>{state.toolFilter=button.dataset.toolFilter;filterToolCatalog();};
 $("clear-tool-filters").onclick=()=>{
@@ -1755,7 +1771,7 @@ function announceToolResult(id) {
   if(tool.operation?.cancelled)toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.setup-stopped-its-output-is-kept", {p0: name})));
   else if(toolNeedsDiagnosis(tool))toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.needs-attention-open-it-in-research-tools-to-see-why-and-diagnose-wi", {p0: name})),true);
   else if(tool.installed)toast(SimjectureI18n.live(() => `✓ ${name} ${(check ? SimjectureI18n.t("ui.passed-its-readiness-check") : SimjectureI18n.t("ui.is-installed-and-ready"))}.`));
-  else toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.finished-2", {p0: name, p1: (check ? SimjectureI18n.t("ui.readiness-check") : "setup")})));
+  else toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.finished-2", {p0: name, p1: (check ? SimjectureI18n.t("ui.readiness-check") : SimjectureI18n.t("status.setup"))})));
 }
 async function pollToolProgress() {
   if(hosted || state.toolPolling || !state.toolWatch.size)return;
@@ -2051,7 +2067,7 @@ async function renderStudies() {
         files.append(
           linkFile(`experiments/${experiment.id}/workspace/${output}`, output),
         );
-      if (experiment.machine) files.append(el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.machine", {p0: experiment.machine, p1: (SimjectureI18n.label(experiment.transport_status) || "recorded")}))));
+      if (experiment.machine) files.append(el("p", SimjectureI18n.live(() => SimjectureI18n.t("ui.machine", {p0: experiment.machine, p1: SimjectureI18n.label(experiment.transport_status || "recorded")}))));
       const retained = Object.keys(experiment.remote_artifacts || {}).filter(name=>!experiment.artifacts?.[name]);
       if (retained.length) {
         const select = el("select"); SimjectureI18n.attribute(select, "aria-label", () => SimjectureI18n.t("ui.remote-artifact-to-retrieve"));
@@ -2239,14 +2255,14 @@ $("provider-preset").onchange = () => {
 $("settings-form").onsubmit = (e) => {
   e.preventDefault();
   action($("save-connection"), async () => {
-    SimjectureI18n.bindText($("connection-result"), () => SimjectureI18n.t("ui.saving-api-connection"));
+    SimjectureI18n.text($("connection-result"), "ui.saving-api-connection");
     try {
       state.settings = await api("api-settings", {
         base_url: $("base-url").value,
         api_key: $("api-key").value,
       });
     } catch (error) {
-      SimjectureI18n.bindText($("connection-result"), () => SimjectureI18n.t("ui.connection-not-saved", {p0: error.message}));
+      SimjectureI18n.text($("connection-result"), "ui.connection-not-saved", {p0: error.message});
       throw error;
     }
     $("api-key").value = "";

@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import re
+import shutil
 import sys
 import threading
 from pathlib import Path
@@ -12,8 +13,34 @@ import httpx
 import pytest
 
 from conjecture_solver.research_service import ResearchService
+from conjecture_solver.web import server as web_server
 from conjecture_solver.web.application import SimjectureWebApplication
+from conjecture_solver.web.assets import ENGLISH_FALLBACK, render_i18n_messages
 from conjecture_solver.web.server import create_server
+from conjecture_solver.web.workspace import CATALOGUE
+
+STATIC = web_server.STATIC_ROOT
+
+
+@pytest.fixture
+def english_catalog():
+    return json.loads((STATIC / "language/en.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def static_without_english(tmp_path, monkeypatch):
+    # Keep the real handlers and browser assets, but break only a temporary installation.
+    static = shutil.copytree(
+        STATIC, tmp_path / "static", ignore=shutil.ignore_patterns("en.json")
+    )
+    monkeypatch.setattr(web_server, "STATIC_ROOT", static)
+    return static
+
+
+def test_packaged_english_matches_source(english_catalog):
+    assert json.loads(ENGLISH_FALLBACK.read_text(encoding="utf-8")) == english_catalog, (
+        "Refresh web/english_fallback.json from web/static/language/en.json"
+    )
 
 
 @pytest.fixture
@@ -145,25 +172,212 @@ def test_language_manifest_loads_before_startup_and_supplies_new_options(
     expect(page.locator("html")).to_have_attribute("lang", "fr")
 
 
-@pytest.mark.parametrize("missing", ["manifest", "zh-CN"])
-def test_optional_language_resource_failure_keeps_english_ui(language_site, language_page, missing):
+@pytest.mark.parametrize(("resource", "body"), [
+    ("manifest", None), ("manifest", "null"), ("zh-CN", None), ("zh-CN", "[]"),
+])
+def test_unavailable_saved_language_retries_on_reload(language_site, language_page, resource, body):
     base, _, _ = language_site
     page, expect = language_page
-    page.route(
-        f"**/assets/language/{missing}.json",
-        lambda route: route.fulfill(status=404, body="missing"),
-    )
+    page.add_init_script("localStorage.setItem('simjecture-language', 'zh-CN')")
+    path = f"**/assets/language/{resource}.json"
+    page.route(path, lambda route: route.fulfill(
+        status=404 if body is None else 200, content_type="application/json", body=body or "",
+    ))
     page.goto(base + "/workspace")
     expect(page.locator("#account-button")).to_be_enabled()
     expect(page.locator("[data-language-select]")).to_be_enabled()
-    if missing == "zh-CN":
-        choose_language(page, "zh-CN")
-        expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
+    expect(page.locator("[data-language-select] option")).to_have_count(1)
+    expect(page.locator("[data-language-select]")).to_have_value("en")
+    expect(page.locator("html")).to_have_attribute("lang", "en")
+    heading = page.locator('[data-i18n="workspace.homeIntro"]')
+    expect(heading).to_have_text("What are we investigating?")
+    assert page.evaluate("localStorage.getItem('simjecture-language')") == "zh-CN"
+    page.unroute(path)
+    page.reload()
+    expect(heading).to_have_text("我们要研究什么？")
+    expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
+
+
+@pytest.mark.parametrize("route", ["/workspace", "/monitor"])
+@pytest.mark.parametrize("saved", [None, "zh-CN"])
+def test_english_ui_needs_no_separate_catalog_request(
+    language_site, language_page, english_catalog, static_without_english, route, saved
+):
+    """A corrupt installed catalog still permits a first visit, language changes and reloads."""
+    base, _, campaign = language_site
+    page, expect = language_page
+    (static_without_english / "language/en.json").write_bytes(b"{broken")
+    if saved:
+        page.add_init_script(
+            "if (localStorage.getItem('simjecture-language') === null) "
+            f"localStorage.setItem('simjecture-language', {json.dumps(saved)});"
+        )
+
+    english_requests = []
+
+    def fail_english(request):
+        english_requests.append(request.request.url)
+        request.abort()
+
+    page.route("**/assets/language/en.json", fail_english)
+    page.goto(base + route + "?" + urlencode({"campaign": campaign}))
+    page.evaluate("SimjectureI18n.ready")
+    expect(page.locator("[data-language-select]")).to_be_enabled()
+    expect(page.locator("html")).to_have_attribute("lang", saved or "en")
+    assert page.evaluate("localStorage.getItem('simjecture-language')") == saved
+    # Both real initializers reach their API-backed state and wire up controls.
+    if route == "/workspace":
+        page.locator("#account-button").click()
+        expect(page.locator("#hosting-account")).to_be_visible()
+        page.locator("#account-button").click()
+        heading = page.locator('[data-i18n="workspace.homeIntro"]')
+        field = page.locator("#first-request")
+        english = "What are we investigating?"
+        chinese = "我们要研究什么？"
+        placeholder = "Ask a question or describe your research…"
     else:
-        expect(page.locator("[data-language-select] option")).to_have_count(1)
-    expect(page.locator('[data-i18n="workspace.homeIntro"]')).to_have_text(
-        "What are we investigating?"
+        expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
+        page.locator("#new-run-button").click()
+        expect(page.locator("#new-run-dialog")).to_be_visible()
+        heading = page.locator("#new-run-dialog h2")
+        field = page.locator('#new-run-dialog textarea[name="hypothesis"]')
+        english = "Give Simjecture a hypothesis"
+        chinese = "向 Simjecture 提出一个假设"
+        placeholder = "State one falsifiable scientific hypothesis…"
+    field.fill("Keep this draft {p0} unchanged")
+    # The complete English dictionary survives a Chinese -> English switch,
+    # including messages that are never present in the static HTML.
+    for language, title in [("en", english), ("zh-CN", chinese), ("en", english)]:
+        page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
+        expect(heading).to_have_text(title)
+        expect(field).to_have_value("Keep this draft {p0} unchanged")
+    expect(field).to_have_attribute("placeholder", placeholder)
+    assert page.evaluate("SimjectureI18n.t('unknown.message')") == "unknown.message"
+    assert_rendered_english_catalog(page, english_catalog)
+    page.reload()
+    page.evaluate("SimjectureI18n.ready")
+    expect(page.locator("html")).to_have_attribute("lang", "en")
+    assert_rendered_english_catalog(page, english_catalog)
+    assert english_requests == []
+
+
+@pytest.mark.parametrize("route", ["/workspace", "/monitor"])
+@pytest.mark.parametrize("failure", ["http", "network", "invalid_json"])
+@pytest.mark.parametrize("saved", [None, "zh-CN"])
+def test_all_catalog_failures_keep_complete_dynamic_english(
+    language_site, language_page, english_catalog, static_without_english, route, failure, saved
+):
+    """Start with neither an English file on the server nor a working locale JSON request."""
+    base, _, campaign = language_site
+    page, expect = language_page
+    if saved:
+        page.add_init_script(f"localStorage.setItem('simjecture-language', {json.dumps(saved)})")
+
+    def fail_catalog(request):
+        if failure == "network":
+            request.abort()
+        elif failure == "invalid_json":
+            request.fulfill(content_type="application/json", body="{not json")
+        else:
+            request.fulfill(status=503, body="unavailable")
+
+    page.route("**/assets/language/*.json", fail_catalog)
+    page.goto(base + route + "?" + urlencode({"campaign": campaign}))
+    page.evaluate("SimjectureI18n.ready")
+    expect(page.locator("[data-language-select]")).to_be_enabled()
+    expect(page.locator("[data-language-select] option")).to_have_count(1)
+    expect(page.locator("html")).to_have_attribute("lang", "en")
+    assert page.evaluate("localStorage.getItem('simjecture-language')") == saved
+    assert_rendered_english_catalog(page, english_catalog)
+    if route == "/workspace":
+        expect(page.locator("#account-button")).to_be_enabled()
+        expect(page.locator('[data-i18n="workspace.homeIntro"]')).to_have_text(
+            "What are we investigating?"
+        )
+        page.locator('button[data-view="tools"]').click()
+        card = page.locator('[data-tool="lean"]')
+        description = card.locator(".research-tool-description")
+        expect(description).to_have_text("Formal theorem checking and numerical-method proofs")
+        expect(description).to_have_attribute(
+            "title", "Formal theorem checking and numerical-method proofs"
+        )
+        card.click()
+        expect(page.locator("#tool-details-dialog .tool-about-heading")).to_have_text(
+            "About this tool"
+        )
+    else:
+        expect(page.locator("#new-run-button")).to_be_enabled()
+        expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
+        expect(page.locator("#new-run-button")).to_have_text("New hypothesis")
+        page.locator("#new-run-button").click()
+        expect(page.locator('#new-run-dialog textarea[name="hypothesis"]')).to_have_attribute(
+            "placeholder", "State one falsifiable scientific hypothesis…"
+        )
+        expect(page.locator("#claim-graph .graph-node").first).to_have_attribute(
+            "aria-label", re.compile(r"scientific claim .+: Untranslated scientific hypothesis")
+        )
+    # Create new parameterized content after boot; user text must stay literal.
+    page.evaluate("""() => {
+        const message = SimjectureI18n.message('ui.saved', {p0: '<b>draft</b> {p1}.txt'});
+        (typeof toast === 'function' ? toast : showToast)(message);
+    }""")
+    expect(page.locator("#toast")).to_have_text("Saved <b>draft</b> {p1}.txt")
+    expect(page.locator("#toast b")).to_have_count(0)
+    page.reload()
+    page.evaluate("SimjectureI18n.ready")
+    assert_rendered_english_catalog(page, english_catalog)
+
+
+def assert_rendered_english_catalog(page, english_catalog):
+    rendered = page.evaluate("""() => Object.fromEntries(
+        Object.keys(SimjectureMessages).map(key => [key, SimjectureI18n.t(key)])
+    )""")
+    assert rendered == english_catalog
+
+
+@pytest.mark.parametrize("broken", [None, b"{broken", b"\xff", b"null"], ids=[
+    "missing", "invalid-json", "invalid-utf8", "wrong-shape",
+])
+def test_local_and_hosted_language_loaders_share_the_english_bundle(
+    language_site, static_without_english, tmp_path, monkeypatch, broken
+):
+    test_client = pytest.importorskip("fastapi.testclient").TestClient
+    from conjecture_solver.public import server as public_server
+
+    base, _, _ = language_site
+    if broken is not None:
+        (static_without_english / "language/en.json").write_bytes(broken)
+    monkeypatch.setattr(public_server, "WORKSPACE_STATIC", static_without_english)
+    app = public_server.create_app(tmp_path / "hosted", dispatch=False, secure_cookies=False)
+    with test_client(app) as hosted, httpx.Client(base_url=base, trust_env=False) as local:
+        first = local.get("/assets/i18n-messages.js")
+        second = hosted.get("/assets/i18n-messages.js")
+        assert first.status_code == second.status_code == 200
+        assert first.content == second.content == render_i18n_messages(STATIC)
+        assert "/* ENGLISH_CATALOG */" not in first.text
+        for response in (first, second):
+            assert response.headers["content-type"] == "text/javascript; charset=utf-8"
+            assert "script-src 'self'" in response.headers["content-security-policy"]
+
+
+def test_partial_english_catalog_preserves_defaults_and_literal_text(
+    language_site, language_page, english_catalog, static_without_english
+):
+    base, _, _ = language_site
+    page, expect = language_page
+    copy = '</script><script>window.injected=true</script> "` ${value} \\\n中文 {p0}'
+    overrides = {"ui.saved": copy, "workspace.homeIntro": None, "ui.new-conversation": ""}
+    (static_without_english / "language/en.json").write_text(
+        json.dumps(overrides), encoding="utf-8"
     )
+    page.route("**/assets/language/*.json", lambda request: request.abort())
+    page.goto(base + "/workspace")
+    expect(page.locator("#account-button")).to_be_enabled()
+    assert_rendered_english_catalog(page, english_catalog | {"ui.saved": copy})
+    page.evaluate("toast(SimjectureI18n.message('ui.saved', {p0: '{p1}'}))")
+    expect(page.locator("#toast")).to_have_text(copy.replace("{p0}", "{p1}"))
+    expect(page.locator("#toast script")).to_have_count(0)
+    assert page.evaluate("window.injected === undefined")
 
 
 @pytest.mark.parametrize("width", [1440, 390])
@@ -187,8 +401,27 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
         node => node.childElementCount === 0
           && node.textContent === SimjectureI18n.t(node.dataset.i18n))""")
     assert page.evaluate("localStorage.getItem('simjecture-language')") == "zh-CN"
+    # Translation spans must not inherit the old icon size or chevron rotation.
+    resources = page.locator(".workspace-resources")
+    resources.evaluate("node => node.open = false")
+    assert resources.locator("summary [data-i18n]").evaluate(
+        "node => getComputedStyle(node).transform === 'none'"
+    )
+    resources.evaluate("node => node.open = true")
+    assert page.locator(".nav-item [data-i18n]").evaluate_all("""nodes => nodes.every(node =>
+        node.clientWidth >= node.scrollWidth
+        && getComputedStyle(node).fontSize === getComputedStyle(node.parentElement).fontSize)
+    """)
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-    page.screenshot(path=str(tmp_path / f"workspace-zh-CN-{width}.png"), full_page=True)
+    page.screenshot(
+        path=str(tmp_path / f"workspace-zh-CN-{width}.png"), full_page=True, animations="disabled"
+    )
+    if width < 600:
+        page.locator("#rail-toggle").click()
+        page.screenshot(
+            path=str(tmp_path / f"workspace-home-zh-CN-{width}.png"),
+            full_page=True, animations="disabled",
+        )
 
     page.reload()
     expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
@@ -201,7 +434,9 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
     page.evaluate("renderExecutions()")
     expect(page.locator("#execution-list")).to_contain_text("尚未记录数值计算运行")
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-    page.screenshot(path=str(tmp_path / f"monitor-zh-CN-{width}.png"), full_page=True)
+    page.screenshot(
+        path=str(tmp_path / f"monitor-zh-CN-{width}.png"), full_page=True, animations="disabled"
+    )
     choose_language(page, "en")
     expect(page.locator('[data-i18n="monitor.evidenceHelp"]')).to_contain_text(
         "Recorded experiments"
@@ -280,10 +515,10 @@ def test_open_tabs_share_language_and_storage_removal(language_site, language_pa
 def test_missing_chinese_copy_falls_back_to_english(language_site, language_page):
     base, _, _ = language_site
     page, expect = language_page
+    page.route("**/assets/language/zh-CN.json", lambda route: route.fulfill(json={
+        "workspace.interactiveSummary": "运行代码与仿真。", "ui.new-conversation": 42,
+    }))
     page.goto(base + "/workspace")
-    # Simulate an incomplete catalog without shipping a deliberately missing translation.
-    page.evaluate("SimjectureI18n.ready")
-    page.evaluate("delete SimjectureMessages['workspace.homeIntro']['zh-CN']")
     choose_language(page, "zh-CN")
     expect(page.locator('[data-i18n="workspace.homeIntro"]')).to_have_text(
         "What are we investigating?"
@@ -291,6 +526,10 @@ def test_missing_chinese_copy_falls_back_to_english(language_site, language_page
     expect(page.locator('[data-i18n="workspace.interactiveSummary"]')).to_contain_text(
         "运行代码与仿真"
     )
+    expect(page.locator("#new-project")).to_have_text("＋ New conversation")
+    assert page.evaluate(
+        "SimjectureI18n.label('budget_exhausted', 'budget exhausted')"
+    ) == "budget exhausted"
     assert page.evaluate("SimjectureI18n.t('unknown.message')") == "unknown.message"
 
 
@@ -343,6 +582,8 @@ def test_bound_labels_keep_children_focus_and_raw_content(language_site, languag
           () => SimjectureI18n.t('ui.reason'));
         SimjectureI18n.attribute(input, 'title',
           () => SimjectureI18n.t('ui.reason'));
+        // A poll rebinds the label after the input has been appended.
+        SimjectureI18n.text(label, 'ui.reason');
         SimjectureI18n.setLanguage('zh-CN');
     }""")
     expect(page.locator("#bound-label")).to_have_text("原因")
@@ -469,6 +710,127 @@ def test_monitor_dialog_accessibility_and_state_unchanged(language_site, languag
     expect(draft).to_have_value("running: this scientific hypothesis stays English")
 
 
+def test_monitor_preserves_raw_english_status_tokens(language_site, language_page):
+    base, _, campaign = language_site
+    page, expect = language_page
+    page.goto(base + f"/monitor?campaign={campaign}")
+    expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
+    page.evaluate("""() => {
+        state.pollInFlight = true;
+        state.campaigns[0].execution_status = 'budget_exhausted';
+        state.snapshot.claim_graph.nodes[0].status = 'budget_exhausted';
+        state.snapshot.engine = {
+            name: 'dsh', mode: 'minimal', status: 'budget_exhausted',
+            current_activity: 'budget_exhausted',
+            activity: [{kind: 'session', status: 'budget_exhausted'}],
+            report_assessments: [{status: 'review_pending', report: 'report.md'}],
+            finalization: {reserve_seconds: 60, phase: 'report_finalizing',
+                           report_status: 'not_started', compute_deadline: 1800000000},
+        };
+        renderCampaignPicker(); renderGraph(true);
+        renderLoopProgress(state.snapshot); renderResearchTrace();
+    }""")
+    original = page.evaluate("JSON.stringify([state.campaigns, state.snapshot])")
+    for language, text in [("en", "budget_exhausted"), ("zh-CN", "预算已耗尽"),
+                           ("en", "budget_exhausted")]:
+        page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
+        expect(page.locator("#campaign-select option").first).to_contain_text(text)
+        expect(page.locator("#claim-graph .node-status").first).to_have_text(text)
+        expect(page.locator("#claim-graph .graph-node").first).to_have_attribute(
+            "data-status", "budget_exhausted"
+        )
+        expect(page.locator("#loop-progress .role-badge")).to_have_text(text)
+        expect(page.locator("#research-trace .trace-event small").first).to_have_text(text)
+        assert page.evaluate("SimjectureI18n.label('New_Status_V2')") == "New_Status_V2"
+        assert page.evaluate("JSON.stringify([state.campaigns, state.snapshot])") == original
+        if language == "en":
+            expect(page.locator(".report-assessments strong")).to_have_text(
+                "Report review pending · frozen version"
+            )
+            expect(page.locator("#research-trace")).to_contain_text(
+                "report_finalizing · report not started"
+            )
+    # Existing views that deliberately prettify status tokens retain that choice.
+    assert page.evaluate(
+        "SimjectureI18n.label('budget_exhausted', 'budget exhausted')"
+    ) == "budget exhausted"
+
+
+def test_dynamic_fallbacks_and_evidence_badges_preserve_raw_records(language_site, language_page):
+    base, _, campaign = language_site
+    page, expect = language_page
+    page.goto(base + f"/monitor?campaign={campaign}")
+    expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
+    page.evaluate("""() => {
+        state.pollInFlight = true;
+        state.snapshot.engine = {mode:'minimal',
+            finalization:{reserve_seconds:60, compute_deadline:1800000000},
+            execution_costs:[{id:'fixture', source:'solver.py', machine:'local',
+                              status:'succeeded', wall_seconds:2}]};
+        state.snapshot.snapshot.latest_heartbeat = {age_seconds:null};
+        state.snapshot.formatted.heartbeat_age = 'unknown';
+        renderMetrics(state.snapshot); renderResearchTrace();
+        for (const sufficient of [true, false]) {
+            const card = evidenceCard({observation_sufficient:sufficient}, 'fixture');
+            card.dataset.fallbackFixture = '';
+            document.getElementById('claim-inspector').append(card);
+        }
+    }""")
+    original = page.evaluate("JSON.stringify(state.snapshot)")
+    for language, badges, report, recorded in [
+        ("en", ["sufficient", "limited"], "research · report not started", "recorded"),
+        ("zh-CN", ["充足", "有限"], "研究 · 报告未开始", "已记录"),
+        ("en", ["sufficient", "limited"], "research · report not started", "recorded"),
+    ]:
+        page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
+        labels = page.locator("[data-fallback-fixture] .status-badge")
+        expect(labels).to_have_text(badges)
+        expect(labels.nth(0)).to_have_attribute("data-status", "supported")
+        expect(labels.nth(1)).to_have_attribute("data-status", "unresolved")
+        expect(page.locator("#research-trace .research-director")).to_contain_text(report)
+        expect(page.locator("#metric-heartbeat")).to_have_text(
+            "最近状态上报：未知" if language == "zh-CN" else "Heartbeat unknown"
+        )
+        cost = page.locator("#research-trace .scientific-progress .trace-event").first
+        expect(cost).to_contain_text(recorded)
+        expect(cost).to_contain_text("local")
+        expect(cost).to_contain_text("solver.py")
+        assert page.evaluate("JSON.stringify(state.snapshot)") == original
+
+    page.goto(base + "/workspace")
+    expect(page.locator("#account-button")).to_be_enabled()
+    page.evaluate("""() => {
+        state.tools.push({id:'fixture-finished', name:'Fixture', installed:false});
+        announceToolResult('fixture-finished');
+    }""")
+    for language, text in [
+        ("en", "Fixture: setup finished."), ("zh-CN", "Fixture：配置已完成。"),
+        ("en", "Fixture: setup finished."),
+    ]:
+        page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
+        expect(page.locator("#toast")).to_have_text(text)
+
+
+def test_failed_connection_message_switches_while_preserving_server_error(
+    language_site, language_page
+):
+    base, _, _ = language_site
+    page, expect = language_page
+    requests = []
+    page.route("**/api/workspace/api-settings", lambda route: requests.append(route))
+    page.goto(base + "/workspace#settings")
+    expect(page.locator("#account-button")).to_be_enabled()
+    page.locator("#save-connection").click()
+    status = page.locator("#connection-result")
+    expect(status).to_have_text("Saving API connection…")
+    choose_language(page, "zh-CN")
+    expect(status).to_have_text("正在保存 API 连接……")
+    requests[0].fulfill(status=503, json={"error": "Connection lost"})
+    expect(status).to_have_text("连接未保存：Connection lost")
+    choose_language(page, "en")
+    expect(status).to_have_text("Connection not saved: Connection lost")
+
+
 def test_workspace_api_payload_does_not_depend_on_language(language_site, language_page):
     base, project, _ = language_site
     page, expect = language_page
@@ -576,6 +938,8 @@ def test_source_audit_distinguishes_copy_from_data(tmp_path, monkeypatch, capsys
         const nested = `Progress ${enabled ? `Batch ${count} checked` : "Still waiting"}`;
         const html = "<p>Generated interface help</p>";
         const localized = SimjectureI18n.message("ui.reason");
+        const fallback = SimjectureI18n.label(value) || "recorded";
+        const label = check ? SimjectureI18n.t("ui.reason") : "setup";
     """)
     (tmp_path / "vendor").mkdir()
     (tmp_path / "vendor/third-party.js").write_text('node.textContent = "Vendor label"')
@@ -592,6 +956,8 @@ def test_source_audit_distinguishes_copy_from_data(tmp_path, monkeypatch, capsys
         "Batch {value} checked",
         "Still waiting",
         "Generated interface help",
+        "recorded",
+        "setup",
     }
     assert not any(row["text"] == "Vendor label" for row in records)
     assert any(row["text"] == "ui.reason" and row["category"] == "localized" for row in records)
@@ -627,6 +993,33 @@ def test_builtin_descriptions_and_status_labels_remain_live(language_site, langu
     expect(page.locator("#research-trace")).to_contain_text("此记录尚无已完成轮次")
     expect(page.locator("#claim-graph .node-id")).to_have_text("科学")
     expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
+
+
+def test_lean_catalog_card_and_details_translate_without_changing_setup(
+    language_site, language_page
+):
+    base, _, _ = language_site
+    page, expect = language_page
+    english = next(description for name, _, description, _ in CATALOGUE if name == "lean")
+    page.goto(base + "/workspace#tools")
+    card = page.locator('[data-tool="lean"]')
+    description = card.locator(".research-tool-description")
+    expect(description).to_have_text(english)
+    setup = page.evaluate("setupGuideText({id:'lean'})")
+    assert "simjecture install lean" in setup
+    assert "simjecture doctor --profile lean" in setup
+    original = page.evaluate("JSON.stringify(state.tools.find(tool => tool.id === 'lean'))")
+    card.click()
+    expect(page.locator("#tool-details-dialog")).to_be_visible()
+    for language, text in [("zh-CN", "形式化定理检查与数值方法证明"), ("en", english)]:
+        page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
+        expect(description).to_have_text(text)
+        expect(description).to_have_attribute("title", text)
+        expect(page.locator("#tool-details-dialog")).to_contain_text(text)
+        assert page.evaluate("setupGuideText({id:'lean'})") == setup
+        assert page.evaluate(
+            "JSON.stringify(state.tools.find(tool => tool.id === 'lean'))"
+        ) == original
 
 
 @pytest.mark.parametrize("language", ["en", "zh-CN"])
@@ -748,7 +1141,7 @@ def test_legacy_stages_graph_values_and_contract_expansion_stay_stable(
         state.snapshot.claim_details[root].evidence_contracts = [
           {version:1, observable:'Keep scientific observation text in English'}];
         state.selectedClaim = root;
-        renderLoopProgress(state.snapshot); renderInspector();
+        renderLoopProgress(state.snapshot); renderInspector(); renderGraph(true);
         window.rawGraphFixture = JSON.stringify(graphData());
     }""")
     active = page.locator(".loop-stage.active")
@@ -756,9 +1149,16 @@ def test_legacy_stages_graph_values_and_contract_expansion_stay_stable(
     detail = page.locator(".contract-card details")
     detail.locator("summary").click()
     expect(detail).to_have_attribute("open", "")
+    stage = page.locator('.graph-node[data-node-id="stage-fixture"]')
+    edge = page.locator('.graph-edge-label[data-source="stage-fixture"]')
+    stage.focus()
+    original_stage = stage.element_handle()
     page.evaluate("SimjectureI18n.setLanguage('zh-CN')")
+    expect(stage).to_be_focused()
+    expect(edge).to_have_text("为以下论断提供证据支持")
+    assert original_stage.evaluate("node => node.isConnected")
     expect(active).to_have_attribute("data-stage", "commissioning")
-    expect(active).to_have_text("验证工具")
+    expect(active).to_have_text("调试验证")
     assert page.evaluate("JSON.stringify(graphData()) === rawGraphFixture")
     assert page.evaluate("""() => {
         const graph=graphData();
@@ -776,6 +1176,7 @@ def test_legacy_stages_graph_values_and_contract_expansion_stay_stable(
     }""")
     expect(active).to_have_attribute("data-stage", "repair")
     page.evaluate("SimjectureI18n.setLanguage('en')")
+    expect(edge).to_have_text("enables evidence for")
     expect(active).to_have_attribute("data-stage", "repair")
     expect(active).to_have_text("Repair")
     page.evaluate("renderInspector()")
@@ -810,6 +1211,27 @@ def test_guided_commissioning_keeps_technical_values_and_layout(language_site, l
         expect(chips.locator(".metadata-chip")).to_have_text(values)
         expect(chips).to_have_css("display", "flex")
         expect(chips).to_have_css("gap", "7px")
+
+
+def test_tool_search_tracks_visible_language_and_category(language_site, language_page):
+    base, _, _ = language_site
+    page, expect = language_page
+    page.goto(base + "/workspace#tools")
+    card = page.locator('[data-tool="lean"]')
+    search = page.locator("#tool-search")
+    expect(card).to_be_visible()
+    search.fill("分析与数据")
+    expect(card).to_be_hidden()
+    choose_language(page, "zh-CN")
+    expect(card).to_be_visible()
+    search.fill("形式化定理检查")
+    expect(card).to_be_visible()
+    choose_language(page, "en")
+    expect(card).to_be_hidden()
+    expect(search).to_have_value("形式化定理检查")
+    expect(page.locator("#tool-search-empty")).to_be_visible()
+    search.fill("Lean")
+    expect(card).to_be_visible()
 
 
 def test_tools_keep_card_and_dialog_focus_after_language_change_and_poll(

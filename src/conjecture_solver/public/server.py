@@ -19,6 +19,7 @@ from urllib.parse import urlsplit
 
 from .. import __version__
 from ..mvp_launch import read_process_identity
+from ..web.assets import render_i18n_messages
 from .deletion import ProjectDeletion
 from .lifecycle import GuestLifecycle
 from .native import OUTPUTS
@@ -136,7 +137,7 @@ class Dispatcher:
 def create_app(root, *, dispatch=True, secure_cookies=True):
     try:
         from fastapi import FastAPI, HTTPException, Request
-        from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+        from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
         from pydantic import BaseModel, ConfigDict, Field
     except ImportError as error:
         raise RuntimeError(
@@ -746,6 +747,12 @@ def create_app(root, *, dispatch=True, secure_cookies=True):
             )
         ):
             raise HTTPException(404, "Not found")
+        if name == "i18n-messages.js":
+            return Response(
+                render_i18n_messages(WORKSPACE_STATIC),
+                media_type="text/javascript",
+                headers=HEADERS,
+            )
         return FileResponse(path, headers=HEADERS)
 
     async def favicon():

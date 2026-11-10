@@ -43,30 +43,52 @@ window.SimjectureI18n = (() => {
     return messages[key] && messages[key].en === value ? t(key) : value;
   }
 
-  function label(value, fallback = String(value ?? "").replaceAll("_", " ")) {
+  function label(value, fallback = String(value ?? ""), locale = language) {
+    if (locale === "en") return fallback;
     const raw = String(value ?? "");
     const key = `status.${raw.toLowerCase().replaceAll(" ", "_")}`;
-    return language !== "en" && messages[key] ? t(key) : fallback;
+    return messages[key]?.[locale] ?? fallback;
+  }
+
+  function bindingsFor(node) {
+    let record = bindings.get(node);
+    if (!record) {
+      record = new Map();
+      bindings.set(node, record);
+      node.setAttribute("data-i18n-bound", "");
+    }
+    return record;
+  }
+
+  function updateAttribute(node, name, result) {
+    if (result == null) {
+      if (node.hasAttribute(name)) node.removeAttribute(name);
+    } else {
+      const value = String(result);
+      if (node.getAttribute(name) !== value) node.setAttribute(name, value);
+    }
   }
 
   function bind(node, render, attribute) {
-    let record = bindings.get(node);
-    if (!record) { record = new Map(); bindings.set(node, record); }
+    const record = bindingsFor(node);
     const result = render();
-    const value = String(result ?? "");
     if (attribute) {
-      if (result == null) node.removeAttribute(attribute);
-      else node.setAttribute(attribute, value);
+      updateAttribute(node, attribute, result);
       record.set(attribute, { render });
     } else {
-      // Renderers may subsequently append controls. Locale changes only touch
-      // this text node, so labels keep their inputs, focus and event handlers.
-      node.textContent = value;
-      if (!node.firstChild) node.append(document.createTextNode(""));
-      record.set("text", { render, text: node.firstChild });
+      // A poll may rebind a label after its renderer appended a control.
+      // Keep updating the owned text node so the control retains focus.
+      const value = String(result ?? "");
+      let text = record.get("text")?.text;
+      if (text?.parentNode !== node) {
+        text = document.createTextNode(value);
+        node.replaceChildren(text);
+      } else if (text.data !== value) {
+        text.data = value;
+      }
+      record.set("text", { render, text });
       record.delete("view");
     }
-    node.setAttribute("data-i18n-bound", "");
     // An explicit dynamic binding supersedes the original static message.
     node.removeAttribute(attribute ? `data-i18n-${attribute}` : "data-i18n");
     return node;
@@ -93,13 +115,10 @@ window.SimjectureI18n = (() => {
     bindings.get(node)?.delete("text");
     // Raw research content also supersedes an initial localized placeholder.
     node.removeAttribute("data-i18n");
-    renderer(String(value ?? ""));
+    const copy = String(value ?? "");
+    renderer(copy);
     if (!value?.[messageType]) return node;
-    if (!bindings.has(node)) bindings.set(node, new Map());
-    bindings.get(node).set("view", {
-      render: () => String(value), renderer, value: String(value),
-    });
-    node.setAttribute("data-i18n-bound", "");
+    bindingsFor(node).set("view", { render: () => String(value), renderer, value: copy });
     return node;
   }
 
@@ -132,10 +151,7 @@ window.SimjectureI18n = (() => {
             binding.value = value;
           }
         } else {
-          const value = binding.render();
-          if (value == null) {
-            if (node.hasAttribute(name)) node.removeAttribute(name);
-          } else if (node.getAttribute(name) !== String(value)) node.setAttribute(name, String(value));
+          updateAttribute(node, name, binding.render());
         }
       }
     }

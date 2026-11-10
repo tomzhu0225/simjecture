@@ -64,6 +64,8 @@ FIXED = {
     "Frankfurt FEOS",
     "Optab",
     "FAC",
+    "Lean",
+    "LN",  # Lean tool-card monogram.
     "Math",
     "Ctrl+C",
     "Content-Type",
@@ -477,9 +479,18 @@ def audit():
                     r"[\"']\s*,\s*|new Option\(\s*)$",
                     before,
                 )
+                # A bare word beside a translated expression is still display
+                # copy. Do not apply this heuristic to routes or other tokens.
+                translated_fallback = re.fullmatch(r"[A-Za-z][A-Za-z _-]+", value) and re.search(
+                    r"(?:SimjectureI18n\.label\([^;\n]*\)\s*\|\||"
+                    r"SimjectureI18n\.t\([^;\n]*\)\s*:)\s*$", before
+                )
                 # Attributes, element tag names and CSS class arguments are
                 # handled above; a lowercase word in a text sink is still UI.
-                category = "unresolved" if direct_copy and value not in FIXED else None
+                category = (
+                    "unresolved" if (direct_copy or translated_fallback) and value not in FIXED
+                    else None
+                )
                 emit(
                     path.name,
                     line,

@@ -23,6 +23,7 @@ from .application import (
     SimjectureWebApplication,
     WebApplicationError,
 )
+from .assets import render_i18n_messages
 
 STATIC_ROOT = Path(__file__).with_name("static")
 MAX_REQUEST_BYTES = 64 * 1024
@@ -316,7 +317,11 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             ".svg": "image/svg+xml",
             ".ico": "image/x-icon",
         }.get(path.suffix, "application/octet-stream")
-        body = path.read_bytes()
+        body = (
+            render_i18n_messages(STATIC_ROOT)
+            if relative == "i18n-messages.js"
+            else path.read_bytes()
+        )
         self._begin(HTTPStatus.OK, content_type, len(body), cache="no-cache")
         self.wfile.write(body)
 

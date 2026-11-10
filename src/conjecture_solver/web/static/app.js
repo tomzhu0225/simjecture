@@ -125,9 +125,6 @@ function bindEvents() {
     if (campaign && state.campaigns.some((item) => item.id === campaign))
       selectCampaign(campaign, { history: false });
   });
-  window.addEventListener("simjecture-language", () => {
-    if (state.snapshot) renderGraph(true);
-  });
   window.addEventListener("resize", debounce(() => {
     if (state.snapshot) renderGraph(false);
   }, 160));
@@ -518,7 +515,8 @@ function renderMetrics(data) {
 
 function heartbeatAge(data) {
   const seconds = data.snapshot.latest_heartbeat?.age_seconds;
-  if (seconds == null || SimjectureI18n.getLanguage() === "en") return data.formatted.heartbeat_age;
+  if (seconds == null) return SimjectureI18n.known("status.unknown", data.formatted.heartbeat_age);
+  if (SimjectureI18n.getLanguage() === "en") return data.formatted.heartbeat_age;
   if (seconds < 1) return SimjectureI18n.t("ui.just-now");
   if (seconds < 60) return SimjectureI18n.t("time.heartbeat-seconds", {p0: Math.floor(seconds)});
   if (seconds < 3600) return SimjectureI18n.t("time.heartbeat-minutes", {p0: Math.floor(seconds / 60)});
@@ -756,7 +754,7 @@ function renderGraph(preserveScroll) {
       "data-source": edge.source,
       "data-target": edge.target,
     });
-    SimjectureI18n.content(label, SimjectureI18n.live(() => SimjectureI18n.label(edge.relation, edge.relation || SimjectureI18n.t("status.related"))));
+    SimjectureI18n.bindText(label, () => SimjectureI18n.label(edge.relation || "related"));
     edgeLayer.append(label);
   }
   graph.append(edgeLayer);
@@ -856,6 +854,20 @@ function graphNodeSize(item) {
   return { width: 230, height: 90 };
 }
 
+function graphEdgeLabelWidth(relation) {
+  // Reserve room for each available translation at layout time. Switching
+  // language can then update just the captions, even during a node drag.
+  const raw = relation || "related";
+  let width = 38;
+  for (const locale of Object.keys(SimjectureLanguages)) {
+    const caption = SimjectureI18n.label(raw, raw, locale);
+    let estimate = 0;
+    for (const char of caption) estimate += char.codePointAt(0) > 255 ? 12 : 6;
+    width = Math.max(width, estimate);
+  }
+  return Math.min(width, 150);
+}
+
 function dagreLayoutCandidate(nodes, edges, rankdir) {
   if (!window.dagre?.graphlib?.Graph || typeof window.dagre.layout !== "function") return null;
   const engine = new window.dagre.graphlib.Graph({ multigraph: true });
@@ -877,7 +889,7 @@ function dagreLayoutCandidate(nodes, edges, rankdir) {
       edge.source,
       edge.target,
       {
-        width: Math.min(150, Math.max(38, SimjectureI18n.label(edge.relation, edge.relation || "").length * (SimjectureI18n.getLanguage() === "zh-CN" ? 12 : 6))),
+        width: graphEdgeLabelWidth(edge.relation),
         height: 16,
       },
       `edge-${index}`,
@@ -1673,7 +1685,7 @@ function renderResearchTrace() {
       window.SimjectureI18n.text(element("p", "field-help"), "monitor.reportReviewHelp"));
     for (const request of (engine.report_assessments || []).slice(-5)) {
       const label = request.assessment?.decision || request.status;
-      reports.append(element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.report-frozen-version", {p0: SimjectureI18n.label(label)}))));
+      reports.append(element("strong", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.report-frozen-version", {p0: SimjectureI18n.label(label, label.replaceAll("_", " "))}))));
       if (request.assessment?.summary) reports.append(element("p", null, request.assessment.summary));
       for (const issue of request.assessment?.issues || []) reports.append(element("p", "warning-list", issue));
       if (request.error) reports.append(element("p", "warning-list", request.error));
@@ -1702,7 +1714,7 @@ function renderResearchTrace() {
   if (engine.finalization?.reserve_seconds) {
     const finish = engine.finalization, section = element("section", "research-director");
     section.append(element("h3", null, SimjectureI18n.message("ui.report-finalization")),
-      element("p", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.report", {p0: (SimjectureI18n.label(finish.phase) || "research"), p1: SimjectureI18n.label(finish.report_status || "not_started")}))),
+      element("p", null, SimjectureI18n.live(() => SimjectureI18n.t("ui.report", {p0: SimjectureI18n.label(finish.phase || "research"), p1: SimjectureI18n.label(finish.report_status || "not_started", (finish.report_status || "not_started").replaceAll("_", " "))}))),
       element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.numerical-work-ends-by-is-reserved-for-writing-and-independent-repor", {p0: new Date(finish.compute_deadline * 1000).toLocaleTimeString(), p1: formatDuration(finish.reserve_seconds)}))));
     if (finish.assessment?.summary) section.append(element("p", null, finish.assessment.summary));
     for (const issue of finish.assessment?.issues || []) section.append(element("p", "warning-list", issue));
@@ -1818,7 +1830,7 @@ function renderResearchTrace() {
       const card = element("article", "trace-event");
       const copy = element("div", "trace-copy");
       copy.append(element("strong", null, [row.source, ...(row.args || [])].filter(Boolean).join(" ")),
-        element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.measured-execution-2", {p0: formatDuration(row.wall_seconds), p1: row.machine, p2: SimjectureI18n.label(row.status), p3: (SimjectureI18n.label(row.stage) || "recorded")}))));
+        element("p", "field-help", SimjectureI18n.live(() => SimjectureI18n.t("ui.measured-execution-2", {p0: formatDuration(row.wall_seconds), p1: row.machine, p2: SimjectureI18n.label(row.status), p3: SimjectureI18n.label(row.stage || "recorded")}))));
       if (row.end_to_end_seconds != null) copy.append(element("p", "field-help",
         SimjectureI18n.live(() => SimjectureI18n.t("ui.submission-to-result-includes-admission-transfer-and-result-collecti", {p0: formatDuration(row.end_to_end_seconds)}))));
       const link = element("a", null, SimjectureI18n.message("ui.view-execution-receipt"));
