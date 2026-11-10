@@ -456,6 +456,50 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
     assert reopened.evaluate("localStorage.getItem('simjecture-language')") == "en"
 
 
+def test_subagent_panel_and_micro_study_links_switch_in_place(language_site, language_page):
+    base, project, _ = language_site
+    page, expect = language_page
+    job = {"id": "grid-task", "name": "Grid convergence", "kind": "simulation",
+           "subagent": True, "status": "running", "live": True}
+    with httpx.Client(base_url=base, trust_env=False) as client:
+        record = client.get("/api/workspace/project", params={"id": project}).json()
+    record["simulations"] = [job]
+    record["messages"] = [{
+        "role": "assistant", "turn": 1, "running": True, "preview": "Checking the grid.",
+        "events": [{"type": "tool", "name": "run_subagents"}],
+        "activity": {"label": "Running subagents", "detail": "Grid convergence"},
+        "links": [
+            {"kind": "simulation", "subagent": True, "simulation": job["id"], "label": job["name"]},
+            {"kind": "study", "micro_study": True, "campaign": "mesh-study", "label": "Mesh study"},
+        ],
+    }]
+    page.route("**/api/workspace/project?*", lambda route: route.fulfill(json=record))
+    page.route("**/api/workspace/simulation?*", lambda route: route.fulfill(json=job))
+    page.goto(base + "/workspace#" + urlencode({"project": project, "view": "interactive"}))
+    page.locator("#subagent-toggle").click()
+    row = page.locator("#subagent-list a")
+    row.focus()
+    href = row.get_attribute("href")
+    for locale, count, status, detail, activity, summary, links in [
+        ("zh-CN", "1 项进行中", "运行中", "隔离运行的子智能体", "正在运行子智能体任务",
+         "1 次操作 · 查看活动", ["子智能体任务", "微型研究"]),
+        ("en", "1 active", "running", "Isolated subagent", "Running subagents",
+         "1 action · view activity", ["SUBAGENT TASK", "MICRO-STUDY"]),
+    ]:
+        page.evaluate("locale => SimjectureI18n.setLanguage(locale)", locale)
+        expect(row).to_be_focused()
+        expect(row).to_have_attribute("href", href)
+        expect(row).to_have_attribute("data-status", "running")
+        expect(row.locator("small")).to_have_text(status)
+        expect(row.locator("span")).to_have_text("Grid convergence")
+        expect(page.locator("#subagent-count")).to_have_text(count)
+        expect(page.locator("#simulation-detail .run-meta")).to_contain_text(detail)
+        expect(page.locator("#messages .agent-progress")).to_contain_text(activity)
+        expect(page.locator("#messages summary").first).to_have_text(summary)
+        expect(page.locator("#messages .link-category")).to_have_text(links)
+        expect(page.locator("#messages .live-answer")).to_have_text("Checking the grid.")
+
+
 def test_dynamic_help_preserves_draft_nodes_and_expanded_details(language_site, language_page):
     base, project, _ = language_site
     page, expect = language_page

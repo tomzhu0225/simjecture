@@ -41,6 +41,10 @@ function el(tag, text, cls) {
   if (cls) node.className = cls;
   return node;
 }
+function activityLabel(value) {
+  const key = `activity.${String(value ?? "").toLowerCase().replaceAll(" ", "-")}`;
+  return SimjectureI18n.known(key, value);
+}
 function toast(message, error = false) {
   SimjectureI18n.content($("toast"), message);
   $("toast").className = `toast${error ? " error" : ""}`;
@@ -647,9 +651,8 @@ function renderProject(force = false) {
         details.dataset.turn = message.turn;
         details.open = openSteps.has(message.turn);
         const actionCount = tools.filter((e) => e.type === "tool").length;
-        details.append(el("summary", actionCount === 1
-          ? "1 action · view activity"
-          : SimjectureI18n.message("ui.actions-view-activity", {p0: actionCount})));
+        const key = actionCount === 1 ? "workspace.singleActionActivity" : "ui.actions-view-activity";
+        details.append(el("summary", SimjectureI18n.message(key, {count: actionCount})));
         const trace = el("div", undefined, "trace");
         for (const item of tools) {
           trace.append(el("p", item.type === "tool" ? item.name : item.text));
@@ -676,18 +679,11 @@ function renderProject(force = false) {
               };
         const card = el("a", undefined, "research-link-card");
         card.href = projectLink(p.id, target);
+        const categoryKey = related.kind === "simulation"
+          ? (related.subagent ? "workspace.subagents.taskLink" : "ui.simulation")
+          : (related.micro_study ? "workspace.microStudyLink" : "ui.autonomous-study");
         card.append(
-          el(
-            "span",
-            related.kind === "simulation"
-              ? related.subagent
-                ? "SUBAGENT TASK"
-                : SimjectureI18n.message("ui.simulation")
-              : related.micro_study
-                ? "MICRO-STUDY"
-                : SimjectureI18n.message("ui.autonomous-study"),
-            "link-category",
-          ),
+          el("span", SimjectureI18n.message(categoryKey), "link-category"),
           el("strong", related.label),
           el("span", SimjectureI18n.message("ui.open"), "link-open"),
         );
@@ -701,7 +697,7 @@ function renderProject(force = false) {
         SimjectureI18n.attribute(spinner, "aria-label", () => SimjectureI18n.t("ui.agent-active"));
         const label = el(
           "span",
-          SimjectureI18n.live(() => message.activity?.label || SimjectureI18n.t("ui.waiting-for-agent")),
+          SimjectureI18n.live(() => activityLabel(message.activity?.label) || SimjectureI18n.t("ui.waiting-for-agent")),
         );
         const elapsed = el("small");
         elapsed.dataset.elapsed = message.started_at;
@@ -748,7 +744,7 @@ function renderProject(force = false) {
         for (const item of recent.slice(-5)) {
           const row = el("li");
           row.append(
-            el("strong", item.label),
+            el("strong", SimjectureI18n.live(() => activityLabel(item.label))),
             el("small", SimjectureI18n.live(() => SimjectureI18n.label(item.status, item.status.replaceAll("_", " ")))),
           );
           if (item.detail) row.append(el("span", item.detail));

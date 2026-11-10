@@ -48,8 +48,10 @@ window.WorkspaceMonitor = {
       subagentRevision = revision;
       subagents.hidden = tasks.length === 0;
       if (fresh) subagents.open = true;
-      const active = tasks.filter((j) => ["queued", "running"].includes(j.status));
-      $("subagent-count").textContent = active.length ? `${active.length} active` : String(tasks.length);
+      const activeCount = tasks.filter((j) => ["queued", "running"].includes(j.status)).length;
+      SimjectureI18n.content($("subagent-count"), activeCount
+        ? SimjectureI18n.message("workspace.subagents.activeCount", {count: activeCount})
+        : tasks.length);
       const list = $("subagent-list");
       const rows = new Map([...list.children].map((a) => [a.dataset.id, a]));
       let cursor = list.firstChild;
@@ -68,7 +70,8 @@ window.WorkspaceMonitor = {
           view: "interactive", [job.kind === "command" ? "command" : "simulation"]: job.id,
         });
         row.firstChild.textContent = job.name;
-        row.lastChild.textContent = job.status.replaceAll("_", " ");
+        SimjectureI18n.bindText(row.lastChild, () =>
+          SimjectureI18n.label(job.status, job.status.replaceAll("_", " ")));
         row.dataset.status = job.status;
         if (row !== cursor) list.insertBefore(row, cursor);
         cursor = row.nextSibling;
@@ -326,7 +329,7 @@ window.WorkspaceMonitor = {
               job.native
                 ? SimjectureI18n.message("ui.cli-managed-command")
                 : job.subagent
-                  ? "Isolated subagent"
+                  ? SimjectureI18n.message("workspace.subagents.isolated")
                   : SimjectureI18n.message("ui.interactive-exploration"),
             ),
           );
