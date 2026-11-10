@@ -399,3 +399,31 @@ def test_interactive_worker_does_not_arm_default_alarm(tmp_path, monkeypatch):
     )
     assert limits == [None]
     assert alarms == [0]  # only clear a possible old alarm on exit
+
+
+def test_live_preview_uses_only_top_level_public_text(tmp_path):
+    log = tmp_path / "response.json"
+    events = [
+        {
+            "type": "item.completed",
+            "item": {"type": "agent_message", "text": "Inspecting the run."},
+        },
+        {
+            "type": "stream_event",
+            "event": {
+                "type": "content_block_delta",
+                "delta": {"type": "thinking_delta", "thinking": "hidden"},
+            },
+        },
+        {
+            "type": "stream_event",
+            "parent_tool_use_id": "helper",
+            "event": {
+                "type": "content_block_delta",
+                "delta": {"type": "text_delta", "text": "nested"},
+            },
+        },
+    ]
+    log.write_text("\n".join(json.dumps(e) for e in events))
+    assert native_activity(log, "123", True)[0]["preview"] == "Inspecting the run."
+    assert "preview" not in native_activity(log, "123", False)[0]

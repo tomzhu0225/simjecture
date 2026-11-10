@@ -189,6 +189,11 @@ def file_role(path, name, request):
     """Distinguish workspace results from the project snapshot retained as inputs."""
     if request.get("kind") == "command":
         return "shared"
+    if request.get("subagent"):
+        if name == "CONTEXT.json" or name.startswith("inputs/"):
+            return "input"
+        if name == "HELPER_RESULT.json":
+            return "output"
     if name not in request.get("inputs", []):
         return "output"
     original = request.get("input_manifest", {}).get(name)
@@ -251,6 +256,7 @@ def snapshot(project, identifier, *, include_files=False, summary=False):
                 "id",
                 "name",
                 "kind",
+                "subagent",
                 "status",
                 "live",
                 "created_at",
@@ -260,6 +266,9 @@ def snapshot(project, identifier, *, include_files=False, summary=False):
             )
             if key in result
         }
+    handoff = read(root / "subagent_result.json")
+    if handoff:
+        result["subagent_result"] = handoff
     result.update(
         output=tail(root / "output.log"),
         controller_output=tail(root / "controller.log", 2000),

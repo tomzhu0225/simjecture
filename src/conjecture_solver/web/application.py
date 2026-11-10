@@ -147,7 +147,7 @@ class SimjectureWebApplication:
         from ..research_limits import configure_limits
 
         self._require_mutations()
-        root = self.registry.resolve(token)
+        root = self.resolve_campaign(token)
         result = configure_limits(
             root,
             payload.get("limits"),
@@ -159,7 +159,7 @@ class SimjectureWebApplication:
         from ..research_budget import budget_status, extend_budget
 
         self._require_mutations()
-        root = self.registry.resolve(token)
+        root = self.resolve_campaign(token)
         if not (root / "research.json").exists():
             raise ValueError("Live budget extension currently requires a minimal study")
         event = extend_budget(
@@ -201,6 +201,27 @@ class SimjectureWebApplication:
 
     def all_conversations(self):
         return [p for workspace in self.workspaces.all() for p in workspace.projects()]
+
+    def resolve_campaign(self, token):
+        """Include workspace studies launched by an agent in another process."""
+        with self._lock:
+            try:
+                return self.registry.resolve(token)
+            except WebApplicationError:
+                for project in self.all_conversations():
+                    studies_root = Path(project["path"]).resolve() / "studies"
+                    for study in project.get("studies", []):
+                        if study.get("campaign") != token or not isinstance(study.get("path"), str):
+                            continue
+                        root = Path(study["path"]).resolve()
+                        if (
+                            root.is_relative_to(studies_root)
+                            and root.is_dir()
+                            and self.registry.token_for(root) == token
+                        ):
+                            self.registry.register(root)
+                            return root
+                raise
 
     def workspace_context(self, token, root):
         for space in self.workspaces.list():
@@ -284,7 +305,7 @@ class SimjectureWebApplication:
 
     def campaign_snapshot(self, token: str) -> dict[str, Any]:
         with self._lock:
-            root = self.registry.resolve(token)
+            root = self.resolve_campaign(token)
             snapshot = self._monitor(token, root).snapshot()
             live = _is_live(root)
             raw_claims = _raw_claims(root)
@@ -456,7 +477,7 @@ class SimjectureWebApplication:
         if iteration < 1:
             raise WebApplicationError("invalid execution iteration", status=400)
         with self._lock:
-            root = self.registry.resolve(token)
+            root = self.resolve_campaign(token)
             snapshot = self._monitor(token, root).snapshot()
             execution = next(
                 (item for item in snapshot.executions if item.iteration == iteration),
@@ -477,7 +498,7 @@ class SimjectureWebApplication:
 
     def control(self, token: str, action: str) -> dict[str, Any]:
         self._require_mutations()
-        root = self.registry.resolve(token)
+        root = self.resolve_campaign(token)
         if action == "assess-report":
             from ..research_service import ResearchService
 
@@ -525,7 +546,7 @@ class SimjectureWebApplication:
         raise WebApplicationError("unknown control action", status=404)
 
     def artifact(self, token: str, relative_path: str) -> ArtifactResource:
-        root = self.registry.resolve(token)
+        root = self.resolve_campaign(token)
         normalized = PurePosixPath(relative_path)
         if (
             normalized.is_absolute()

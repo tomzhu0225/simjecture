@@ -749,6 +749,114 @@ def agent_tools(root, deadline, project=None, workspace=None):
             """
             return json.dumps(workspace.machine_command(machine, command, timeout_seconds))
 
+        @tool
+        def run_subagents(tasks: list[dict], wait: bool = True) -> str:
+            """Launch 1 to 4 parallel subagents in isolated workspaces with validated handoffs.
+            Each task dict requires 'name', 'task', 'completion_criteria', 'outputs' (list of
+            relative file paths to produce), and optional 'input_files' (list of project-relative
+            files to copy) and 'timeout_seconds' (5..7200, default 600). Subagent outputs stay
+            isolated until imported via subagent_status.
+
+            Args:
+                tasks: List of 1 to 4 task specification dictionaries.
+                wait: Wait for all launched subagents to finish before returning.
+            """
+            result = workspace.start_subagents(project, dict(tasks=tasks, wait=wait))
+            for item in result.get("tasks", []):
+                emit("subagent", id=item["id"], name=item["name"], status=item.get("status"))
+            return json.dumps(result)
+
+        @tool
+        def subagent_status(
+            identifier: str = "",
+            import_files: list[str] | None = None,
+            overwrite: bool = False,
+        ) -> str:
+            """Inspect interactive subagent status, handoff results, and optionally import outputs.
+
+            Args:
+                identifier: Subagent run ID; omit to list all subagents in this conversation.
+                import_files: Optional validated deliverable paths to copy into conversation files.
+                overwrite: Allow replacing an existing conversation file when importing.
+            """
+            return json.dumps(
+                workspace.subagent_status(
+                    project,
+                    identifier or None,
+                    import_files=import_files,
+                    overwrite=overwrite,
+                )
+            )
+
+        @tool
+        def run_micro_study(
+            question: str,
+            success_criteria: str,
+            constraints: str = "",
+            minutes: float = 15.0,
+            completion_policy: str = "answer",
+            instrument: str = "",
+            input_files: list[str] | None = None,
+            wait: bool = True,
+        ) -> str:
+            """Run a bounded, self-contained autonomous verification study within this turn.
+            Exports a summary ledger file into the conversation files directory and returns
+            the study status, recorded experiments, and study:<campaign> link.
+
+            Args:
+                question: Precise hypothesis or claim to test.
+                success_criteria: Measurements and controls required to answer it.
+                constraints: Fixed assumptions or required tools.
+                minutes: Wall-clock budget in minutes (1 to 60, default 15).
+                completion_policy: answer accepts a negative result; repair seeks a tested repair.
+                instrument: Optional required installed solver capability ID.
+                input_files: Optional project-relative input files to copy; omit for all.
+                wait: Wait for completion and return the self-contained study summary.
+            """
+            result = workspace.run_micro_study(
+                project,
+                dict(
+                    question=question,
+                    success_criteria=success_criteria,
+                    constraints=constraints,
+                    minutes=minutes,
+                    completion_policy=completion_policy,
+                    instrument=instrument,
+                    input_files=input_files,
+                    wait=wait,
+                ),
+            )
+            emit("micro_study", campaign=result["campaign"], status=result["status"])
+            return json.dumps(result)
+
+        @tool
+        def review_work(
+            claim: str,
+            evidence_files: list[str],
+            criteria: str = "",
+            reviewer_model: str = "",
+        ) -> str:
+            """Run an on-demand independent skeptical review over frozen SHA-256 project files.
+            Saves an immutable review packet and writes a REVIEW_<id>.md report in project files.
+
+            Args:
+                claim: The scientific or technical claim to audit against the evidence.
+                evidence_files: Project-relative file paths (1 to 32) supporting the claim.
+                criteria: Specific controls or assumptions the reviewer should verify.
+                reviewer_model: Optional chat model ID at the configured API endpoint.
+            """
+            result = workspace.review_work(
+                project,
+                dict(
+                    claim=claim,
+                    evidence_files=evidence_files,
+                    criteria=criteria,
+                    reviewer_model=reviewer_model,
+                ),
+            )
+            emit("review", review_id=result["review_id"], status=result["status"])
+            return json.dumps(result)
+
         tools += [
             draft_study,
             research_tools,
@@ -757,6 +865,10 @@ def agent_tools(root, deadline, project=None, workspace=None):
             run_simulation,
             run_command,
             simulation_status,
+            run_subagents,
+            subagent_status,
+            run_micro_study,
+            review_work,
             progress_update,
         ]
 
@@ -861,7 +973,10 @@ def run_agent(
         while attempt < 2:
             if time.time() >= deadline:
                 raise ValueError("Independent review deadline exhausted")
-            options = {"tools_to_call_from": review_tools} if review_tools else {}
+            # Reviewers may read more evidence or return a plain JSON verdict.
+            options = (
+                {"tools_to_call_from": review_tools, "tool_choice": "auto"} if review_tools else {}
+            )
             response = llm.generate(messages, **options)
             if response.token_usage:
                 emit(
@@ -1060,6 +1175,9 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         interactive_activity=True,
     )
     supervisor = AgentSupervisor(args)
+    # An isolated helper's controller also owns the native CLI's separate session.
+    if workspace is None:
+        supervisor.record_review_identity = True
     from .workspace_sessions import load_session, save_session
 
     session = load_session(root.parent, config) if workspace else {}
@@ -1072,7 +1190,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
     emit("tool", name=config["backend"], arguments={"task": "Working in project files"})
     emit("activity", state="connecting", label="Connecting to " + config["backend"])
     # Native CLI agents can access the same durable brief and installation bridge.
-    prompt += (
+    bridge = (
         "\nTo prepare an autonomous study, write a JSON object to STUDY_BRIEF.json in "
         "the project files directory, with question, success_criteria, constraints, "
         "hours (0.01 to 168), completion_policy ('answer' or 'repair'). "
@@ -1089,7 +1207,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         "Include machine_ids when using prepared remote workers."
     )
     if workspace:
-        prompt += (
+        bridge += (
             f"\nUse {sys.executable} for the workspace bridge and project file analysis. "
             "Scientific runtimes may have separate interpreters. "
             "For research software inventory, reuse the local Python bridge: "
@@ -1112,7 +1230,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "Reprepare after changing configuration. "
             "These commands prepare machines; their outputs are not research evidence."
         )
-        prompt += (
+        bridge += (
             "\nDuring extended work share public progress with w.progress_update("
             f"{root.parent.name!r}, 'Current stage, observed finding/blocker, and next action'). "
             "Use this at meaningful milestones; do not expose private reasoning. "
@@ -1121,6 +1239,17 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "'timeout_seconds':3600}). Run commands in foreground; this launches a background "
             "job with permanent inputs/outputs and a live browser monitor. "
             f"w.simulation({root.parent.name!r}, 'run-id') reads status, output and files. "
+            "For parallel multi-task delegation in isolated workspaces use w.start_subagents("
+            f"{root.parent.name!r}, {{'tasks':[{{'name':'Grid check','task':'Compare two grids.',"
+            "'completion_criteria':'Save the measured errors.','outputs':['result.json'],"
+            "'input_files':[]}],'wait':True}) and w.subagent_status("
+            f"{root.parent.name!r}, 'subagent-id', import_files=['result.json']). "
+            "For a self-contained bounded autonomous study inside a turn use w.run_micro_study("
+            f"{root.parent.name!r}, {{'question':'Is mass conserved?',"
+            "'success_criteria':'Measure mass drift.','minutes':15,'wait':True}), "
+            f"or independently review files with w.review_work({root.parent.name!r}, "
+            "{'claim':'Mass is conserved.','evidence_files':['result.json']}). "
+            "If needed, set reviewer_model to a chat model ID at the review API endpoint. "
             "Use this for numerical runs instead of untracked background shell processes. "
             "Save run-specific analysis and figures in that run's returned work_directory; "
             "keep cross-run reports and comparisons in the shared project files directory. "
@@ -1147,7 +1276,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "or change boundaries just to get a run."
         )
     try:
-        rc = supervisor.launch(output, prompt)
+        rc = supervisor.launch(output, bridge + "\n\n" + prompt)
     finally:
         if workspace and supervisor.state.get("worker_cursor"):
             save_session(root.parent, config, cursor=supervisor.state["worker_cursor"])
@@ -1156,6 +1285,8 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         try:
             event = json.loads(line)
         except ValueError:
+            continue
+        if event.get("parent_tool_use_id"):
             continue
         item = event.get("item", {})
         if item.get("type") == "agent_message":

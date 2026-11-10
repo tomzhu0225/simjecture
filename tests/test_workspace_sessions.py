@@ -1,7 +1,9 @@
 """Continuity is scoped to a conversation, model and provider connection."""
 
+import ast
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -78,6 +80,10 @@ else:
         task = (turn / "cli/turn/task.txt").read_text()
         assert "instrument with its installed catalogue tool or variant ID" in task
         assert "Omitted tool fields preserve" in task
+        for name in ("start_subagents", "subagent_status", "run_micro_study", "review_work"):
+            sample = re.search(rf"w\.{name}\([^)]*\)", task)
+            assert sample, name
+            assert isinstance(ast.parse(sample[0], mode="eval").body, ast.Call)
         args = json.loads((root / "argv.json").read_text())
         assert (flag in args) == (number == 1)
     assert load_session(root.parent, config)["cursor"] == "session-m2"
@@ -213,3 +219,31 @@ def test_deepseek_preambles_cannot_loop_or_complete_without_actions(monkeypatch)
         )
     assert len(calls) == 4
     assert "COMPLETION CHECK:" in str(calls[1])
+
+
+def test_resumed_send_checks_live_process_without_rebuilding_transcript(tmp_path, monkeypatch):
+    from conjecture_solver.web import workspace as module
+
+    workspace = Workspace(tmp_path / ".workspace")
+    workspace.save_api({"base_url": "http://127.0.0.1:9999/v1"})
+    project = workspace.create(
+        {
+            "name": "Resume",
+            "agent": {"backend": "builtin", "model": "fixture"},
+        }
+    )
+    directory = workspace.directory(project["id"])
+    save_session(
+        directory,
+        workspace.project_connection(project),
+        history=[{"role": "user", "content": "old request"}],
+    )
+    monkeypatch.setattr(workspace, "project", lambda _: pytest.fail("reconstructed transcript"))
+    monkeypatch.setattr(module, "spawn", lambda *args: {"test_turn": "live"})
+    monkeypatch.setattr(module, "alive", lambda record: record.get("test_turn") == "live")
+    workspace.send(project["id"], {"message": "Continue the calculation."})
+    (turn,) = (directory / "turns").iterdir()
+    assert "Continue the calculation." in (turn / "prompt.txt").read_text()
+    assert "old request" not in (turn / "prompt.txt").read_text()
+    with pytest.raises(ValueError, match="already working"):
+        workspace.send(project["id"], {"message": "Start a second turn."})

@@ -422,7 +422,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             elif endpoint == "continuation-preview":
                 from ..research_continuation import preview
 
-                root = self.server.application.registry.resolve(self._one_value(query, "id"))
+                root = self.server.application.resolve_campaign(self._one_value(query, "id"))
                 self._json(preview(root))
             elif endpoint == "study":
                 from ..research_continuation import steering
@@ -432,7 +432,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
 
                 app = self.server.application
                 token = self._one_value(query, "id")
-                root = app.registry.resolve(token)
+                root = app.resolve_campaign(token)
                 snapshot = app.campaign_snapshot(token)
                 status = study_status(root)
                 result = working_report(root, status.get("finalization"))
@@ -580,7 +580,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             elif endpoint == "steer-study":
                 from ..research_continuation import submit
 
-                root = self.server.application.registry.resolve(payload.get("campaign"))
+                root = self.server.application.resolve_campaign(payload.get("campaign"))
                 result = submit(root, payload.get("message"), key=payload.get("request_key"))
             elif endpoint == "extend-study":
                 result = self.server.application.extend_study(payload.get("campaign"), payload)
@@ -629,7 +629,7 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
             elif endpoint == "fetch-remote-artifact":
                 from ..research_service import ResearchService
 
-                root = self.server.application.registry.resolve(payload.get("campaign"))
+                root = self.server.application.resolve_campaign(payload.get("campaign"))
                 result = ResearchService(root).fetch_remote(
                     payload.get("experiment"), payload.get("path")
                 )

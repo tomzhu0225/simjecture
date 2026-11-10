@@ -543,10 +543,17 @@
               <h1 id="project-title"></h1>
               <label id="conversation-collection-label" class="conversation-collection" hidden>Project <select id="conversation-collection" aria-label="Conversation project"></select></label>
             </div>
-            <div class="mode-switch" role="group" aria-label="Research mode">
-              <button id="interactive-mode" class="selected">
-                Interactive</button
-              ><button id="autonomous-mode">Autonomous study</button>
+            <div class="project-heading-controls">
+              <div class="mode-switch" role="group" aria-label="Research mode">
+                <button id="interactive-mode" class="selected">Interactive</button>
+                <button id="autonomous-mode">Autonomous study</button>
+              </div>
+              <details id="subagent-panel" class="subagent-panel" hidden>
+                <summary id="subagent-toggle" aria-controls="subagent-list">
+                  <span>Subagents</span><span id="subagent-count"></span>
+                </summary>
+                <div id="subagent-list" aria-label="Subagent tasks"></div>
+              </details>
             </div>
           </div>
           <nav id="study-navigation" class="study-navigation" aria-label="Research navigation"></nav>
