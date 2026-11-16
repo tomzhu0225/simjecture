@@ -147,14 +147,14 @@ window.WorkspaceBenchmarks = (() => {
     const task=publication.tasks.find(t=>t.id===officialTask)||publication.tasks[0];officialTask=task.id;
     const tabs=$("benchmark-task-tabs");tabs.replaceChildren();
     for(const t of publication.tasks){const b=node("button",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${t.id}.title`, t.title)),"benchmark-task-tab");b.type="button";b.setAttribute("aria-pressed",String(t.id===task.id));b.onclick=()=>{officialTask=t.id;officialBoard(publication,actions);};tabs.append(b);}
-    const brief=$("benchmark-task-brief");brief.replaceChildren(node("p",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${task.id}.description`, task.description))),node("span",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${task.id}.inputs`, task.inputs))),node("span",SimjectureI18n.live(() => task.budget_seconds/60 + SimjectureI18n.t("ui.min-deadline") + task.repeats + SimjectureI18n.t("ui.scheduled") + (task.repeats===1 ? SimjectureI18n.t("ui.attempt") : SimjectureI18n.t("ui.attempts")) + SimjectureI18n.t("ui.per-configuration"))));
+    const brief=$("benchmark-task-brief");brief.replaceChildren(node("p",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${task.id}.description`, task.description))),node("span",SimjectureI18n.live(() => SimjectureI18n.known(`ui.benchmark-official.${task.id}.inputs`, task.inputs))),node("span",SimjectureI18n.live(() => SimjectureI18n.t(task.repeats === 1 ? "benchmarks.scheduleSummary.one" : "benchmarks.scheduleSummary.other", {minutes: task.budget_seconds / 60, repeats: task.repeats}))));
     const redraw=()=>{
       const search=$("benchmark-search").value.toLowerCase().replaceAll(/[^a-z0-9]/g,""),effort=$("benchmark-effort-filter").value;
       let rows=task.rows.filter(r=>r.trials>0&&(r.agent+" "+agentName(r.agent)+" "+r.model+" "+modelName(r.family_label)).toLowerCase().replaceAll(/[^a-z0-9]/g,"").includes(search)&&(effort==="all"||(r.effort||"default")===effort));
       const key=rankKey();rows.sort((a,b)=>(a.ranks[key]??Infinity)-(b.ranks[key]??Infinity)||a.model.localeCompare(b.model)||effortOrder.indexOf(a.effort)-effortOrder.indexOf(b.effort));
       const entries=rows.map(row=>{
         const identity=node("div",undefined,"benchmark-model-identity"),name=node("strong",SimjectureI18n.live(() => modelName(row.family_label))),detail=node("small",SimjectureI18n.live(() => agentName(row.agent)));identity.append(name,detail);SimjectureI18n.attribute(identity, "title", () => row.model + " · " + (row.agent_version || SimjectureI18n.t("ui.version-unavailable")));
-        const receipts=node("details");receipts.append(node("summary",SimjectureI18n.live(() => SimjectureI18n.t("ui.view") + row.trials + " " + (row.trials===1 ? SimjectureI18n.t("ui.attempt") : SimjectureI18n.t("ui.attempts")))));
+        const receipts=node("details");receipts.append(node("summary",SimjectureI18n.live(() => SimjectureI18n.t(row.trials === 1 ? "benchmarks.viewAttempts.one" : "benchmarks.viewAttempts.other", {count: row.trials}))));
         const token=n=>n===null||n===undefined ? SimjectureI18n.t("ui.not-recorded") : n.toLocaleString();
         receipts.append(table([
           SimjectureI18n.message("ui.elapsed"), SimjectureI18n.message("ui.input-incl-cache"),

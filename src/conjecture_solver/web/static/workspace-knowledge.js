@@ -132,7 +132,7 @@ window.WorkspaceKnowledge = (() => {
         const node = button("", () => preview(item), "knowledge-result");
         node.classList.toggle("selected", selected?.id === item.id);
         node.dataset.document = item.id;
-        node.append(el("span", `${names[item.kind] || item.kind} · ${item.source_name}`, "knowledge-result-meta"),
+        node.append(el("span", SimjectureI18n.live(() => `${names[item.kind] || item.kind} · ${item.source_name}`), "knowledge-result-meta"),
           el("h3", item.title), el("p", item.snippet || item.location), el("p", item.path, "knowledge-result-path"));
         $("knowledge-results").append(node);
       }

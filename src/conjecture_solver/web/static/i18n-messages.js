@@ -23,7 +23,12 @@ window.SimjectureMessagesReady = (async (english) => {
     }
   }
 
-  add("en", Object.entries(english));
+  const seeded = Object.entries(english && typeof english === "object" ? english : {});
+  if (seeded.length) {
+    add("en", seeded);
+  } else {
+    add("en", await load("en"));
+  }
   const languages = await load("manifest");
   // Fetch concurrently, keeping the manifest's option order. Only advertise
   // languages that can actually be displayed on this visit.

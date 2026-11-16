@@ -311,6 +311,23 @@ function mountHomeAgent() {
   SimjectureI18n.apply(copy);
   $("home-agent-host").append(copy);
 }
+const MODEL_NOTE_KEYS = [
+  "workspace.modelNote.local",
+  "workspace.modelNote.agy",
+  "workspace.modelNote.agyError",
+  "workspace.modelNote.noApi",
+  "workspace.modelNote.api",
+];
+function localizeModelNote(note) {
+  if (typeof note !== "string") return note;
+  return SimjectureI18n.live(() => {
+    for (const key of MODEL_NOTE_KEYS) {
+      const translated = SimjectureI18n.known(key, note);
+      if (translated !== note) return translated;
+    }
+    return SimjectureI18n.knownPrefix("workspace.modelNote.apiListError", note);
+  });
+}
 async function renderAgent(backend, scope = "conversation") {
   const home = scope === "home";
   const p = home
@@ -375,7 +392,7 @@ async function renderAgent(backend, scope = "conversation") {
   if (selected === "agy") controls.effort.value = "";
   controls.model.disabled = state.readonly || hosted;
   if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
-  SimjectureI18n.content(controls.note, choices.note);
+  SimjectureI18n.content(controls.note, localizeModelNote(choices.note));
   globalThis.WorkspaceComposer?.refresh(scope);
   return true;
 }
@@ -1520,7 +1537,11 @@ function renderToolDetails(tool,section=null) {
   if(tool.variants?.length){
     const variants=el("details",undefined,"installed-variants");variants.dataset.key=`variants-${tool.id}`;
     variants.open=section === "variants" || opened.has(variants.dataset.key);
-    variants.append(el("summary",SimjectureI18n.live(() => `${tool.variants.length} ${(hosted ? SimjectureI18n.t("ui.starter-preset") : SimjectureI18n.t("ui.installed-application"))}${(SimjectureI18n.getLanguage() === "en" && !(tool.variants.length === 1) ? "s" : "")}`)));
+    variants.append(el("summary", SimjectureI18n.live(() => {
+      const count = tool.variants.length;
+      const prefix = hosted ? "tools.starterPresets" : "tools.installedApps";
+      return SimjectureI18n.t(`${prefix}.${count === 1 ? "one" : "other"}`, {count});
+    })));
     for(const variant of tool.variants){const item=el("div");item.append(el("strong",SimjectureI18n.live(() => (variant.label || variant.name) || SimjectureI18n.t("ui.local-build"))),el("p",variant.description || ""));if(!hosted)item.append(el("code",variant.runtime || variant.path || ""));variants.append(item);}
     body.append(variants);
   }
@@ -1766,7 +1787,7 @@ function announceToolResult(id) {
   const name=toolPresentation(tool).name, check=tool.operation?.action === "check";
   if(tool.operation?.cancelled)toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.setup-stopped-its-output-is-kept", {p0: name})));
   else if(toolNeedsDiagnosis(tool))toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.needs-attention-open-it-in-research-tools-to-see-why-and-diagnose-wi", {p0: name})),true);
-  else if(tool.installed)toast(SimjectureI18n.live(() => `✓ ${name} ${(check ? SimjectureI18n.t("ui.passed-its-readiness-check") : SimjectureI18n.t("ui.is-installed-and-ready"))}.`));
+  else if(tool.installed)toast(SimjectureI18n.live(() => SimjectureI18n.t(check ? "tools.readinessToast" : "tools.installedToast", {name})));
   else toast(SimjectureI18n.live(() => SimjectureI18n.t("ui.finished-2", {p0: name, p1: (check ? SimjectureI18n.t("ui.readiness-check") : SimjectureI18n.t("status.setup"))})));
 }
 async function pollToolProgress() {
@@ -2014,7 +2035,11 @@ async function renderStudies() {
         findings.append(
           el(
             "p",
-            SimjectureI18n.live(() => `${(v.decision === "approved" ? SimjectureI18n.t("ui.accepted") : SimjectureI18n.t("ui.more-evidence-needed"))}: ${SimjectureI18n.label(v.disposition)}. ${v.rationale}`),
+            SimjectureI18n.live(() => SimjectureI18n.t("workspace.reviewVerdictSummary", {
+              decision: v.decision === "approved" ? SimjectureI18n.t("ui.accepted") : SimjectureI18n.t("ui.more-evidence-needed"),
+              disposition: SimjectureI18n.label(v.disposition),
+              rationale: v.rationale,
+            })),
           ),
         );
       }

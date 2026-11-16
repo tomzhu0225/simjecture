@@ -15,9 +15,9 @@ import pytest
 from conjecture_solver.research_service import ResearchService
 from conjecture_solver.web import server as web_server
 from conjecture_solver.web.application import SimjectureWebApplication
-from conjecture_solver.web.assets import ENGLISH_FALLBACK, render_i18n_messages
+from conjecture_solver.web.assets import PACKAGED_ENGLISH, render_i18n_messages
 from conjecture_solver.web.server import create_server
-from conjecture_solver.web.workspace import CATALOGUE
+from conjecture_solver.web.workspace import CATALOGUE, Workspace
 
 STATIC = web_server.STATIC_ROOT
 
@@ -37,10 +37,9 @@ def static_without_english(tmp_path, monkeypatch):
     return static
 
 
-def test_packaged_english_matches_source(english_catalog):
-    assert json.loads(ENGLISH_FALLBACK.read_text(encoding="utf-8")) == english_catalog, (
-        "Refresh web/english_fallback.json from web/static/language/en.json"
-    )
+def test_packaged_english_points_to_single_source_catalog(english_catalog):
+    assert PACKAGED_ENGLISH == STATIC / "language/en.json"
+    assert json.loads(PACKAGED_ENGLISH.read_text(encoding="utf-8")) == english_catalog
 
 
 @pytest.fixture
@@ -136,7 +135,7 @@ def test_translation_catalog_and_static_routes(language_site):
         static = Path(__file__).resolve().parents[1] / "src/conjecture_solver/web/static"
         for path in static.glob("*.js"):
             source = path.read_text()
-            keys = re.findall(r'SimjectureI18n\.(?:t|message|known)\("([^"]+)"', source)
+            keys = re.findall(r'SimjectureI18n\.(?:t|message|known|knownPrefix)\("([^"]+)"', source)
             for key in keys:
                 assert key in catalogs["en"], (path.name, key)
 
@@ -833,7 +832,7 @@ def test_dynamic_fallbacks_and_evidence_badges_preserve_raw_records(language_sit
         expect(labels.nth(1)).to_have_attribute("data-status", "unresolved")
         expect(page.locator("#research-trace .research-director")).to_contain_text(report)
         expect(page.locator("#metric-heartbeat")).to_have_text(
-            "最近状态上报：未知" if language == "zh-CN" else "Heartbeat unknown"
+            "最近心跳：未知" if language == "zh-CN" else "Heartbeat unknown"
         )
         cost = page.locator("#research-trace .scientific-progress .trace-event").first
         expect(cost).to_contain_text(recorded)
@@ -1055,7 +1054,7 @@ def test_lean_catalog_card_and_details_translate_without_changing_setup(
     original = page.evaluate("JSON.stringify(state.tools.find(tool => tool.id === 'lean'))")
     card.click()
     expect(page.locator("#tool-details-dialog")).to_be_visible()
-    for language, text in [("zh-CN", "形式化定理检查与数值方法证明"), ("en", english)]:
+    for language, text in [("zh-CN", "形式化定理验证与数值方法证明"), ("en", english)]:
         page.evaluate("language => SimjectureI18n.setLanguage(language)", language)
         expect(description).to_have_text(text)
         expect(description).to_have_attribute("title", text)
@@ -1268,11 +1267,11 @@ def test_tool_search_tracks_visible_language_and_category(language_site, languag
     expect(card).to_be_hidden()
     choose_language(page, "zh-CN")
     expect(card).to_be_visible()
-    search.fill("形式化定理检查")
+    search.fill("形式化定理验证")
     expect(card).to_be_visible()
     choose_language(page, "en")
     expect(card).to_be_hidden()
-    expect(search).to_have_value("形式化定理检查")
+    expect(search).to_have_value("形式化定理验证")
     expect(page.locator("#tool-search-empty")).to_be_visible()
     search.fill("Lean")
     expect(card).to_be_visible()
@@ -1391,3 +1390,136 @@ async function assistInstallation(tool, diagnose=false) {
     (tmp_path / "workspace.js").write_text(source.replace("// i18n-technical-end", ""))
     with pytest.raises(ValueError, match="no end"):
         audit.audit()
+
+
+def test_standalone_i18n_messages_fallback_and_missing_key_dom_safety(
+    language_site, language_page
+):
+    base, _, _ = language_site
+    page, expect = language_page
+    raw_loader = (STATIC / "i18n-messages.js").read_text(encoding="utf-8")
+    page.route(
+        "**/assets/i18n-messages.js",
+        lambda route: route.fulfill(content_type="text/javascript; charset=utf-8", body=raw_loader),
+    )
+    page.goto(base + "/workspace")
+    page.evaluate("SimjectureI18n.ready")
+    heading = page.locator('[data-i18n="workspace.homeIntro"]')
+    expect(heading).to_have_text("What are we investigating?")
+    page.evaluate("SimjectureI18n.setLanguage('zh-CN')")
+    expect(heading).to_have_text("我们要研究什么？")
+
+    page.route("**/assets/language/*.json", lambda route: route.abort())
+    page.goto(base + "/workspace")
+    page.evaluate("SimjectureI18n.ready")
+    expect(heading).to_have_text("What are we investigating?")
+    expect(page.locator("#first-request")).to_have_attribute(
+        "placeholder", "Ask a question or describe your research…"
+    )
+
+
+def test_model_notes_and_fragment_fixes_translate_cleanly(
+    language_site, language_page, english_catalog
+):
+    base, _, campaign = language_site
+    page, expect = language_page
+    page.goto(base + "/workspace")
+    expect(page.locator("#account-button")).to_be_enabled()
+    page.evaluate("SimjectureI18n.setLanguage('zh-CN')")
+    notes = {
+        "local": english_catalog["workspace.modelNote.local"],
+        "agy": english_catalog["workspace.modelNote.agy"],
+        "noApi": english_catalog["workspace.modelNote.noApi"],
+        "err": english_catalog["workspace.modelNote.apiListError"].replace(
+            "{error}", "Timed out after 5s"
+        ),
+    }
+    rendered = page.evaluate(
+        """notes => ({
+            local: String(localizeModelNote(notes.local)),
+            agy: String(localizeModelNote(notes.agy)),
+            noApi: String(localizeModelNote(notes.noApi)),
+            err: String(localizeModelNote(notes.err)),
+            schedule: SimjectureI18n.t(
+                'benchmarks.scheduleSummary.other', {minutes: 3, repeats: 5}
+            ),
+            attempts: SimjectureI18n.t('benchmarks.viewAttempts.other', {count: 5}),
+            apps: SimjectureI18n.t('tools.installedApps.other', {count: 2}),
+            toast: SimjectureI18n.t('tools.readinessToast', {name: 'Lean'}),
+            verdict: SimjectureI18n.t('workspace.reviewVerdictSummary', {
+                decision: SimjectureI18n.t('ui.more-evidence-needed'),
+                disposition: SimjectureI18n.label('inconclusive'),
+                rationale: 'Missing holdout.'
+            }),
+        })""",
+        notes,
+    )
+    assert "本地建议列表" in rendered["local"]
+    assert "AGY CLI" in rendered["agy"]
+    assert "连接设置" in rendered["noApi"]
+    assert rendered["err"].startswith("无法列出模型，请输入服务商的模型 ID。")
+    assert rendered["err"].endswith("Timed out after 5s")
+    assert rendered["schedule"] == "时限 3 分钟 · 每个配置安排 5 次尝试"
+    assert rendered["attempts"] == "查看 5 次尝试"
+    assert rendered["apps"] == "2 个已安装应用"
+    assert rendered["toast"] == "✓ Lean 已通过就绪检查。"
+    assert rendered["verdict"] == "需要更多证据：结论不确定。Missing holdout."
+
+    page.goto(base + f"/monitor?campaign={campaign}")
+    page.evaluate("SimjectureI18n.setLanguage('zh-CN')")
+    events = page.evaluate("""() => [
+        engineEventSummary({kind: 'tool', tool: 'run_python', status: 'running'}),
+        engineEventSummary({kind: 'engine', status: 'updated'}),
+    ]""")
+    assert events == ["正在调用 run_python：运行中。", "引擎：已更新。"]
+
+
+def test_real_web_static_passes_source_audit():
+    script = Path(__file__).resolve().parents[1] / "scripts/check_web_i18n.py"
+    spec = importlib.util.spec_from_file_location("check_web_i18n", script)
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    unresolved = [row for row in audit.audit() if row["category"] == "unresolved"]
+    assert unresolved == []
+
+
+def test_known_server_copy_stays_in_sync_with_english_catalog(tmp_path, english_catalog):
+    from conjecture_solver.llm_bench import leaderboard, official, pack
+    from conjecture_solver.web.activity import describe_tool
+
+    for tool_id, _, description, _ in CATALOGUE:
+        assert english_catalog[f"ui.tool-description.{tool_id}"] == description
+    for task_id, task in official.TASK_DESCRIPTIONS.items():
+        for field in ("title", "description", "inputs"):
+            assert english_catalog[f"ui.benchmark-official.{task_id}.{field}"] == task[field]
+    for task_id, task in pack.TASKS.items():
+        assert english_catalog[f"ui.benchmark-task.{task_id}.title"] == task["title"]
+
+    assert leaderboard.summarize([])["cost_note"] == english_catalog["ui.benchmark-pricing-note"]
+    study_status = (
+        Path(__file__).resolve().parents[1] / "src/conjecture_solver/study_status.py"
+    ).read_text(encoding="utf-8")
+    assert english_catalog["ui.usage-cost-note"] in study_status
+
+    workspace = Workspace(tmp_path)
+    assert workspace.local_models("grok")["note"] == english_catalog["workspace.modelNote.local"]
+    assert workspace.models("builtin")["note"] == english_catalog["workspace.modelNote.noApi"]
+    for tool_name, key in (
+        ("run_subagents", "activity.running-subagents"),
+        ("subagent_status", "activity.checking-subagent"),
+        ("run_micro_study", "activity.running-micro-study"),
+        ("review_work", "activity.independent-review"),
+    ):
+        assert describe_tool(tool_name, {})["label"] == english_catalog[key]
+
+
+def test_chinese_catalog_terminology_and_punctuation_guards():
+    zh = json.loads((STATIC / "language/zh-CN.json").read_text(encoding="utf-8"))
+    bad_terms = re.compile(
+        r"(Machines 页面|Simulations 中|Connections 中|资格认定|形式化定理检查|状态上报)"
+    )
+    for key, text in zh.items():
+        assert not re.search(r"[\u4e00-\u9fff]\.$", text), (key, text)
+        assert not bad_terms.search(text), (key, text)
+    assert zh["status.open"] == "未定论"
+    assert zh["ui.tradeoff-dominated"] == "非前沿（被占优）"

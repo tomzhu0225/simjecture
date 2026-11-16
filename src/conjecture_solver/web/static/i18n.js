@@ -43,6 +43,13 @@ window.SimjectureI18n = (() => {
     return messages[key] && messages[key].en === value ? t(key) : value;
   }
 
+  function knownPrefix(key, value) {
+    const template = messages[key]?.en;
+    const prefix = template?.endsWith("{error}") ? template.slice(0, -"{error}".length) : "";
+    if (!prefix || typeof value !== "string" || !value.startsWith(prefix)) return value;
+    return t(key, { error: value.slice(prefix.length) });
+  }
+
   function label(value, fallback = String(value ?? ""), locale = language) {
     if (locale === "en") return fallback;
     const raw = String(value ?? "");
@@ -127,12 +134,15 @@ window.SimjectureI18n = (() => {
       ...(root.matches?.(selector) ? [root] : []), ...root.querySelectorAll(selector),
     ];
     for (const node of select("[data-i18n]")) {
-      const value = t(node.dataset.i18n);
+      const key = node.dataset.i18n;
+      if ((messages[key]?.[language] ?? messages[key]?.en) == null) continue;
+      const value = t(key);
       if (node.textContent !== value) node.textContent = value;
     }
     for (const name of attributes) {
       for (const node of select(`[data-i18n-${name}]`)) {
         const key = node.getAttribute(`data-i18n-${name}`);
+        if ((messages[key]?.[language] ?? messages[key]?.en) == null) continue;
         const value = t(key);
         if (node.getAttribute(name) !== value) node.setAttribute(name, value);
       }
@@ -202,6 +212,6 @@ window.SimjectureI18n = (() => {
     apply();
   });
 
-  return { t, message, live, label, known, text, content, render, bindText, attribute, apply, setLanguage,
+  return { t, message, live, label, known, knownPrefix, text, content, render, bindText, attribute, apply, setLanguage,
     ready, getLanguage: () => language };
 })();

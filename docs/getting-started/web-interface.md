@@ -72,19 +72,16 @@ descriptive names. Both use the same parameter-object API; names must match the
 call site and every language's entry. Prefer meaningful names such as `{count}`
 and `{model}` for new entries. English is the fallback dictionary.
 
-The local and hosted servers include the complete English dictionary in the
-`i18n-messages.js` response. If `language/en.json` is missing or unreadable
-at startup, the servers use the copy packaged with the Web service. If only
-some entries are missing or invalid, valid entries still take precedence.
-This also works on a first visit when the browser cannot fetch any locale JSON.
+The local and hosted servers embed `web/static/language/en.json` directly into the
+`i18n-messages.js` response. If a runtime static root override lacks a readable
+`language/en.json`, the servers fall back to the packaged `language/en.json` copy
+and override or supplement only valid entries. When `i18n-messages.js` is served
+standalone without the Python renderer, it falls back to fetching
+`/assets/language/en.json`, and `i18n.js` leaves static HTML text intact if a key
+is absent from the loaded catalogs.
 
-Edit English copy in `web/static/language/en.json`. Refresh the packaged copy
-from the repository root with the following command. The catalog test checks
-that both files contain identical keys and text.
-
-```sh
-cp src/conjecture_solver/web/static/language/en.json src/conjecture_solver/web/english_fallback.json
-```
+Edit English copy directly in `web/static/language/en.json`—there is no
+duplicate fallback file to keep in sync.
 
 The loader fetches the manifest and optional dictionaries once; `i18n.js` retains
 the existing translation and DOM-binding API. Both page initializers await
@@ -140,7 +137,8 @@ The Simplified Chinese catalog distinguishes domain concepts consistently:
 | instrument / tool / capability | 仪器 / 工具 / 能力 |
 | judge / review | 裁决 / 评审 (审阅 for reading a document) |
 | commissioning | 调试验证 |
-| qualifies / verified | 资格认定 / 已验证 |
+| qualifies / verified | 核验支撑（方法核验） / 已验证 |
+| heartbeat / evidence contract / open claim | 心跳 / 证据契约 / 未定论 |
 
 Here, an instrument may be a numerical program or method, not just physical
 hardware. These are display terms; stored identifiers and scientific records

@@ -1913,7 +1913,9 @@ function engineEventSummary(event) {
     return SimjectureI18n.t("ui.job", {p0: stage, p1: SimjectureI18n.label(event.status), p2: elapsed});
   }
   if (event.kind === "tool") {
-    return `${(event.status === "running" ? SimjectureI18n.t("ui.calling") : SimjectureI18n.t("ui.tool-call"))} ${((event.tool || event.call_id) || SimjectureI18n.t("ui.typed-simjecture-tool"))}: ${SimjectureI18n.label(event.status)}.`;
+    const tool = (event.tool || event.call_id) || SimjectureI18n.t("ui.typed-simjecture-tool");
+    const key = event.status === "running" ? "monitor.toolEventCalling" : "monitor.toolEventDone";
+    return SimjectureI18n.t(key, {tool, status: SimjectureI18n.label(event.status)});
   }
   if (event.kind === "retry") {
     const delay = event.delay_ms == null ? "" : SimjectureI18n.t("ui.after", {p0: formatDuration(event.delay_ms / 1000)});
@@ -1929,7 +1931,10 @@ function engineEventSummary(event) {
   if (event.kind === "agent") return SimjectureI18n.t("ui.autonomous-researcher-is", {p0: SimjectureI18n.label(event.status)});
   if (event.kind === "model") return SimjectureI18n.t("ui.model-2", {p0: SimjectureI18n.label(event.status)});
   if (event.kind === "turn") return SimjectureI18n.t("ui.dsh-turn", {p0: SimjectureI18n.label(event.status)});
-  return `${SimjectureI18n.label(event.kind || "engine", capitalize(event.kind || "engine"))} ${SimjectureI18n.label(event.status || "updated")}.`;
+  return SimjectureI18n.t("monitor.genericEventSummary", {
+    kind: SimjectureI18n.label(event.kind || "engine", capitalize(event.kind || "engine")),
+    status: SimjectureI18n.label(event.status || "updated"),
+  });
 }
 
 function renderArtifacts() {
