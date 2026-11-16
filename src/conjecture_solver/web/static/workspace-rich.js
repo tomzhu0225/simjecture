@@ -71,7 +71,7 @@ window.WorkspaceRich = (() => {
       img = document.createElement("img");
     node.className = "chat-figure";
     img.src = url;
-    img.alt = caption || "Research figure";
+    SimjectureI18n.attribute(img, "alt", () => caption || SimjectureI18n.t("ui.research-figure"));
     img.loading = "lazy";
     link.href = artifactURL(source, project, false);
     link.target = "_blank";
@@ -79,12 +79,12 @@ window.WorkspaceRich = (() => {
     link.append(img);
     node.append(link);
     const label = document.createElement("figcaption");
-    label.textContent = caption || source;
+    SimjectureI18n.content(label, caption || source);
     node.append(label);
     return node;
   }
   function render(target, text, project) {
-    const figures = [];
+    const figures = [], fallbackLabels = new Map();
     // Work on Markdown image tokens only. Raw HTML remains disabled by the shared sanitizer.
     const source = String(text || "").replace(
       /```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]*`|(!?)\[([^\]]*)\]\(([^\s)]+)(?:\s+"[^"]*")?\)/g,
@@ -95,7 +95,12 @@ window.WorkspaceRich = (() => {
           return local ? `[${caption}](${local})` : full;
         }
         const node = figure(path, caption, project);
-        if (!node) return `[${caption || "Figure"}](${path})`;
+        if (!node) {
+          if (caption) return `[${caption}](${path})`;
+          const marker = `SIMJECTUREFIGURELINK${fallbackLabels.size}PLACEHOLDER`;
+          fallbackLabels.set(marker, "ui.figure");
+          return `[${marker}](${path})`;
+        }
         const marker = `SIMJECTUREFIGURE${figures.length}PLACEHOLDER`;
         figures.push({ marker, node });
         return `\n\n${marker}\n\n`;
@@ -111,6 +116,8 @@ window.WorkspaceRich = (() => {
       }
     }
     for (const link of target.querySelectorAll("a[href]")) {
+      const key = fallbackLabels.get(link.textContent);
+      if (key) SimjectureI18n.text(link, key);
       const raw = link.getAttribute("href");
       const local = artifactURL(raw, project, false);
       if (local) {
@@ -128,24 +135,23 @@ window.WorkspaceRich = (() => {
       const bar = document.createElement("div");
       bar.className = "code-toolbar";
       const language = document.createElement("span");
-      language.textContent =
-        (code.className.match(/language-([\w+-]+)/) || [])[1] || "Code";
+      SimjectureI18n.bindText(language, () => (code.className.match(/language-([\w+-]+)/) || [])[1] || SimjectureI18n.t("ui.code"));
       const copy = document.createElement("button");
       copy.type = "button";
-      copy.textContent = "Copy";
-      copy.setAttribute("aria-label", "Copy code");
+      SimjectureI18n.bindText(copy, () => SimjectureI18n.t("ui.copy"));
+      SimjectureI18n.attribute(copy, "aria-label", () => SimjectureI18n.t("ui.copy-code"));
       copy.onclick = async () => {
         try {
           await navigator.clipboard.writeText(raw);
-          copy.textContent = "Copied";
-          setTimeout(() => (copy.textContent = "Copy"), 1600);
+          SimjectureI18n.bindText(copy, () => SimjectureI18n.t("ui.copied"));
+          setTimeout(() => (SimjectureI18n.bindText(copy, () => SimjectureI18n.t("ui.copy"))), 1600);
         } catch {
           const range = document.createRange();
           range.selectNodeContents(code);
           const selection = window.getSelection();
           selection.removeAllRanges();
           selection.addRange(range);
-          copy.textContent = "Press Ctrl+C to copy";
+          SimjectureI18n.bindText(copy, () => SimjectureI18n.t("ui.press-ctrl-c-to-copy"));
         }
       };
       bar.append(language, copy);

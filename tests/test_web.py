@@ -373,7 +373,9 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "Research loop progress" in html
     assert "Commissioning stage" in html
     assert "All claim kinds" in html
-    assert "Scientific only" in javascript
+    messages = (STATIC_ROOT / "language/en.json").read_text()
+    assert "Scientific only" in messages
+    assert 'SimjectureI18n.t("ui.scientific-only")' in javascript
     for kind in ("Scientific", "Instrument", "Diagnostic", "Control"):
         assert kind in html
     assert "private hidden chain-of-thought" in html
@@ -383,7 +385,10 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert "simjecture-graph-layout-v2" in javascript
     assert "renderCommissioningInspector" in javascript
     assert "renderLoopProgress" in javascript
-    assert "event.research_role ? `role ${event.research_role}`" in javascript
+    assert (
+        'SimjectureI18n.t("ui.event-role", {p0: SimjectureI18n.label(event.research_role)})'
+        in javascript
+    )
     assert '"marker-end": "url(#graph-arrow)"' in javascript
     assert "handleGraphWheel" in javascript
     assert "bindGraphCanvasPan" in javascript
@@ -392,7 +397,8 @@ def test_web_assets_keep_live_detail_state_and_separate_operator_views() -> None
     assert 'relation: "qualifies"' in javascript
     assert 'relation: "enables evidence for"' in javascript
     assert "graph-node-clip-" in javascript
-    assert "scientific target:" in javascript
+    assert "scientific target:" in messages
+    assert 'SimjectureI18n.t("ui.graph-scientific-target"' in javascript
     assert "scientificPreviewText" in javascript
     assert "autoMath: true" in javascript
     assert "DOMPurify.sanitize" in markdown

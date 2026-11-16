@@ -43,12 +43,11 @@ window.WorkspacePanels = (() => {
       );
       const button = $(`${side}-sidebar-toggle`);
       if (button) {
-        const label = `${collapsed[side] ? "Expand" : "Collapse"} ${side} sidebar`;
-        button.setAttribute("aria-label", label);
+        const label = SimjectureI18n.live(() => SimjectureI18n.t(`panels.${collapsed[side] ? "expand" : "collapse"}.${side}`));
+        SimjectureI18n.attribute(button, "aria-label", () => label);
         button.setAttribute("aria-expanded", String(!collapsed[side]));
-        button.title = `${label} · drag to resize`;
-        button.querySelector("span").textContent =
-          (side === "left") === collapsed[side] ? "›" : "‹";
+        SimjectureI18n.attribute(button, "title", () => SimjectureI18n.t("ui.drag-to-resize", {p0: label}));
+        SimjectureI18n.content(button.querySelector("span"), (side === "left") === collapsed[side] ? "›" : "‹");
       }
     }
     const handle = $("left-sidebar-resizer");

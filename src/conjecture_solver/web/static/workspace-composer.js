@@ -12,7 +12,7 @@ window.WorkspaceComposer = (() => {
     popup.id = `${scope}-agent-popup`;
     popup.setAttribute("popover", "auto");
     popup.setAttribute("role", "dialog");
-    popup.setAttribute("aria-label", "Agent and model settings");
+    SimjectureI18n.attribute(popup, "aria-label", () => SimjectureI18n.t("ui.agent-and-model-settings"));
     picker.setAttribute("popovertarget", popup.id);
     picker.setAttribute("aria-controls", popup.id);
     controls.before(picker);
@@ -36,7 +36,7 @@ window.WorkspaceComposer = (() => {
     expand.type = "button";
     expand.className = "composer-expand";
     expand.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7"/></svg>';
-    expand.setAttribute("aria-label", "Expand message editor");
+    SimjectureI18n.attribute(expand, "aria-label", () => SimjectureI18n.t("ui.expand-message-editor"));
     expand.setAttribute("aria-expanded", "false");
     expand.hidden = true;
     form.append(expand);
@@ -67,8 +67,8 @@ window.WorkspaceComposer = (() => {
       input.style.height = `${Math.max(line, expanded ? limit : Math.min(content, limit))}px`;
       input.style.overflowY = content > limit ? "auto" : "hidden";
       expand.hidden = content <= line * 5 && !expanded;
-      expand.setAttribute("aria-label", expanded ? "Collapse message editor" : "Expand message editor");
-      expand.title = expanded ? "Collapse message editor" : "Expand message editor";
+      SimjectureI18n.attribute(expand, "aria-label", () => expanded ? SimjectureI18n.t("ui.collapse-message-editor") : SimjectureI18n.t("ui.expand-message-editor"));
+      SimjectureI18n.attribute(expand, "title", () => expanded ? SimjectureI18n.t("ui.collapse-message-editor") : SimjectureI18n.t("ui.expand-message-editor"));
       expand.setAttribute("aria-expanded", String(expanded));
       form.classList.toggle("has-editor-expand", !expand.hidden);
     }
@@ -97,13 +97,16 @@ window.WorkspaceComposer = (() => {
     if (!editor) return;
     const selects = editor.controls.querySelectorAll("select");
     const backend = selects[0], model = selects[1];
-    const custom = editor.controls.querySelector('input[placeholder="Exact model ID"]');
-    const name = model?.value === "__custom__" ? custom?.value : model?.selectedOptions[0]?.textContent;
+    const custom = document.getElementById(scope === "home" ? "home-custom-model" : "custom-model");
+    const name = () => model?.value === "__custom__" ? custom?.value : model?.selectedOptions[0]?.textContent;
     editor.picker.disabled = !backend?.options.length;
-    editor.summary.textContent = editor.picker.disabled ? "Loading agent…" : name || backend?.value || "Choose agent";
-    editor.picker.title = `${backend?.value || "Agent"} · ${name || "Choose model"}`;
+    SimjectureI18n.bindText(editor.summary, () => editor.picker.disabled ? SimjectureI18n.t("ui.loading-agent") : ((name() || backend?.value) || SimjectureI18n.t("ui.choose-agent-2")));
+    SimjectureI18n.attribute(editor.picker, "title", () => `${(backend?.value || SimjectureI18n.t("ui.agent-2"))} · ${(name() || SimjectureI18n.t("ui.choose-model-2"))}`);
     editor.update();
   }
+  window.addEventListener("simjecture-language", () => {
+    refresh("home"); refresh("conversation");
+  });
   function open(scope) {
     const editor = editors.get(scope === "home" ? "first-request" : "chat-input");
     if (!editor) return;

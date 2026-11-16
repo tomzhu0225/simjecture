@@ -14,35 +14,29 @@ window.WorkspaceTour = (() => {
   const steps = [
     {
       target: () => pick("#quick-start"),
-      title: "Ask your agent anything",
+      title: SimjectureI18n.message("ui.ask-your-agent-anything"),
       get body() {
-        return "Describe a question, a puzzling result or a simulation you want to run. " +
-          (permissions.change_model === false
-            ? "The hosted agent and model are provided for this workspace."
-            : "Choose which agent and model answers from the menu on the right.");
+        return (SimjectureI18n.t("ui.describe-a-question-a-puzzling-result-or-a-simulation-you-want-to-ru") + (permissions.change_model === false ? SimjectureI18n.t("ui.the-hosted-agent-and-model-are-provided-for-this-workspace") : SimjectureI18n.t("ui.choose-which-agent-and-model-answers-from-the-menu-on-the-right")));
       },
     },
     {
       target: () => pick("#home-knowledge"),
       get title() {
-        return knowledgeCapabilities.connect_folders === false
-          ? "Reuse earlier conversations" : "Bring your own references";
+        return (knowledgeCapabilities.connect_folders === false ? SimjectureI18n.t("ui.reuse-earlier-conversations") : SimjectureI18n.t("ui.bring-your-own-references"));
       },
       get body() {
-        return knowledgeCapabilities.connect_folders === false
-          ? "Search completed replies from your conversations under Knowledge. Your agent can use them as references in this workspace."
-          : "Connect folders of papers and notes under Knowledge. Your agent can search them and cite what it used.";
+        return (knowledgeCapabilities.connect_folders === false ? SimjectureI18n.t("ui.search-completed-replies-from-your-conversations-under-knowledge-you") : SimjectureI18n.t("ui.connect-folders-of-papers-and-notes-under-knowledge-your-agent-can-s"));
       },
     },
     {
       target: () => pick(".mode-cards"),
-      title: "Two ways to work",
-      body: "Interactive is a conversation: you steer each step. Autonomous study runs on its own within a time budget, then an independent review checks the evidence. Start in Interactive; switch to Autonomous study inside the conversation once your claim is clear.",
+      title: SimjectureI18n.message("ui.two-ways-to-work"),
+      body: SimjectureI18n.message("ui.interactive-is-a-conversation-you-steer-each-step-autonomous-study-r"),
     },
     {
       target: () => pick("#project-list"),
-      title: "Your conversations",
-      body: "Each conversation keeps its own files, simulations and studies. Its live runs and outputs appear in the Workspace panel beside the chat.",
+      title: SimjectureI18n.message("ui.your-conversations"),
+      body: SimjectureI18n.message("ui.each-conversation-keeps-its-own-files-simulations-and-studies-its-li"),
     },
     {
       // Opens the Resources group for this step and restores it afterwards.
@@ -53,13 +47,10 @@ window.WorkspaceTour = (() => {
       available: () => visible(document.querySelector(".workspace-resources summary")),
       target: () => pick('.nav-item[data-view="tools"]'),
       get title() {
-        return permissions.install_tools === false
-          ? "Explore the available research tools" : "Add research tools when you need them";
+        return (permissions.install_tools === false ? SimjectureI18n.t("ui.explore-the-available-research-tools") : SimjectureI18n.t("ui.add-research-tools-when-you-need-them"));
       },
       get body() {
-        return permissions.install_tools === false
-          ? "Open Research tools to see the verified solvers available here. Your administrator manages installation and setup."
-          : "Python is ready now. Install solvers such as WarpX from Research tools; setup shows its progress and you can keep working meanwhile.";
+        return (permissions.install_tools === false ? SimjectureI18n.t("ui.open-research-tools-to-see-the-verified-solvers-available-here-your-") : SimjectureI18n.t("ui.python-is-ready-now-install-solvers-such-as-warpx-from-research-tool"));
       },
     },
   ];
@@ -93,12 +84,13 @@ window.WorkspaceTour = (() => {
       <h2 id="tour-title"></h2>
       <p id="tour-body"></p>
       <div class="tour-actions">
-        <button type="button" class="quiet tour-skip">Skip tour</button>
+        <button type="button" class="quiet tour-skip" data-i18n="ui.skip-tour">Skip tour</button>
         <span class="tour-nav">
-          <button type="button" class="secondary tour-back">Back</button>
-          <button type="button" class="primary tour-next">Next</button>
+          <button type="button" class="secondary tour-back" data-i18n="ui.back">Back</button>
+          <button type="button" class="primary tour-next" data-i18n="ui.next">Next</button>
         </span>
       </div>`;
+    SimjectureI18n.apply(card);
     card.querySelector(".tour-skip").onclick = () => stop();
     card.querySelector(".tour-back").onclick = () => go(index - 1);
     card.querySelector(".tour-next").onclick = () => (index >= active.length - 1 ? stop() : go(index + 1));
@@ -145,11 +137,11 @@ window.WorkspaceTour = (() => {
     const target = step.target();
     if (!target) { active.splice(index, 1); if (!active.length) return stop(); return go(index); }
     target.scrollIntoView({block: "nearest", inline: "nearest"});
-    card.querySelector("#tour-step").textContent = `${index + 1} of ${active.length}`;
-    card.querySelector("#tour-title").textContent = step.title;
-    card.querySelector("#tour-body").textContent = step.body;
+    SimjectureI18n.bindText(card.querySelector("#tour-step"), () => SimjectureI18n.t("ui.of", {p0: (index + 1), p1: active.length}));
+    SimjectureI18n.bindText(card.querySelector("#tour-title"), () => step.title);
+    SimjectureI18n.bindText(card.querySelector("#tour-body"), () => step.body);
     card.querySelector(".tour-back").hidden = index === 0;
-    card.querySelector(".tour-next").textContent = index === active.length - 1 ? "Done" : "Next";
+    SimjectureI18n.bindText(card.querySelector(".tour-next"), () => index === active.length - 1 ? SimjectureI18n.t("ui.done") : SimjectureI18n.t("ui.next"));
     place();
     requestAnimationFrame(place);
     card.focus({preventScroll: true});
@@ -187,5 +179,6 @@ window.WorkspaceTour = (() => {
     start();
   }
 
+  window.addEventListener("simjecture-language", () => { if (card) requestAnimationFrame(place); });
   return {init, start, stop, maybeStart, get open() { return !!card; }};
 })();
