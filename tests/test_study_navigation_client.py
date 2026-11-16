@@ -38,6 +38,47 @@ const document = {createElement: tag => new Element(tag)};
 const window = {};
 """
 
+I18N = (
+    "const _messages = JSON.parse(require('node:fs').readFileSync("
+    + json.dumps(str((STATIC / "language/en.json").resolve()))
+    + ", 'utf8'));\n"
+    + """
+const SimjectureI18n = {
+  t(key, params = {}) {
+    const template = _messages[key] ?? key;
+    return template.replace(/\\{(\\w+)\\}/g, (match, name) =>
+      Object.hasOwn(params, name) ? String(params[name] ?? '') : match);
+  },
+  live(render) {
+    const value = () => String(render() ?? '');
+    return { __uiMessage: true, toString: value, toJSON: value };
+  },
+  message(key, params = {}) { return SimjectureI18n.live(() => SimjectureI18n.t(key, params)); },
+  known(key, value) { return _messages[key] === value ? SimjectureI18n.t(key) : value; },
+  knownPrefix(key, value) { return value; },
+  label(value, fallback = String(value ?? '')) { return fallback; },
+  content(node, value) { node.textContent = String(value ?? ''); return node; },
+  bindText(node, render) { node.textContent = String(render() ?? ''); return node; },
+  text(node, key, params = {}) {
+    return SimjectureI18n.bindText(node, () => SimjectureI18n.t(key, params));
+  },
+  attribute(node, name, render) {
+    const result = render();
+    if (result == null) return node;
+    const value = String(result);
+    node.setAttribute?.(name, value);
+    if (name === 'title') node.title = value;
+    return node;
+  },
+  apply() {},
+  getLanguage() { return 'en'; },
+};
+if (typeof window === 'object') window.SimjectureI18n = SimjectureI18n;
+"""
+)
+
+DOM += I18N
+
 
 def navigation_source():
     return (STATIC / "study-navigation.js").read_text()
@@ -181,7 +222,8 @@ assert.equal(new URLSearchParams(projectHash('owner', {study:'latest'})).get('st
 @pytest.mark.parametrize("outcome", ["success", "failure"])
 def test_late_monitor_snapshot_cannot_replace_new_campaign_or_clear_its_pending_flag(outcome):
     run_js(
-        """
+        I18N
+        + """
 const assert = require('node:assert/strict');
 const state = {selectedCampaign:'old', snapshotRequest:0, pollInFlight:false};
 const pending = new Map(), rendered = [], sync = [], errors = [];
@@ -276,7 +318,8 @@ const refreshSnapshot = async () => loaded.push(state.selectedCampaign);
 @pytest.mark.parametrize("interruption", ["project", "mode", "request"])
 def test_stale_study_list_response_does_not_repaint_newer_context(interruption):
     run_js(
-        """
+        I18N
+        + """
 const assert = require('node:assert/strict');
 const state = {project:{id:'old',studies:[{campaign:'old'}]},
  mode:'autonomous',studyRequest:0};
@@ -314,7 +357,9 @@ Element.prototype.focus = function() {};
 document.body = new Element('body');
 document.createTextNode = text => text;
 const el = (tag,text,cls) => {
- const element = new Element(tag); element.textContent = text; element.className = cls;
+ const element = new Element(tag);
+ if (text !== undefined) SimjectureI18n.content(element, text);
+ element.className = cls;
  return element;
 };
 const bytes = value => `${value} B`;
@@ -595,7 +640,8 @@ const toast = error => {throw error;};
 def test_study_launch_keeps_original_project_and_does_not_reopen_departed_route(interruption):
     launch = client_function("launchStudy").split('\n$("brief-form").onsubmit')[0]
     run_js(
-        """
+        I18N
+        + """
 const assert = require('node:assert/strict');
 const hosted = false;
 const crypto = require('node:crypto');

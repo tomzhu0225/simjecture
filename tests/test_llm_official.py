@@ -145,5 +145,9 @@ def test_standalone_publication_ranks_and_effort_connections(tmp_path):
         assert page.locator(".benchmark-submit-link").is_visible()
         page.set_viewport_size({"width": 390, "height": 1000})
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
+        page.evaluate("() => SimjectureI18n.setLanguage('zh-CN')")
+        playwright.expect(page.locator("#benchmark-task-tabs button").first).to_have_text(
+            "RZ 等离子体诊断"
+        )
         assert not errors
         browser.close()

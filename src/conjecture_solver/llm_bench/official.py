@@ -259,6 +259,20 @@ def export_page(output):
         1,
     )
     css = (static / "workspace.css").read_text()
+    manifest = json.loads((static / "language/manifest.json").read_text(encoding="utf-8"))
+    messages: dict[str, dict[str, str]] = {}
+    for locale in manifest:
+        entries = json.loads((static / f"language/{locale}.json").read_text(encoding="utf-8"))
+        for key, value in entries.items():
+            messages.setdefault(key, {})[locale] = value
+    i18n_bootstrap = (
+        "window.SimjectureMessages = Object.assign(Object.create(null), "
+        + json.dumps(messages, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+        + ");\nwindow.SimjectureLanguages = "
+        + json.dumps(manifest, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+        + ";\nwindow.SimjectureMessagesReady = Promise.resolve();"
+    )
+    i18n_runtime = (static / "i18n.js").read_text(encoding="utf-8")
     script = (static / "workspace-benchmarks.js").read_text()
     publication = dashboard()
     if publication is None:
@@ -286,6 +300,10 @@ def export_page(output):
         + '</style></head><body><main class="publication-main">'
         + section
         + "</main><script>"
+        + i18n_bootstrap
+        + "</script><script>"
+        + i18n_runtime
+        + "</script><script>"
         + script
         + "</script><script>"
         + "WorkspaceBenchmarks.render("
