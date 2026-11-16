@@ -4,6 +4,7 @@ import importlib.util
 import json
 import re
 import shutil
+import subprocess
 import sys
 import threading
 from pathlib import Path
@@ -1481,6 +1482,11 @@ def test_real_web_static_passes_source_audit():
     spec.loader.exec_module(audit)
     unresolved = [row for row in audit.audit() if row["category"] == "unresolved"]
     assert unresolved == []
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is required for JavaScript syntax checks")
+    for js in sorted(STATIC.glob("*.js")):
+        subprocess.run([node, "--check", str(js)], check=True)
 
 
 def test_known_server_copy_stays_in_sync_with_english_catalog(tmp_path, english_catalog):
