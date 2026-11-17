@@ -1,0 +1,4 @@
+jsonschema>=4.23,<5
+cryptography>=44,<51
+# Install the repository root with its process extra in the controller venv.
+# pip install -e '../..[process]'

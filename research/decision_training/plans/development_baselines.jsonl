@@ -1,0 +1,16 @@
+{"job_id": "D01-L1-dev-baseline", "task_id": "D01-L1", "split": "dev", "arm": "simjecture", "total_wall_seconds": 3600, "status": "prepared_not_started"}
+{"job_id": "D02-L1-dev-baseline", "task_id": "D02-L1", "split": "dev", "arm": "simjecture", "total_wall_seconds": 3600, "status": "prepared_not_started"}
+{"job_id": "D03-L2-dev-baseline", "task_id": "D03-L2", "split": "dev", "arm": "simjecture", "total_wall_seconds": 10800, "status": "prepared_not_started"}
+{"job_id": "D04-L1-dev-baseline", "task_id": "D04-L1", "split": "dev", "arm": "simjecture", "total_wall_seconds": 3600, "status": "prepared_not_started"}
+{"job_id": "D05-L1-dev-baseline", "task_id": "D05-L1", "split": "dev", "arm": "simjecture", "total_wall_seconds": 3600, "status": "prepared_not_started"}
+{"job_id": "D06-L2-dev-baseline", "task_id": "D06-L2", "split": "dev", "arm": "simjecture", "total_wall_seconds": 10800, "status": "prepared_not_started"}
+{"job_id": "D07-L2-dev-baseline", "task_id": "D07-L2", "split": "dev", "arm": "simjecture", "total_wall_seconds": 10800, "status": "prepared_not_started"}
+{"job_id": "D08-L2-dev-baseline", "task_id": "D08-L2", "split": "dev", "arm": "simjecture", "total_wall_seconds": 10800, "status": "prepared_not_started"}
+{"job_id": "D09-L3-dev-baseline", "task_id": "D09-L3", "split": "dev", "arm": "simjecture", "total_wall_seconds": 21600, "status": "prepared_not_started"}
+{"job_id": "D10-L3-dev-baseline", "task_id": "D10-L3", "split": "dev", "arm": "simjecture", "total_wall_seconds": 21600, "status": "prepared_not_started"}
+{"job_id": "D11-L3-dev-baseline", "task_id": "D11-L3", "split": "dev", "arm": "simjecture", "total_wall_seconds": 21600, "status": "prepared_not_started"}
+{"job_id": "D12-L3-dev-baseline", "task_id": "D12-L3", "split": "dev", "arm": "simjecture", "total_wall_seconds": 21600, "status": "prepared_not_started"}
+{"job_id": "D13-L4-dev-baseline", "task_id": "D13-L4", "split": "dev", "arm": "simjecture", "total_wall_seconds": 43200, "status": "prepared_not_started"}
+{"job_id": "D14-L4-dev-baseline", "task_id": "D14-L4", "split": "dev", "arm": "simjecture", "total_wall_seconds": 43200, "status": "prepared_not_started"}
+{"job_id": "D15-L4-dev-baseline", "task_id": "D15-L4", "split": "dev", "arm": "simjecture", "total_wall_seconds": 43200, "status": "prepared_not_started"}
+{"job_id": "D16-L4-dev-baseline", "task_id": "D16-L4", "split": "dev", "arm": "simjecture", "total_wall_seconds": 43200, "status": "prepared_not_started"}

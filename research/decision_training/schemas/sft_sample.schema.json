@@ -1,0 +1,500 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "sft_sample",
+  "type": "object",
+  "properties": {
+    "collection_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "split": {
+      "const": "train"
+    },
+    "teacher": {
+      "const": "gpt-6.1-sol"
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "research-decision/1"
+        },
+        "task_contract": {
+          "type": "object"
+        },
+        "hypotheses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "physical_models": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "equations": {
+                "type": "string",
+                "minLength": 1
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "validity_scope": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "name",
+              "equations",
+              "assumptions",
+              "validity_scope"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "available_resources": {
+          "type": "object"
+        },
+        "completed_receipts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "receipt_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "task_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "study_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "decision_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "input_sha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "output_sha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "solver": {
+                "type": "string",
+                "minLength": 1
+              },
+              "solver_version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_sha256": {
+                "type": "string",
+                "minLength": 1
+              },
+              "seed": {
+                "type": "integer"
+              },
+              "started_at": {
+                "type": "number"
+              },
+              "finished_at": {
+                "type": "number"
+              },
+              "status": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "timed_out",
+                  "partial"
+                ]
+              },
+              "cost": {
+                "type": "object",
+                "properties": {
+                  "wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "cpu_core_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "gpu_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "npu_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "peak_memory_bytes": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "wall_seconds",
+                  "cpu_core_seconds",
+                  "gpu_seconds",
+                  "npu_seconds",
+                  "peak_memory_bytes"
+                ],
+                "additionalProperties": false
+              },
+              "diagnostics": {
+                "type": "object"
+              },
+              "artifact_hashes": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "receipt_id",
+              "task_id",
+              "study_id",
+              "decision_id",
+              "input_sha256",
+              "output_sha256",
+              "solver",
+              "solver_version",
+              "source_sha256",
+              "seed",
+              "started_at",
+              "finished_at",
+              "status",
+              "cost",
+              "diagnostics",
+              "artifact_hashes"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "verified_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "receipt_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "measured_values": {
+                "type": "object"
+              },
+              "uncertainty": {
+                "type": "object"
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "observed_at": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "evidence_id",
+              "receipt_ids",
+              "measured_values",
+              "uncertainty",
+              "scope",
+              "observed_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "necessary_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "executed_plan": {
+                "type": "object"
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "decision_id",
+              "executed_plan",
+              "evidence_ids"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "remaining_wall_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "observed_at": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "schema_version",
+        "task_contract",
+        "hypotheses",
+        "physical_models",
+        "available_resources",
+        "completed_receipts",
+        "verified_evidence",
+        "necessary_history",
+        "remaining_wall_seconds",
+        "observed_at"
+      ],
+      "additionalProperties": false
+    },
+    "teacher_public_decision": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "enum": [
+            "propose_experiments",
+            "reorganize",
+            "request_evidence",
+            "closeout"
+          ]
+        },
+        "experiments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "experiment_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scientific_question": {
+                "type": "string",
+                "minLength": 1
+              },
+              "competing_hypotheses": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "solver": {
+                "type": "string",
+                "minLength": 1
+              },
+              "physical_model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "parameters": {
+                "type": "object"
+              },
+              "initial_boundary_conditions": {
+                "type": "object"
+              },
+              "scale": {
+                "type": "object",
+                "properties": {
+                  "spatial_dimensions": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "mesh": {
+                    "type": "object"
+                  },
+                  "particles": {
+                    "type": "object"
+                  },
+                  "time_integration": {
+                    "type": "object"
+                  },
+                  "parallel_resources": {
+                    "type": "object"
+                  },
+                  "estimated_wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "expected_numerical_error": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "refinement_condition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "spatial_dimensions",
+                  "mesh",
+                  "particles",
+                  "time_integration",
+                  "parallel_resources",
+                  "estimated_wall_seconds",
+                  "expected_numerical_error",
+                  "refinement_condition"
+                ],
+                "additionalProperties": false
+              },
+              "diagnostics": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "success_or_falsification_criteria": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "experiment_id",
+              "scientific_question",
+              "competing_hypotheses",
+              "solver",
+              "physical_model",
+              "parameters",
+              "initial_boundary_conditions",
+              "scale",
+              "diagnostics",
+              "success_or_falsification_criteria",
+              "dependencies",
+              "evidence_ids"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "organization": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameter_justification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_hierarchy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "budget_allocation": {
+          "type": "object"
+        },
+        "public_justification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "change_of_mind_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "requested_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "action",
+        "experiments",
+        "organization",
+        "parameter_justification",
+        "model_hierarchy",
+        "budget_allocation",
+        "public_justification",
+        "change_of_mind_conditions",
+        "requested_evidence_ids"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "trajectory_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "quality_review_receipt": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "collection_id",
+    "task_id",
+    "split",
+    "teacher",
+    "observation",
+    "teacher_public_decision",
+    "receipt_ids",
+    "trajectory_id",
+    "decision_index",
+    "quality_review_receipt"
+  ],
+  "additionalProperties": false
+}
