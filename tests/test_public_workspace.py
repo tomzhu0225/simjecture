@@ -443,3 +443,49 @@ def test_low_disk_space_blocks_both_admission_routes_without_charging(app, monke
     ):
         assert client.post(path, json=data).status_code == 503
     assert not app.state.store.jobs(app.state.store.visitor(client.cookies.get(COOKIE))["id"])
+
+
+def test_hosted_interactive_worker_carries_brainstorming_and_replication_guidance(app, monkeypatch):
+    from smolagents.models import (
+        ChatMessage,
+        ChatMessageToolCall,
+        ChatMessageToolCallFunction,
+        Model,
+    )
+
+    from conjecture_solver.public.worker import execute
+
+    captured = []
+
+    class Scripted(Model):
+        def generate(self, messages, *args, **kwargs):
+            captured.append(messages)
+            return ChatMessage(
+                role="assistant",
+                content=None,
+                tool_calls=[
+                    ChatMessageToolCall(
+                        id="1",
+                        type="function",
+                        function=ChatMessageToolCallFunction(
+                            name="final_answer",
+                            arguments={"answer": "Here are three exploratory options to compare."},
+                        ),
+                    )
+                ],
+            )
+
+    monkeypatch.setattr("conjecture_solver.public.worker.budget_model", lambda *args: Scripted())
+    client = session(app)
+    p = project(client)
+    j = client.post(
+        "/api/workspace/message",
+        json={"project": p["id"], "message": "Let's brainstorm three inlet tests."},
+    ).json()
+    app.state.store.claim()
+    execute(app.state.store.root, j["id"])
+    assert captured
+    system_prompt = json.dumps(captured[0][0])
+    assert "keep the turn exploratory" in system_prompt
+    assert "For a replication request" in system_prompt
+    assert "call prepare_study only when the user asks" in system_prompt

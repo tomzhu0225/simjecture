@@ -8,7 +8,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from conjecture_solver.research_continuation import MAX_FILE
+from conjecture_solver.research_continuation import MAX_FILE, InvalidInheritedFiles
 from conjecture_solver.research_service import ResearchService, put
 from conjecture_solver.web.application import SimjectureWebApplication
 from tests.test_workspace import connect, wait_for
@@ -157,6 +157,92 @@ def test_native_continuation_keeps_revised_brief_when_an_inherited_file_is_too_l
     assert new_brief["success_criteria"][0] in manifest["operator_protocol"]
     assert new_brief["constraints"][0] in manifest["operator_protocol"]
     assert list(manifest["continuation"]["files"]) == ["setup.py"]
+
+
+def test_native_non_continuation_saves_brief_without_inherited_files(tmp_path, monkeypatch):
+    app = SimjectureWebApplication(runs_root=tmp_path / "runs", scan_roots=(tmp_path,))
+    project_id = app.workspace.create({"name": "Standalone native brief"})["id"]
+    new_brief = {
+        "question": "Does inflow amplitude shift vortex shedding frequency?",
+        "success_criteria": ["Compare Strouhal numbers at two inflow speeds."],
+        "constraints": ["Keep domain geometry fixed."],
+        "hours": 1,
+        "inherited_files": ["setup.py"],
+    }
+    binary = tmp_path / "codex"
+    binary.write_text(
+        f"#!{sys.executable}\n"
+        "import json\nfrom pathlib import Path\n"
+        f"Path('STUDY_BRIEF.json').write_text({json.dumps(new_brief)!r})\n"
+        "print(json.dumps({'type': 'item.completed', 'item': "
+        "{'type': 'agent_message', 'text': 'Prepared the brief.'}}))\n"
+        "print(json.dumps({'type': 'turn.completed', 'usage': "
+        "{'input_tokens': 1, 'output_tokens': 1}}))\n"
+    )
+    binary.chmod(0o700)
+    monkeypatch.setenv("PATH", str(tmp_path) + os.pathsep + os.environ["PATH"])
+    app.workspace.select_agent(project_id, {"backend": "codex", "model": "fixture"})
+    app.workspace.send(project_id, {"message": "Prepare a study brief."})
+    wait_for(lambda: not app.workspace.project(project_id)["running"])
+    project = app.workspace.project(project_id)
+    assert project["brief"]["question"] == new_brief["question"]
+    answer = project["messages"][-1]["content"]
+    assert "without inherited_files because this conversation has no parent continuation" in answer
+    assert project["messages"][-1]["status"] == "complete"
+
+
+def test_draft_study_keeps_revised_brief_when_inherited_files_fail_and_checks_total(
+    tmp_path, monkeypatch
+):
+    import time
+
+    from conjecture_solver.workspace_agent import agent_tools
+
+    app = SimjectureWebApplication(runs_root=tmp_path / "runs", scan_roots=(tmp_path,))
+    parent = ResearchService.create(tmp_path / "parent", "Investigate the flow")
+    (parent.work / "setup.py").write_text("print('baseline')\n")
+    (parent.work / "a.dat").write_bytes(b"a" * 600)
+    (parent.work / "b.dat").write_bytes(b"b" * 600)
+    (parent.work / "paper.pdf").write_bytes(b"0" * (MAX_FILE + 1))
+    campaign = app.registry.register(parent.root)
+    prepared = app.workspace.prepare_continuation(
+        {"campaign": campaign, "guidance": "Continue the flow study", "files": ["setup.py"]},
+        app,
+    )
+    project_id = prepared["project"]
+    monkeypatch.setattr("conjecture_solver.research_continuation.MAX_TOTAL", 1024)
+    with pytest.raises(InvalidInheritedFiles, match="16 MiB"):
+        app.workspace.save_brief(
+            project_id,
+            {
+                "question": "Total limit check",
+                "success_criteria": "Compare total size.",
+                "constraints": "Keep baseline.",
+                "hours": 1,
+                "inherited_files": ["a.dat", "b.dat"],
+            },
+        )
+    assert app.workspace.project(project_id)["continuation_draft"]["files"] == ["setup.py"]
+
+    tools = {
+        t.name: t
+        for t in agent_tools(
+            Path(app.workspace.project(project_id)["files_directory"]),
+            time.time() + 60,
+            project=project_id,
+            workspace=app.workspace,
+        )
+    }
+    output = tools["draft_study"](
+        question="Does sustained inflow past two obstacles reproduce the reference?",
+        success_criteria="Verify two obstacles in executed inputs.",
+        constraints="Preserve reference geometry.",
+        inherited_files=["setup.py", "paper.pdf"],
+    )
+    assert "paper.pdf" in output and "kept the previous inherited file selection" in output
+    project = app.workspace.project(project_id)
+    assert project["brief"]["question"].startswith("Does sustained inflow")
+    assert project["continuation_draft"]["files"] == ["setup.py"]
 
 
 def test_missing_model_keeps_recoverable_chat_preparation(tmp_path, monkeypatch):

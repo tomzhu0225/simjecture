@@ -151,10 +151,11 @@ proposal must be resolved first; it is not silently replaced. A directly opened
 CLI study without a workspace owner remains standalone and creates a conversation
 only when a continuation is submitted.
 
-If a native chat agent revises a continuation brief and proposes an invalid
-inherited file selection, Simjecture saves the revised brief, retains the previous
-file selection, and explains the file validation error in the reply. Review the
-brief and ensure its inputs are available before launching.
+If a chat agent revises a continuation brief and proposes an invalid
+inherited file selection (through `STUDY_BRIEF.json` or `draft_study`),
+Simjecture saves the revised brief, retains the previous file selection, and
+explains the file validation error in the reply. Review the brief and ensure
+its inputs are available before launching.
 
 ## Permanent files, arranged by project
 

@@ -24,6 +24,29 @@ from urllib.parse import urlparse
 ACTIVE_COMMANDS: set[int] = set()
 
 
+def _save_brief_with_inherited_fallback(workspace, project_id, payload):
+    """Save a study brief, falling back to the prior file selection if proposed files fail."""
+    from .research_continuation import InvalidInheritedFiles
+
+    try:
+        return workspace.save_brief(project_id, payload), None
+    except InvalidInheritedFiles as error:
+        fallback = dict(payload)
+        fallback.pop("inherited_files", None)
+        brief = workspace.save_brief(project_id, fallback)
+        if workspace.project(project_id).get("continuation_draft"):
+            note = (
+                "Simjecture saved the revised study brief and kept the previous "
+                f"inherited file selection. The proposed selection could not be used: {error}"
+            )
+        else:
+            note = (
+                "Simjecture saved the revised study brief without inherited_files because this "
+                f"conversation has no parent continuation ({error})."
+            )
+        return brief, note
+
+
 def require_runtime():
     if importlib.util.find_spec("smolagents") is None:
         raise ValueError("Install the built-in agent with: uv sync --extra workspace")
@@ -667,7 +690,8 @@ def agent_tools(root, deadline, project=None, workspace=None):
                     Use a descriptor file/directory to restrict access, or an empty string for
                     Python only. Omit to preserve the current access setting.
             """
-            brief = workspace.save_brief(
+            brief, note = _save_brief_with_inherited_fallback(
+                workspace,
                 project,
                 dict(
                     question=question,
@@ -687,6 +711,11 @@ def agent_tools(root, deadline, project=None, workspace=None):
                 ),
             )
             emit("brief", brief=brief)
+            if note:
+                return (
+                    f"{note} Explain this in your reply or call draft_study again with "
+                    "valid parent files."
+                )
             return "Study brief prepared. The user can edit it and press Start research."
 
         @tool
@@ -1289,7 +1318,7 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             continue
         if event.get("parent_tool_use_id"):
             continue
-        item = event.get("item", {})
+        item = event.get("item") or {}
         if config["backend"] in {"codex", "codex-glm"}:
             if event.get("type") == "item.completed" and item.get("type") == "agent_message":
                 reply = item.get("text", "")
@@ -1389,20 +1418,11 @@ def main(argv=None):
                 brief.read_bytes() if brief.is_file() and not brief.is_symlink() else None
             )
             if workspace and after_brief is not None and after_brief != before_brief:
-                from .research_continuation import InvalidInheritedFiles
-
-                payload = json.loads(after_brief)
-                try:
-                    workspace.save_brief(args.project, payload)
-                except InvalidInheritedFiles as error:
-                    # An optional file selection must not leave the superseded brief launchable.
-                    del payload["inherited_files"]
-                    workspace.save_brief(args.project, payload)
-                    answer += (
-                        "\n\nSimjecture saved the revised study brief and kept the previous "
-                        f"inherited file selection. The proposed selection could not be used: "
-                        f"{error}"
-                    )
+                _, note = _save_brief_with_inherited_fallback(
+                    workspace, args.project, json.loads(after_brief.decode())
+                )
+                if note:
+                    answer += f"\n\n{note}"
         else:
             answer = run_agent(
                 args.prompt_file.read_text(),

@@ -96,14 +96,16 @@ def parse_judge_stream(
             success = payload.get("status") == "SUCCESS"
             response = payload.get("response")
         elif backend in {"codex", "codex-glm"}:
-            item = event.get("item", {})
+            item = event.get("item") or {}
             allowed = {"agent_message", "reasoning", "error"}
             if allow_readonly_tools:
                 allowed.update({"command_execution", "web_search"})
             if item and item.get("type") not in allowed:
                 raise ValueError("Independent judge used a tool; verdict rejected")
-            if item.get("type") == "agent_message":
-                response_text = item.get("text", "")
+            if event.get("type") == "item.completed" and item.get("type") == "agent_message":
+                reply = item.get("text", "")
+                if isinstance(reply, str) and reply.strip():
+                    response_text = reply
             if event.get("type") in {"error", "turn.failed"}:
                 raise ValueError("Judge did not return a successful complete result")
             terminal = event.get("type") == "turn.completed"

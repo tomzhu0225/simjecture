@@ -472,6 +472,16 @@ def test_codex_startup_diagnostic_is_not_judge_tool_use(tmp_path):
     with pytest.raises(ValueError, match="successful complete"):
         parse_judge_stream(path, "codex")
     events[-1] = {"type": "turn.completed"}
+    events.insert(
+        2,
+        {
+            "type": "item.updated",
+            "item": {"type": "agent_message", "text": "partial draft"},
+        },
+    )
+    path.write_text("\n".join(json.dumps(e) for e in events))
+    assert parse_judge_stream(path, "codex") == {"decision": "approved"}
+    events.pop(2)
     events.insert(1, {"type": "item.completed", "item": {"type": "command_execution"}})
     path.write_text("\n".join(json.dumps(e) for e in events))
     with pytest.raises(ValueError, match="used a tool"):

@@ -1334,11 +1334,13 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 f"{self.inventory_context()}\n"
                 f"Current brief: {json.dumps(project['brief'])}\n"
                 f"Related studies: {json.dumps(project['studies'])}\n"
-                "When the user wants to brainstorm or discuss possibilities, keep the turn "
-                "exploratory. Offer plausible options and tradeoffs, identify uncertainties, "
-                "and ask a focused question when it would help. Leave decisions open until "
-                "the user asks to settle them. Prepare a formal report, save a study brief, "
-                "or launch a simulation only when that serves what the user asks for now.\n"
+                "When the user wants to brainstorm or discuss possibilities, or asks a "
+                "follow-up 'what if' question while exploring, keep the turn exploratory. "
+                "Offer plausible options and tradeoffs, identify uncertainties, and ask a "
+                "focused question when it would help. Leave decisions open until the user "
+                "asks for a concrete plan or to settle them. Prepare a formal report, save a "
+                "study brief, or launch a simulation only when that serves what the user asks "
+                "for now.\n"
                 "For a replication request, read the cited source and carry explicit "
                 "requirements into the plan or simulation, including geometry, multiplicity, "
                 "inflow and boundary conditions. Check the actual run inputs and outputs "
@@ -1762,12 +1764,12 @@ class Workspace(MachineWorkspace, ProjectCollections):
             if not instrument and prior.get("instrument") and brief["capability_directory"]:
                 brief["instrument"] = prior["instrument"]
             if payload.get("inherited_files") is not None:
-                from ..research_continuation import InvalidInheritedFiles, selected_file
+                from ..research_continuation import MAX_TOTAL, InvalidInheritedFiles, selected_file
 
                 selected = payload["inherited_files"]
                 continuation = project.get("continuation_draft")
                 if not continuation:
-                    raise ValueError("Parent files require a continuation")
+                    raise InvalidInheritedFiles("Parent files require a continuation")
                 if (
                     not isinstance(selected, list)
                     or len(selected) > 128
@@ -1778,11 +1780,16 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     )
                 if len(selected) != len(set(selected)):
                     raise InvalidInheritedFiles("Inherited files must be distinct")
+                total_bytes = 0
                 for name in selected:
                     try:
-                        selected_file(Path(continuation["parent"]), name)
+                        total_bytes += (
+                            selected_file(Path(continuation["parent"]), name).stat().st_size
+                        )
                     except ValueError as error:
                         raise InvalidInheritedFiles(f"{name!r}: {error}") from error
+                if total_bytes > MAX_TOTAL:
+                    raise InvalidInheritedFiles("Selected parent files exceed 16 MiB in total")
                 continuation["files"] = selected
             project.update(brief=brief, brief_launched=None, updated_at=time.time())
             project["brief_source_turn"] = project.get("active_turn")
