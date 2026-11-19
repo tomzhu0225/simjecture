@@ -95,8 +95,15 @@ def test_codex_reconnect_then_completion_preserves_answer_and_session(tmp_path, 
     events = [
         {"type": "thread.started", "thread_id": "recovered-session"},
         {"type": "turn.started"},
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "Initial idea"}},
         {"type": "error", "message": "Reconnecting... 2/5 (tls handshake eof)"},
+        {"type": "item.updated", "item": {"type": "agent_message", "text": "Partial reply"}},
         {"type": "item.completed", "item": {"type": "agent_message", "text": "Saved result"}},
+        {
+            "type": "item.completed",
+            "parent_tool_use_id": "helper",
+            "item": {"type": "agent_message", "text": "Subagent reply"},
+        },
         {"type": "turn.completed", "usage": {"input_tokens": 1, "output_tokens": 1}},
     ]
     stream = "\n".join(json.dumps(event) for event in events) + "\n"
@@ -131,6 +138,13 @@ def test_api_preserves_structured_history_between_turns(tmp_path, provider):
     assert "Previous conversation" in (turns[0] / "prompt.txt").read_text()
     assert "Previous conversation" not in (turns[1] / "prompt.txt").read_text()
     assert "CURRENT MACHINE INVENTORY" in (turns[1] / "prompt.txt").read_text()
+    for turn in turns:
+        prompt = (turn / "prompt.txt").read_text()
+        assert "When the user wants to brainstorm" in prompt
+        assert "Check the actual run inputs and outputs" in prompt
+        assert prompt.index("When the user wants to brainstorm") < prompt.index(
+            "CURRENT USER REQUEST"
+        )
 
 
 def test_deepseek_thinking_tools_and_plain_answers_resume_privately(tmp_path, provider):

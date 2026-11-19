@@ -1062,11 +1062,11 @@ def run_agent(
             "Distinguish observations, hypotheses and independently accepted findings. "
             "Use files and tools to do work, not just suggest commands. Never expose credentials. "
             "If you announce an action, perform it before ending the turn. Use final_answer "
-            "for a completed answer, a concrete blocker, or an essential question, never "
-            "merely a promise of future work. "
+            "to deliver this turn's reply, including tentative ideas and open questions "
+            "when exploring. For execution requests, deliver the result or a concrete blocker. "
             "For interactive requests return after doing the requested task. For autonomous "
             "research follow the supplied research service guide and hand off for reviews. "
-            "Only use draft_study when an autonomous investigation would serve the request. "
+            "Use draft_study when the user wants a study brief and the proposal is ready. "
             "For interactive simulations, prefer run_simulation so the user can follow live "
             "progress while continuing the conversation. Files belong to this conversation; "
             "never place research results in /tmp. Use Markdown with LaTeX equations and "
@@ -1191,7 +1191,8 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
     emit("activity", state="connecting", label="Connecting to " + config["backend"])
     # Native CLI agents can access the same durable brief and installation bridge.
     bridge = (
-        "\nTo prepare an autonomous study, write a JSON object to STUDY_BRIEF.json in "
+        "\nWhen the user wants a study brief and the proposal is ready, write a JSON object "
+        "to STUDY_BRIEF.json in "
         "the project files directory, with question, success_criteria, constraints, "
         "hours (0.01 to 168), completion_policy ('answer' or 'repair'). "
         "question must be a text string; success_criteria and constraints may be "
@@ -1289,8 +1290,13 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
         if event.get("parent_tool_use_id"):
             continue
         item = event.get("item", {})
-        if item.get("type") == "agent_message":
-            messages.append(item.get("text", ""))
+        if config["backend"] in {"codex", "codex-glm"}:
+            if event.get("type") == "item.completed" and item.get("type") == "agent_message":
+                reply = item.get("text", "")
+                if isinstance(reply, str) and reply.strip():
+                    # Earlier messages are progress previews, not the completed turn reply.
+                    messages = [reply]
+            continue
         if event.get("type") == "result" and isinstance(event.get("result"), str):
             messages.append(event["result"])
         if event.get("event") == "result":
@@ -1383,7 +1389,20 @@ def main(argv=None):
                 brief.read_bytes() if brief.is_file() and not brief.is_symlink() else None
             )
             if workspace and after_brief is not None and after_brief != before_brief:
-                workspace.save_brief(args.project, json.loads(after_brief.decode()))
+                from .research_continuation import InvalidInheritedFiles
+
+                payload = json.loads(after_brief)
+                try:
+                    workspace.save_brief(args.project, payload)
+                except InvalidInheritedFiles as error:
+                    # An optional file selection must not leave the superseded brief launchable.
+                    del payload["inherited_files"]
+                    workspace.save_brief(args.project, payload)
+                    answer += (
+                        "\n\nSimjecture saved the revised study brief and kept the previous "
+                        f"inherited file selection. The proposed selection could not be used: "
+                        f"{error}"
+                    )
         else:
             answer = run_agent(
                 args.prompt_file.read_text(),
