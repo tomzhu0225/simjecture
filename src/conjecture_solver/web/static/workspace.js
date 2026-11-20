@@ -280,6 +280,8 @@ function renderSettings() {
   SimjectureI18n.bindText($("runtime-status"), () => s.runtime_installed ? SimjectureI18n.t("ui.built-in-agent-powered-by-hugging-face-smolagents-your-existing-simj") : SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
   SimjectureI18n.bindText($("connection-result"), () => s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation") : SimjectureI18n.t("ui.optional-you-can-use-an-installed-cli-without-adding-an-api-key"));
 }
+let agentWrite = Promise.resolve();
+let bulkAgentPending = false;
 function agentControls(scope = "conversation") {
   const home = scope === "home";
   return {
@@ -294,6 +296,7 @@ function agentControls(scope = "conversation") {
 }
 function mountHomeAgent() {
   const copy = document.querySelector(".agent-controls").cloneNode(true);
+  copy.querySelector("#bulk-model-controls").remove();
   const ids = {
     "conversation-backend": "home-backend",
     "conversation-model": "home-model",
@@ -356,6 +359,7 @@ async function renderAgent(backend, scope = "conversation") {
   }
   controls.model.replaceChildren(SimjectureI18n.bindText(new Option("", ""), () => SimjectureI18n.t("ui.loading-model-choices")));
   controls.model.disabled = true;
+  if (!home) $("apply-bulk-model").disabled = true;
   controls.customBox.hidden = true;
   controls.custom.value = "";
   SimjectureI18n.bindText(controls.note, () => SimjectureI18n.t("ui.reading-model-choices"));
@@ -391,6 +395,10 @@ async function renderAgent(backend, scope = "conversation") {
   controls.effort.disabled = selected === "agy" || state.readonly || hosted;
   if (selected === "agy") controls.effort.value = "";
   controls.model.disabled = state.readonly || hosted;
+  if (!home) {
+    $("bulk-model-controls").hidden = controls.model.disabled;
+    $("apply-bulk-model").disabled = controls.model.disabled || bulkAgentPending;
+  }
   if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
   SimjectureI18n.content(controls.note, localizeModelNote(choices.note));
   globalThis.WorkspaceComposer?.refresh(scope);
@@ -406,7 +414,7 @@ function agentPayload(scope = "conversation") {
     reasoning_effort: c.effort.value,
   };
 }
-async function saveConversationAgent(scope = "conversation") {
+async function saveConversationAgent(scope = "conversation", updateAllModels = false) {
   if(hosted) return state.settings.default_agent;
   const c = agentControls(scope);
   if (c.model.disabled && !state.readonly)
@@ -414,10 +422,13 @@ async function saveConversationAgent(scope = "conversation") {
       SimjectureI18n.t("ui.model-choices-are-still-loading-please-try-again-in-a-moment"),
     );
   const payload = agentPayload(scope);
+  if (updateAllModels) payload.update_all_models = true;
   if (!payload.model)
     throw Error(SimjectureI18n.t("ui.choose-a-model-or-enter-its-exact-id-in-other-model"));
   const previousAgent = scope === "conversation" ? state.project?.agent : null;
-  const result = await api("agent", payload);
+  const write = agentWrite.then(() => api("agent", payload));
+  agentWrite = write.catch(() => {});
+  const result = await write;
   state.routeMemory[result.backend] = result;
   if (scope === "home") state.homeAgent = result;
   else if (state.project?.id === payload.project) {
@@ -473,6 +484,7 @@ async function reloadProjects() {
 }
 async function openProject(id) {
   const request = ++state.projectRequest;
+  await agentWrite;
   const project = await api(`project?id=${encodeURIComponent(id)}`);
   // A slower earlier click must not replace a newer navigation choice.
   if (request !== state.projectRequest) return false;
@@ -2238,13 +2250,32 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!accountBox.hidden)
 mountHomeAgent();
 globalThis.WorkspaceComposer?.mount($("chat-form"), $("chat-input"), document.querySelector("#chat-form .agent-controls"), "conversation");
 globalThis.WorkspaceComposer?.mount($("quick-start"), $("first-request"), document.querySelector("#quick-start .agent-controls"), "home");
+$("apply-bulk-model").onclick = async () => {
+  const button = $("apply-bulk-model");
+  if (button.disabled) return;
+  bulkAgentPending = true;
+  button.disabled = true;
+  try {
+    await saveConversationAgent("conversation", true);
+    toast(SimjectureI18n.t("workspace.bulkModelSaved"));
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    bulkAgentPending = false;
+    button.disabled = $("conversation-model").disabled;
+  }
+};
 for (const scope of ["home", "conversation"]) {
   const c = agentControls(scope);
+  const saveSelection = () => {
+    globalThis.WorkspaceComposer?.refresh(scope);
+    return saveConversationAgent(scope).catch((e) => toast(e.message, true));
+  };
   c.backend.onchange = () =>
     renderAgent(c.backend.value, scope)
       .then((ready) => {
         if (ready && agentPayload(scope).model)
-          return saveConversationAgent(scope);
+          return saveSelection();
       })
       .catch((e) => toast(e.message, true));
   c.model.onchange = () => {
@@ -2254,12 +2285,10 @@ for (const scope of ["home", "conversation"]) {
       c.custom.focus();
       return;
     }
-    saveConversationAgent(scope).catch((e) => toast(e.message, true));
+    return saveSelection();
   };
-  c.custom.onchange = () =>
-    saveConversationAgent(scope).catch((e) => toast(e.message, true));
-  c.effort.onchange = () =>
-    saveConversationAgent(scope).catch((e) => toast(e.message, true));
+  c.custom.onchange = saveSelection;
+  c.effort.onchange = saveSelection;
   c.refresh.onclick = () =>
     action(c.refresh, () => renderAgent(c.backend.value, scope));
 }

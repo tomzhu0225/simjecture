@@ -16,6 +16,51 @@ def provider():
     yield from protocol_provider.__wrapped__()
 
 
+@pytest.mark.parametrize("width", [1440, 850])
+def test_browser_bulk_model_update_is_opt_in(tmp_path, provider, width):
+    playwright = pytest.importorskip("playwright.sync_api")
+    url, _requests = provider
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    app.workspace.save_api(dict(base_url=url, api_key="test-secret"))
+    agent = dict(backend="builtin", model="fixture-model", reasoning_effort="high")
+    first = app.workspace.create(dict(name="First chat", agent=agent))
+    second = app.workspace.create(dict(name="Second chat", agent=agent))
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as runtime:
+            browser = runtime.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": width, "height": 720})
+            page.set_default_timeout(8000)
+            page.goto(f"http://127.0.0.1:{server.server_port}/workspace#project={first['id']}")
+            page.locator("#conversation-agent-picker").click()
+            apply = page.locator("#apply-bulk-model")
+            model = page.locator("#conversation-model")
+            effort = page.locator("#conversation-effort")
+            playwright.expect(apply).to_be_enabled()
+            playwright.expect(apply).to_have_css("font-size", "12px")
+            assert apply.evaluate("(b) => b.scrollWidth <= b.clientWidth")
+            with page.expect_response(lambda response: "/api/workspace/agent" in response.url):
+                model.select_option("fixture-alternate")
+            assert app.workspace.project(second["id"])["agent"] == agent
+
+            effort.select_option("low")
+            model.select_option("__custom__")
+            page.locator("#custom-model").fill("fixture-new")
+            apply.click()
+            page.get_by_role("button", name="Second chat", exact=True).click()
+            page.locator("#conversation-agent-picker").click()
+            playwright.expect(page.locator("#custom-model")).to_have_value("fixture-new")
+            playwright.expect(effort).to_have_value("low")
+            page.reload()
+            page.locator("#conversation-agent-picker").click()
+            playwright.expect(page.locator("#custom-model")).to_have_value("fixture-new")
+            playwright.expect(effort).to_have_value("low")
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
 def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
     playwright = pytest.importorskip("playwright.sync_api")
     url, _requests = provider
