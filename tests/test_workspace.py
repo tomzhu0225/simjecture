@@ -597,6 +597,18 @@ def test_bulk_model_update_syncs_existing_conversations_in_this_workspace(tmp_pa
     assert elsewhere.project(third["id"])["agent"] == original
 
 
+def test_implicit_model_selection_only_fills_a_missing_model(tmp_path):
+    workspace = Workspace(tmp_path / ".workspace")
+    empty = dict(backend="builtin", model="", reasoning_effort="")
+    project = workspace.create(dict(name="Conversation", agent=empty))
+    fallback = empty | dict(model="fallback-model", only_if_model_missing=True)
+    selected = workspace.select_agent(project["id"], fallback)
+    assert selected["model"] == "fallback-model"
+    updated = workspace.select_agent(project["id"], selected | dict(model="chosen-model"))
+    assert workspace.select_agent(project["id"], fallback) == updated
+    assert workspace.project(project["id"])["agent"] == updated
+
+
 def test_api_model_discovery_uses_saved_endpoint_without_global_model(tmp_path, provider):
     url, _ = provider
     workspace = Workspace(tmp_path / ".workspace")

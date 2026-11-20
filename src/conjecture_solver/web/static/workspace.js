@@ -282,6 +282,7 @@ function renderSettings() {
 }
 let agentWrite = Promise.resolve();
 let bulkAgentPending = false;
+let conversationAgentSelection = null;
 function agentControls(scope = "conversation") {
   const home = scope === "home";
   return {
@@ -396,6 +397,8 @@ async function renderAgent(backend, scope = "conversation") {
   if (selected === "agy") controls.effort.value = "";
   controls.model.disabled = state.readonly || hosted;
   if (!home) {
+    if (!backend || backend === p.agent?.backend)
+      conversationAgentSelection = agentPayload();
     $("bulk-model-controls").hidden = controls.model.disabled;
     $("apply-bulk-model").disabled = controls.model.disabled || bulkAgentPending;
   }
@@ -414,7 +417,11 @@ function agentPayload(scope = "conversation") {
     reasoning_effort: c.effort.value,
   };
 }
-async function saveConversationAgent(scope = "conversation", updateAllModels = false) {
+function sameAgentSelection(left, right) {
+  return !!left && left.project === right.project && left.backend === right.backend &&
+    left.model === right.model && left.reasoning_effort === (right.reasoning_effort || "");
+}
+async function saveConversationAgent(scope = "conversation", {updateAll = false, onlyIfChanged = false} = {}) {
   if(hosted) return state.settings.default_agent;
   const c = agentControls(scope);
   if (c.model.disabled && !state.readonly)
@@ -422,29 +429,34 @@ async function saveConversationAgent(scope = "conversation", updateAllModels = f
       SimjectureI18n.t("ui.model-choices-are-still-loading-please-try-again-in-a-moment"),
     );
   const payload = agentPayload(scope);
-  if (updateAllModels) payload.update_all_models = true;
+  if (updateAll) payload.update_all_models = true;
   if (!payload.model)
     throw Error(SimjectureI18n.t("ui.choose-a-model-or-enter-its-exact-id-in-other-model"));
-  const previousAgent = scope === "conversation" ? state.project?.agent : null;
-  const write = agentWrite.then(() => api("agent", payload));
-  agentWrite = write.catch(() => {});
-  const result = await write;
-  state.routeMemory[result.backend] = result;
-  if (scope === "home") state.homeAgent = result;
-  else if (state.project?.id === payload.project) {
-    if (
-      previousAgent &&
-      (previousAgent.backend !== result.backend ||
-        previousAgent.model !== result.model)
-    ) {
-      state.dismissedSwitches.delete(state.project.id);
+  const modelRequest = state.modelRequests[scope];
+  const write = agentWrite.then(async () => {
+    const current = state.project?.id === payload.project ? state.project.agent : null;
+    // A picker that the user hasn't changed may be older than a workspace-wide update.
+    if (onlyIfChanged && sameAgentSelection(conversationAgentSelection, payload)) {
+      if (current?.model) return current;
+      payload.only_if_model_missing = true;
     }
-    state.project.agent = result;
-    state.homeAgent = result;
-    renderProject();
-  }
-  globalThis.WorkspaceComposer?.refresh(scope);
-  return result;
+    const result = await api("agent", payload);
+    state.routeMemory[result.backend] = result;
+    if (scope === "home") state.homeAgent = result;
+    else if (state.project?.id === payload.project) {
+      if (modelRequest === state.modelRequests.conversation)
+        conversationAgentSelection = payload;
+      if (current && (current.backend !== result.backend || current.model !== result.model))
+        state.dismissedSwitches.delete(payload.project);
+      state.project.agent = result;
+      state.homeAgent = result;
+      renderProject();
+    }
+    globalThis.WorkspaceComposer?.refresh(scope);
+    return result;
+  });
+  agentWrite = write.catch(() => {});
+  return write;
 }
 function renderProjects() {
   $("project-list").replaceChildren();
@@ -849,7 +861,7 @@ async function send() {
   if (!message || !project) return;
   const references = [...(globalThis.WorkspaceKnowledge?.references(project) || [])];
   // Navigation and new typing may happen while either request is pending.
-  await saveConversationAgent();
+  await saveConversationAgent("conversation", {onlyIfChanged: true});
   const payload = { project, message };
   if (references.length) payload.knowledge_refs = references;
   await api("message", payload);
@@ -2256,7 +2268,7 @@ $("apply-bulk-model").onclick = async () => {
   bulkAgentPending = true;
   button.disabled = true;
   try {
-    await saveConversationAgent("conversation", true);
+    await saveConversationAgent("conversation", {updateAll: true});
     toast(SimjectureI18n.t("workspace.bulkModelSaved"));
   } catch (error) {
     toast(error.message, true);
@@ -2415,7 +2427,7 @@ $("interactive-mode").onclick = () => mode("interactive");
 $("autonomous-mode").onclick = () => mode("autonomous");
 $("open-brief").onclick = () => mode("autonomous");
 async function prepareStudy(approach) {
-  await saveConversationAgent();
+  await saveConversationAgent("conversation", {onlyIfChanged: true});
   await api("prepare", { project: state.project.id, approach });
   state.project = await api(
     `project?id=${encodeURIComponent(state.project.id)}`,
@@ -2465,7 +2477,7 @@ async function launchStudy() {
   const request = state.projectRequest;
   const route = location.hash;
   const stillHere = () => state.project?.id === id && state.projectRequest === request && location.hash === route;
-  await saveConversationAgent();
+  await saveConversationAgent("conversation", {onlyIfChanged: true});
   if (!stillHere()) return;
   if (state.briefDirty || !state.project.brief) await saveBrief();
   if (!stillHere()) return;
@@ -2582,10 +2594,18 @@ setInterval(async () => {
     if (!hosted && ++organizationTicks % 5 === 0) await reloadProjects();
     if (state.view === "project" && state.project) {
       const id = state.project.id;
+      const pendingAgentWrite = agentWrite;
+      await pendingAgentWrite;
       const project = await api(`project?id=${encodeURIComponent(id)}`);
       if (state.project?.id === id) {
         state.project = project;
         renderProject();
+        if (!hosted && pendingAgentWrite === agentWrite && project.agent?.model &&
+            !agentControls().model.disabled &&
+            sameAgentSelection(conversationAgentSelection, agentPayload()) &&
+            !sameAgentSelection(conversationAgentSelection, {project: id, ...project.agent})) {
+          await renderAgent();
+        }
         globalThis.WorkspaceProjects?.render();
         globalThis.WorkspaceKnowledge?.renderComposer();
         if (state.mode === "autonomous") await renderStudies();

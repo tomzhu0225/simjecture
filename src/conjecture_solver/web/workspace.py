@@ -432,6 +432,11 @@ class Workspace(MachineWorkspace, ProjectCollections):
         model = text(payload, "model", 200)
         effort = text(payload, "reasoning_effort", 20)
         update_all = payload.get("update_all_models", False)
+        only_if_missing = payload.get("only_if_model_missing", False)
+        if not isinstance(only_if_missing, bool) or (
+            only_if_missing and (identifier is None or update_all or not model)
+        ):
+            raise ValueError("A model fallback applies to a single conversation")
         if not isinstance(update_all, bool) or (update_all and (identifier is None or not model)):
             raise ValueError("Bulk agent updates require a conversation and a model")
         if backend not in {"builtin", "codex", "codex-glm", "grok", "agy"}:
@@ -453,6 +458,10 @@ class Workspace(MachineWorkspace, ProjectCollections):
             if identifier is not None:
                 path = self.directory(identifier) / "project.json"
                 record = load(path)
+                if only_if_missing:
+                    current = self.normalize_agent(record.get("agent") or self.default_agent())
+                    if current.get("model"):
+                        return current
                 record.update(agent=agent, updated_at=time.time())
                 put(path, record)
                 if update_all:
