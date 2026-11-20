@@ -626,6 +626,14 @@
                           placeholder="Exact model ID"
                          data-i18n-placeholder="ui.exact-model-id"/>
                       </div>
+                      <div id="bulk-model-controls" hidden>
+                        <label class="bulk-model-option">
+                          <input type="checkbox" id="update-all-models" />
+                          <span data-i18n="workspace.updateAllModels">Update all conversation models</span>
+                        </label>
+                        <p class="field-help" data-i18n="workspace.updateAllModelsHelp">Only conversations using the selected agent in this workspace are updated.</p>
+                        <button id="apply-bulk-model" class="secondary" type="button" disabled data-i18n="workspace.applyBulkModel">Apply model</button>
+                      </div>
                       <div>
                         <label for="conversation-effort" data-i18n="ui.reasoning-effort">Reasoning effort</label
                         ><select id="conversation-effort">

@@ -1,4 +1,8 @@
 {
+  "workspace.applyBulkModel": "Apply model",
+  "workspace.bulkModelSaved": "Model updated for conversations using the selected agent.",
+  "workspace.updateAllModels": "Update all conversation models",
+  "workspace.updateAllModelsHelp": "Only conversations using the selected agent in this workspace are updated.",
   "activity.checking-subagent": "Checking subagent",
   "activity.independent-review": "Independent review",
   "activity.running-micro-study": "Running micro-study",

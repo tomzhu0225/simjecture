@@ -567,6 +567,32 @@ def test_conversation_agents_are_independent_and_api_credentials_are_optional(
         workspace.select_agent(first["id"], dict(backend="grok", model="grok-4.7 high"))
 
 
+def test_bulk_model_update_preserves_other_agents_and_effort(tmp_path):
+    workspace = Workspace(tmp_path / "current" / ".workspace")
+    elsewhere = Workspace(tmp_path / "elsewhere" / ".workspace")
+    original = dict(backend="builtin", model="model-old", reasoning_effort="high")
+    first = workspace.create({"name": "First", "agent": original})
+    second = workspace.create({"name": "Second", "agent": original})
+    foreign = workspace.create({"name": "Other agent", "agent": original})
+    third = elsewhere.create({"name": "Other workspace", "agent": original})
+    foreign_path = workspace.directory(foreign["id"]) / "project.json"
+    foreign_record = json.loads(foreign_path.read_text())
+    foreign_record["agent"] = dict(backend="codex", model="gpt-fixture")
+    foreign_path.write_text(json.dumps(foreign_record))
+
+    with pytest.raises(ValueError, match="Bulk model updates"):
+        workspace.select_agent(None, original | {"update_all_models": True})
+
+    selected = workspace.select_agent(
+        first["id"],
+        original | dict(model="model-new", reasoning_effort="low", update_all_models=True),
+    )
+    assert workspace.project(first["id"])["agent"] == selected
+    assert workspace.project(second["id"])["agent"] == original | {"model": "model-new"}
+    assert json.loads(foreign_path.read_text()) == foreign_record
+    assert elsewhere.project(third["id"])["agent"] == original
+
+
 def test_api_model_discovery_uses_saved_endpoint_without_global_model(tmp_path, provider):
     url, _ = provider
     workspace = Workspace(tmp_path / ".workspace")

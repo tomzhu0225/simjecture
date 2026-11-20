@@ -16,6 +16,52 @@ def provider():
     yield from protocol_provider.__wrapped__()
 
 
+def test_browser_bulk_model_update_is_opt_in(tmp_path, provider):
+    playwright = pytest.importorskip("playwright.sync_api")
+    url, _requests = provider
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    app.workspace.save_api(dict(base_url=url, api_key="test-secret"))
+    agent = dict(backend="builtin", model="fixture-model", reasoning_effort="high")
+    first = app.workspace.create(dict(name="First chat", agent=agent))
+    second = app.workspace.create(dict(name="Second chat", agent=agent))
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as runtime:
+            browser = runtime.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            page.set_default_timeout(8000)
+            page.goto(f"http://127.0.0.1:{server.server_port}/workspace#project={first['id']}")
+            page.locator("#conversation-agent-picker").click()
+            checkbox = page.locator("#update-all-models")
+            apply = page.locator("#apply-bulk-model")
+            model = page.locator("#conversation-model")
+            playwright.expect(checkbox).not_to_be_checked()
+            playwright.expect(apply).to_be_disabled()
+            with page.expect_response(lambda response: "/api/workspace/agent" in response.url):
+                model.select_option("fixture-alternate")
+            assert app.workspace.project(second["id"])["agent"] == agent
+
+            page.keyboard.press("Escape")
+            page.locator("#conversation-agent-picker").click()
+            checkbox.check()
+            model.select_option("__custom__")
+            page.locator("#custom-model").fill("fixture-new")
+            apply.click()
+            playwright.expect(checkbox).not_to_be_checked()
+            for project in (first, second):
+                assert app.workspace.project(project["id"])["agent"] == agent | {
+                    "model": "fixture-new"
+                }
+            page.reload()
+            page.locator("#conversation-agent-picker").click()
+            playwright.expect(page.locator("#custom-model")).to_have_value("fixture-new")
+            playwright.expect(checkbox).not_to_be_checked()
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
 def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
     playwright = pytest.importorskip("playwright.sync_api")
     url, _requests = provider

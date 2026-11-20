@@ -1,4 +1,8 @@
 {
+  "workspace.applyBulkModel": "应用模型",
+  "workspace.bulkModelSaved": "已更新使用所选智能体的对话模型。",
+  "workspace.updateAllModels": "更新所有对话的模型",
+  "workspace.updateAllModelsHelp": "仅更新当前工作区内使用所选智能体的对话。",
   "activity.checking-subagent": "正在检查子智能体状态",
   "activity.independent-review": "独立评审",
   "activity.running-micro-study": "正在运行微型研究",
