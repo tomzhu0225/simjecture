@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "score",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "study_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blind_arm_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "termination_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "closeout": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "falsified": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "termination_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "include_in_C": {
+          "const": true
+        },
+        "include_in_D": {
+          "const": true
+        }
+      },
+      "required": [
+        "supported",
+        "falsified",
+        "unresolved",
+        "scope",
+        "evidence_ids",
+        "termination_reason",
+        "include_in_C",
+        "include_in_D"
+      ],
+      "additionalProperties": false
+    },
+    "C": {
+      "type": "object"
+    },
+    "D": {
+      "type": "object"
+    },
+    "replication_receipt_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "prediction_receipt_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "novelty_auxiliary": {
+      "type": "object"
+    },
+    "reviewer_session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "task_id",
+    "study_id",
+    "blind_arm_id",
+    "termination_reason",
+    "closeout",
+    "C",
+    "D",
+    "replication_receipt_ids",
+    "prediction_receipt_ids",
+    "novelty_auxiliary",
+    "reviewer_session_id",
+    "source_evidence_ids"
+  ],
+  "additionalProperties": false
+}

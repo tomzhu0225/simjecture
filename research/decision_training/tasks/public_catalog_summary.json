@@ -1,0 +1,17 @@
+{
+  "counts": {
+    "train": {
+      "plasma": 64,
+      "cross": 16
+    },
+    "dev": {
+      "plasma": 13,
+      "cross": 3
+    }
+  },
+  "train_tasks": 80,
+  "development_tasks": 16,
+  "initial_trajectories": 240,
+  "generated_trajectories": 0,
+  "historical_training_data_reused": 0
+}

@@ -1,5 +1,9 @@
 # Simjecture
 
+**Research decision training:** [Qwen3.5-9B SFT / RLOO / LoRA](research/decision_training/README.md) ·
+[中文训练指南与运行命令](research/decision_training/训练指南.md).
+This branch includes the current training implementation; final scientific C/D comparisons are still pending.
+
 [![PyPI](https://img.shields.io/pypi/v/simjecture)](https://pypi.org/project/simjecture/)
 [![CI](https://github.com/tomzhu0225/simjecture/actions/workflows/ci.yml/badge.svg)](https://github.com/tomzhu0225/simjecture/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21945748.svg)](https://doi.org/10.5281/zenodo.21945748)

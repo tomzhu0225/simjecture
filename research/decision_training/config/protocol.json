@@ -1,0 +1,105 @@
+{
+  "version": "2026-11-16.1",
+  "execution_state": "preparation_only",
+  "base_model": "Qwen/Qwen3.5-9B",
+  "base_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "teacher_model": "gpt-6.1-sol",
+  "director_model": "gpt-6.1-sol",
+  "worker_model": "gpt-6.1-sol",
+  "reviewer_model": "gpt-6.1-sol",
+  "reviewer_session_independent": true,
+  "teacher_private_reasoning_to_student": false,
+  "student_observation": [
+    "task_contract",
+    "hypotheses",
+    "physical_models",
+    "available_resources",
+    "completed_receipts",
+    "verified_evidence",
+    "necessary_history",
+    "remaining_wall_seconds"
+  ],
+  "task_counts": {
+    "train": 80,
+    "dev": 16,
+    "test": 20
+  },
+  "tasks_per_level": {
+    "train": 20,
+    "dev": 4,
+    "test": 5
+  },
+  "sft_trajectories_per_train_task": 3,
+  "sft_trajectory_count": 240,
+  "test_known": 10,
+  "test_open": 10,
+  "study_budgets_seconds": {
+    "1": 3600,
+    "2": 10800,
+    "3": 21600,
+    "4": 43200
+  },
+  "per_experiment_time_limit": null,
+  "per_study_experiment_count_limit": null,
+  "per_experiment_mesh_limit": null,
+  "resource_capacity_enforced": true,
+  "student_scale_suggestion_default": "accept_if_physically_executable",
+  "host_override_requires_original_suggestion_and_reason": true,
+  "partial_conclusions_required": true,
+  "unfinished_runs_included_in_both_scores": true,
+  "dev_train_updates_allowed": false,
+  "test_access": "sealed_until_checkpoint_and_protocol_freeze",
+  "arms": [
+    "simjecture",
+    "simjecture_raw9b",
+    "simjecture_sft9b",
+    "simjecture_sftrl9b"
+  ],
+  "formal_runs": 80,
+  "attribution_runs": 40,
+  "dev_candidate_runs": "16*m",
+  "dev_frozen_baseline_runs": 16,
+  "rl_trajectories": "80*n; n is the actual average complete trajectories per train task",
+  "all_scientific_runs": "376 + 80*n + 16*m + R, including 16 fixed development baselines",
+  "attribution": {
+    "treatment": "best_SFT_RL_student_advice",
+    "control": "independent_gpt_6_1_sol_decision",
+    "pair_origin": "one precommitted state per test task, reached by an independent baseline prefix",
+    "prefix_reuse": true,
+    "independent_branches": true,
+    "common_seed_stream": true,
+    "same_remaining_wall_budget": true,
+    "count_prefix_cost_once_and_report_separately": true,
+    "primary_estimand": "intention_to_treat_paired_effect_of_advice_access",
+    "takeover_positive_credit": 0,
+    "component_attribution_excludes_overridden_components": true
+  },
+  "scores": {
+    "C": {
+      "truth_or_valid_evidence": 40,
+      "independent_replication_and_prediction": 35,
+      "numerical_validity_scope_uncertainty": 25
+    },
+    "D": {
+      "experiment_choice_discrimination": 30,
+      "parameters_resolution_scale": 25,
+      "evidence_adaptation": 25,
+      "series_and_budget": 20
+    }
+  },
+  "stopping": {
+    "evaluation_every_completed_train_trajectories": 80,
+    "max_updates": null,
+    "patience_evaluations": 4,
+    "primary_selection": "C improvement with D and mechanism-group generalization guards",
+    "minimum_meaningful_C_points": 2.0,
+    "D_noninferiority_margin_points": 2.0,
+    "paired_confidence_method": "mechanism_cluster_bootstrap_with_alpha_spending",
+    "alpha_spending": "alpha_j = 0.05/(j*(j+1)); evaluation j is counted globally",
+    "stagnation": "4 consecutive evaluations without reliable improvement relative to incumbent",
+    "regression": "stop when reliable C or D generalization regression is detected",
+    "collapse": "stop when conditional diversity collapse with impaired evidence adaptation is established",
+    "numerical_training_failure": "save state and stop updates immediately for diagnosis",
+    "test_used_for_selection": false
+  }
+}

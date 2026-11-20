@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+PACKAGE=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+exec "$PACKAGE/bin/controller-python" -m research_decision.pipeline "$@"

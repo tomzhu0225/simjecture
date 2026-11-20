@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "execution_receipt",
+  "type": "object",
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "study_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_sha256": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_sha256": {
+      "type": "string",
+      "minLength": 1
+    },
+    "solver": {
+      "type": "string",
+      "minLength": 1
+    },
+    "solver_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_sha256": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "started_at": {
+      "type": "number"
+    },
+    "finished_at": {
+      "type": "number"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled",
+        "timed_out",
+        "partial"
+      ]
+    },
+    "cost": {
+      "type": "object",
+      "properties": {
+        "wall_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cpu_core_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "gpu_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "npu_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "peak_memory_bytes": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "wall_seconds",
+        "cpu_core_seconds",
+        "gpu_seconds",
+        "npu_seconds",
+        "peak_memory_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "diagnostics": {
+      "type": "object"
+    },
+    "artifact_hashes": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "task_id",
+    "study_id",
+    "decision_id",
+    "input_sha256",
+    "output_sha256",
+    "solver",
+    "solver_version",
+    "source_sha256",
+    "seed",
+    "started_at",
+    "finished_at",
+    "status",
+    "cost",
+    "diagnostics",
+    "artifact_hashes"
+  ],
+  "additionalProperties": false
+}

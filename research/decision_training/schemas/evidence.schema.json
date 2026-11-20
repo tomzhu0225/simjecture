@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "evidence",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "measured_values": {
+      "type": "object"
+    },
+    "uncertainty": {
+      "type": "object"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "receipt_ids",
+    "measured_values",
+    "uncertainty",
+    "scope",
+    "observed_at"
+  ],
+  "additionalProperties": false
+}

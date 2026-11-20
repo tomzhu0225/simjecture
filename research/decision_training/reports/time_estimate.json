@@ -1,0 +1,59 @@
+{
+  "budgets_hours_by_level": [
+    1,
+    3,
+    6,
+    12
+  ],
+  "study_formula": "376+80*n+16*m+R",
+  "study_hours_formula": "2068+440*n+88*m+H_replication",
+  "evaluation_baseline_added": 16,
+  "parallel_studies": 2,
+  "scheduling_efficiency": [
+    0.7,
+    0.9
+  ],
+  "replication_allowance_fraction": [
+    0.15,
+    0.25
+  ],
+  "serial_NPU_allowance_days": [
+    4,
+    16
+  ],
+  "assumes_each_study_uses_its_entire_budget": true,
+  "measured_end_to_end_throughput": false,
+  "convergence_based_RL_has_no_finite_guaranteed_duration": true,
+  "rows": [
+    {
+      "n": 4,
+      "m": 5,
+      "studies_before_replication": 776,
+      "budgeted_study_hours": 4268.0,
+      "conditional_calendar_days": [
+        118,
+        175
+      ]
+    },
+    {
+      "n": 8,
+      "m": 9,
+      "studies_before_replication": 1160,
+      "budgeted_study_hours": 6380.0,
+      "conditional_calendar_days": [
+        174,
+        253
+      ]
+    },
+    {
+      "n": 16,
+      "m": 17,
+      "studies_before_replication": 1928,
+      "budgeted_study_hours": 10604.0,
+      "conditional_calendar_days": [
+        286,
+        410
+      ]
+    }
+  ]
+}
