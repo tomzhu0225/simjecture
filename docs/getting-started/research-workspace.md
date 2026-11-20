@@ -102,10 +102,14 @@ keeps the existing repair loop. Uncertainty is never counted as an accepted answ
 Existing CLI studies keep their original default and saved policy.
 
 Interactive mode returns after a requested task. It can prepare an editable brief;
-it does not silently start an unbounded investigation. An autonomous study uses the
-existing minimal research core, with its evidence, method, provenance, deadline,
-recovery and independent-review checks. Its pause/resume/stop controls reuse the
-existing verified process controls. A paused study retains its original deadline.
+it does not silently start an unbounded investigation. Ask to brainstorm to discuss
+options and open questions before requesting a report or study brief. For a
+replication, identify the reference and any requirements that must carry through
+to the actual run, such as the geometry and inlet conditions. An autonomous study
+uses the existing minimal research core, with its evidence, method, provenance,
+deadline, recovery and independent-review checks. Its pause/resume/stop controls
+reuse the existing verified process controls. A paused study retains its original
+deadline.
 
 ## Move between conversation, study, and evidence
 
@@ -146,6 +150,12 @@ submission leaves the record unchanged. A busy conversation or existing unlaunch
 proposal must be resolved first; it is not silently replaced. A directly opened
 CLI study without a workspace owner remains standalone and creates a conversation
 only when a continuation is submitted.
+
+If a chat agent revises a continuation brief and proposes an invalid
+inherited file selection (through `STUDY_BRIEF.json` or `draft_study`),
+Simjecture saves the revised brief, retains the previous file selection, and
+explains the file validation error in the reply. Review the brief and ensure
+its inputs are available before launching.
 
 ## Permanent files, arranged by project
 

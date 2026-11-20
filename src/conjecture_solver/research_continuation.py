@@ -19,6 +19,10 @@ MAX_FILE = 1024 * 1024
 MAX_TOTAL = 16 * MAX_FILE
 
 
+class InvalidInheritedFiles(ValueError):
+    """The proposed parent file selection failed validation."""
+
+
 def selected_file(root, name):
     relative = Path(name)
     if relative.is_absolute() or ".." in relative.parts or not relative.parts:

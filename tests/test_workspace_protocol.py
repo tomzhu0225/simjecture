@@ -445,3 +445,35 @@ def test_research_worker_continues_after_action_limit_with_executed_receipts(tmp
     assert (session_dir / "agent-session.json").stat().st_mode & 0o777 == 0o600
     with pytest.raises(ValueError, match="Independent reviewers"):
         wa.run_agent("Review independently.", tmp_path, config, judge=True, session_dir=session_dir)
+
+
+def test_hosted_interactive_worker_instructions_without_fastapi(tmp_path, api):
+    from conjecture_solver.public.store import Store
+    from conjecture_solver.public.worker import execute
+
+    url, requests, responses = api
+    (tmp_path / "provider.json").write_text(
+        json.dumps(
+            {
+                "api_key": "test-key",
+                "model": "deepseek-flash",
+                "base_url": url,
+                "public_enabled": True,
+            }
+        )
+    )
+    (tmp_path / "settings.json").write_text(json.dumps({}))
+    store = Store(tmp_path)
+    _, owner = store.create_visitor("test-owner")
+    proj = store.create_project(owner["id"], "Brainstorm")
+    job = store.enqueue(
+        owner["id"], "interactive", "Let's brainstorm inlet tests.", project=proj["id"]
+    )
+    store.claim()
+    responses.append(response(("1", "final_answer", {"answer": "Three exploratory options."})))
+    execute(tmp_path, job["id"])
+    assert requests
+    system_prompt = json.dumps(requests[-1]["messages"][0])
+    assert "keep the turn exploratory" in system_prompt
+    assert "For a replication request" in system_prompt
+    assert "call prepare_study only when the user asks" in system_prompt

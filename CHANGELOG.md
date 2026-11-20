@@ -4,6 +4,13 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Preserve a revised continuation brief when an invalid inherited file selection
+  is rejected (both native `STUDY_BRIEF.json` imports and `draft_study`), keeping
+  the previous file selection and explaining the rejection in chat.
+- Keep interactive brainstorming open-ended, ask agents to check replication
+  requirements against the actual run, and save only Codex's final reply in the
+  transcript. Earlier Codex messages remain visible as live activity.
+
 - Add an English/Simplified Chinese selector to the workspace and experiment
   monitor, with a shared saved preference and live translations of program-owned
   headings, navigation, actions, forms, dialogs, statuses, tooltips, accessibility

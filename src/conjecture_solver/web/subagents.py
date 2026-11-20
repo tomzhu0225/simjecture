@@ -264,7 +264,8 @@ def import_subagent_outputs(
     folder = project / "subagent_imports"
     folder.mkdir(exist_ok=True)
     receipts = []
-    with tempfile.TemporaryDirectory(prefix=".subagent-import-", dir=dest_root) as temp:
+    # Keep staged files and receipts out of the conversation's live file listing.
+    with tempfile.TemporaryDirectory(prefix=".subagent-import-", dir=folder) as temp:
         staging = Path(temp)
         changes = []
         for index, name in enumerate(targets):
