@@ -4,6 +4,9 @@ This project follows semantic versioning. Dates use ISO 8601.
 
 ## Unreleased
 
+- Add an **Apply to all** action below the conversation reasoning selector to
+  sync the selected agent, model and reasoning effort across the workspace.
+
 - Add an English/Simplified Chinese selector to the workspace and experiment
   monitor, with a shared saved preference and live translations of program-owned
   headings, navigation, actions, forms, dialogs, statuses, tooltips, accessibility

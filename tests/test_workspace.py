@@ -567,7 +567,7 @@ def test_conversation_agents_are_independent_and_api_credentials_are_optional(
         workspace.select_agent(first["id"], dict(backend="grok", model="grok-4.7 high"))
 
 
-def test_bulk_model_update_preserves_other_agents_and_effort(tmp_path):
+def test_bulk_model_update_syncs_existing_conversations_in_this_workspace(tmp_path):
     workspace = Workspace(tmp_path / "current" / ".workspace")
     elsewhere = Workspace(tmp_path / "elsewhere" / ".workspace")
     original = dict(backend="builtin", model="model-old", reasoning_effort="high")
@@ -580,7 +580,7 @@ def test_bulk_model_update_preserves_other_agents_and_effort(tmp_path):
     foreign_record["agent"] = dict(backend="codex", model="gpt-fixture")
     foreign_path.write_text(json.dumps(foreign_record))
 
-    with pytest.raises(ValueError, match="Bulk model updates"):
+    with pytest.raises(ValueError, match="Bulk agent updates"):
         workspace.select_agent(None, original | {"update_all_models": True})
 
     selected = workspace.select_agent(
@@ -588,8 +588,12 @@ def test_bulk_model_update_preserves_other_agents_and_effort(tmp_path):
         original | dict(model="model-new", reasoning_effort="low", update_all_models=True),
     )
     assert workspace.project(first["id"])["agent"] == selected
-    assert workspace.project(second["id"])["agent"] == original | {"model": "model-new"}
-    assert json.loads(foreign_path.read_text()) == foreign_record
+    assert workspace.project(second["id"])["agent"] == selected
+    assert workspace.project(foreign["id"])["agent"] == selected
+    reset = workspace.select_agent(
+        first["id"], selected | dict(reasoning_effort="", update_all_models=True)
+    )
+    assert Workspace(workspace.root).project(second["id"])["agent"] == reset
     assert elsewhere.project(third["id"])["agent"] == original
 
 

@@ -433,7 +433,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
         effort = text(payload, "reasoning_effort", 20)
         update_all = payload.get("update_all_models", False)
         if not isinstance(update_all, bool) or (update_all and (identifier is None or not model)):
-            raise ValueError("Bulk model updates require a conversation and a model")
+            raise ValueError("Bulk agent updates require a conversation and a model")
         if backend not in {"builtin", "codex", "codex-glm", "grok", "agy"}:
             raise ValueError("Choose an API agent or an installed CLI")
         if backend != "builtin" and not shutil.which(backend):
@@ -460,9 +460,8 @@ class Workspace(MachineWorkspace, ProjectCollections):
                         if other == path or other.is_symlink() or other.parent.is_symlink():
                             continue
                         project = load(other)
-                        current = project.get("agent") or {}
-                        if current.get("backend") == backend and current.get("model") != model:
-                            project["agent"] = current | {"model": model}
+                        if project.get("agent") != agent:
+                            project["agent"] = agent
                             put(other, project)
             if model:
                 private_json(self.preferences_path, agent)

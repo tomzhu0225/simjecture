@@ -1,8 +1,7 @@
 {
-  "workspace.applyBulkModel": "Apply model",
-  "workspace.bulkModelSaved": "Model updated for conversations using the selected agent.",
-  "workspace.updateAllModels": "Update all conversation models",
-  "workspace.updateAllModelsHelp": "Only conversations using the selected agent in this workspace are updated.",
+  "workspace.applyBulkModel": "Apply to all",
+  "workspace.applyBulkModelTitle": "Apply the selected model and reasoning effort to all conversations",
+  "workspace.bulkModelSaved": "Model and reasoning effort updated for all conversations.",
   "activity.checking-subagent": "Checking subagent",
   "activity.independent-review": "Independent review",
   "activity.running-micro-study": "Running micro-study",

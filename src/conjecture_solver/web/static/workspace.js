@@ -280,6 +280,8 @@ function renderSettings() {
   SimjectureI18n.bindText($("runtime-status"), () => s.runtime_installed ? SimjectureI18n.t("ui.built-in-agent-powered-by-hugging-face-smolagents-your-existing-simj") : SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
   SimjectureI18n.bindText($("connection-result"), () => s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation") : SimjectureI18n.t("ui.optional-you-can-use-an-installed-cli-without-adding-an-api-key"));
 }
+let agentWrite = Promise.resolve();
+let bulkAgentPending = false;
 function agentControls(scope = "conversation") {
   const home = scope === "home";
   return {
@@ -395,7 +397,7 @@ async function renderAgent(backend, scope = "conversation") {
   controls.model.disabled = state.readonly || hosted;
   if (!home) {
     $("bulk-model-controls").hidden = controls.model.disabled;
-    $("apply-bulk-model").disabled = controls.model.disabled || !$("update-all-models").checked;
+    $("apply-bulk-model").disabled = controls.model.disabled || bulkAgentPending;
   }
   if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
   SimjectureI18n.content(controls.note, localizeModelNote(choices.note));
@@ -424,7 +426,9 @@ async function saveConversationAgent(scope = "conversation", updateAllModels = f
   if (!payload.model)
     throw Error(SimjectureI18n.t("ui.choose-a-model-or-enter-its-exact-id-in-other-model"));
   const previousAgent = scope === "conversation" ? state.project?.agent : null;
-  const result = await api("agent", payload);
+  const write = agentWrite.then(() => api("agent", payload));
+  agentWrite = write.catch(() => {});
+  const result = await write;
   state.routeMemory[result.backend] = result;
   if (scope === "home") state.homeAgent = result;
   else if (state.project?.id === payload.project) {
@@ -480,12 +484,12 @@ async function reloadProjects() {
 }
 async function openProject(id) {
   const request = ++state.projectRequest;
+  await agentWrite;
   const project = await api(`project?id=${encodeURIComponent(id)}`);
   // A slower earlier click must not replace a newer navigation choice.
   if (request !== state.projectRequest) return false;
   $("agent-switch-warning").hidden = true;
   const sameProject = state.project?.id === id;
-  $("update-all-models").checked = false;
   state.project = project;
   globalThis.WorkspaceProjects?.setSelected(project.collection);
   state.routeStudy = window.StudyNavigation.selected(project, sameProject ? state.routeStudy : null);
@@ -2246,32 +2250,26 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!accountBox.hidden)
 mountHomeAgent();
 globalThis.WorkspaceComposer?.mount($("chat-form"), $("chat-input"), document.querySelector("#chat-form .agent-controls"), "conversation");
 globalThis.WorkspaceComposer?.mount($("quick-start"), $("first-request"), document.querySelector("#quick-start .agent-controls"), "home");
-$("update-all-models").onchange = () => {
-  $("apply-bulk-model").disabled = !$("update-all-models").checked || $("conversation-model").disabled;
-};
 $("apply-bulk-model").onclick = async () => {
   const button = $("apply-bulk-model");
-  const checkbox = $("update-all-models");
-  if (button.disabled || !checkbox.checked) return;
+  if (button.disabled) return;
+  bulkAgentPending = true;
   button.disabled = true;
-  checkbox.disabled = true;
   try {
     await saveConversationAgent("conversation", true);
-    checkbox.checked = false;
     toast(SimjectureI18n.t("workspace.bulkModelSaved"));
   } catch (error) {
     toast(error.message, true);
   } finally {
-    checkbox.disabled = false;
-    checkbox.onchange();
+    bulkAgentPending = false;
+    button.disabled = $("conversation-model").disabled;
   }
 };
 for (const scope of ["home", "conversation"]) {
   const c = agentControls(scope);
   const saveSelection = () => {
     globalThis.WorkspaceComposer?.refresh(scope);
-    if (scope !== "conversation" || !$("update-all-models").checked)
-      return saveConversationAgent(scope).catch((e) => toast(e.message, true));
+    return saveConversationAgent(scope).catch((e) => toast(e.message, true));
   };
   c.backend.onchange = () =>
     renderAgent(c.backend.value, scope)
