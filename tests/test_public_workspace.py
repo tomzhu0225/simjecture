@@ -484,8 +484,9 @@ def test_hosted_interactive_worker_carries_brainstorming_and_replication_guidanc
     ).json()
     app.state.store.claim()
     execute(app.state.store.root, j["id"])
+    assert app.state.store.job(j["id"])["status"] == "completed"
     assert captured
-    system_prompt = json.dumps(captured[0][0])
+    system_prompt = json.dumps(captured[0][0].content)
     assert "keep the turn exploratory" in system_prompt
     assert "For a replication request" in system_prompt
     assert "call prepare_study only when the user asks" in system_prompt
