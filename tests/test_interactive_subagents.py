@@ -150,12 +150,17 @@ def test_subagent_handoff_validation_and_import(tmp_path: Path, monkeypatch):
     assert (project_dir / "files/other.json").read_text() == "existing"
     assert not (project_dir / "files/summary.json").exists()
 
-    # Inspect status and import deliverable into conversation files/
-    status = workspace.subagent_status(
-        project["id"],
-        task_id,
-        import_files=["summary.json"],
-    )
+    def write_receipt_and_poll(path, value):
+        put(path, value)
+        assert {entry["name"] for entry in workspace.project(project["id"])["files"]} == {
+            "input.txt",
+            "other.json",
+        }
+
+    # Poll while the verified file and its receipt are staged for publication.
+    with monkeypatch.context() as patch:
+        patch.setattr("conjecture_solver.web.subagents.put", write_receipt_and_poll)
+        status = workspace.subagent_status(project["id"], task_id, import_files=["summary.json"])
     assert status["subagent_result"]["status"] == "completed"
     assert len(status["imported"]) == 1
     assert (project_dir / "files/summary.json").is_file()
