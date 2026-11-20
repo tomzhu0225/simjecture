@@ -1,4 +1,7 @@
 {
+  "workspace.applyBulkModel": "应用到全部",
+  "workspace.applyBulkModelTitle": "将所选智能体、模型和推理力度应用到当前工作区的所有对话。正在运行的轮次保留原设置。",
+  "workspace.bulkModelSaved": "已更新当前工作区所有对话的智能体、模型和推理力度。",
   "activity.checking-subagent": "正在检查子智能体状态",
   "activity.independent-review": "独立评审",
   "activity.running-micro-study": "正在运行微型研究",

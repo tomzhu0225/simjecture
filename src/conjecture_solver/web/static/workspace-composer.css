@@ -61,6 +61,11 @@
 .agent-picker-popup .agent-controls .quiet { font-size: 12px; padding: 4px 0; text-align: left; }
 .agent-picker-popup .agent-controls .quiet::after { content: none; }
 .agent-picker-popup .agent-controls .field-help { display: block; margin: 0; font-size: 12px; line-height: 1.5; }
+.agent-picker-popup #bulk-model-controls[hidden] { display: none; }
+.agent-picker-popup #apply-bulk-model {
+  justify-self: start; max-width: 100%; padding: 6px 10px;
+  font-size: 12px; line-height: 1.4; white-space: normal;
+}
 .prompt-composer .composer-expand {
   position: absolute; top: 10px; right: 12px; display: grid; place-items: center;
   width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px;

@@ -11,6 +11,9 @@ This project follows semantic versioning. Dates use ISO 8601.
   add a repeatable source-copy audit and browser regression checks. Keep
   translations in per-language JSON files with a language manifest.
 
+- Add an **Apply to all** action below the conversation reasoning selector to
+  sync the selected agent, model and reasoning effort across the workspace.
+
 ## 0.7.1 — 2026-11-08
 
 - Add the pinned Lean 4.24.0/Mathlib proof-checking capability (`simjecture

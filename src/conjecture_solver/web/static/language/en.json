@@ -1,4 +1,7 @@
 {
+  "workspace.applyBulkModel": "Apply to all",
+  "workspace.applyBulkModelTitle": "Apply the selected agent, model and reasoning effort to all conversations in this workspace. Running turns keep their original settings.",
+  "workspace.bulkModelSaved": "Agent, model and reasoning effort updated for all conversations in this workspace.",
   "activity.checking-subagent": "Checking subagent",
   "activity.independent-review": "Independent review",
   "activity.running-micro-study": "Running micro-study",

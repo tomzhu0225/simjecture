@@ -286,6 +286,8 @@ const state = {project:null,projectRequest:0,mode:'interactive'};
 const $ = () => ({});
 const pending = new Map();
 const api = path => new Promise(resolve=>pending.set(path,resolve));
+let finishAgentWrite;
+const agentWrite = new Promise(resolve => { finishAgentWrite = resolve; });
 let rendered = [];
 const renderProject = () => rendered.push(state.project.id);
 const view = () => {};
@@ -297,8 +299,13 @@ const renderAgent = async () => {};
         + """
 (async () => {
  const first = openProject('first');
+ assert.equal(pending.size,0);
+ finishAgentWrite();
+ await Promise.resolve();
+ assert.ok(pending.has('project?id=first'));
  if (destination === 'newer-project') {
    const second = openProject('second');
+   await Promise.resolve();
    pending.get('project?id=second')({id:'second'});
    assert.equal(await second,true);
  } else {

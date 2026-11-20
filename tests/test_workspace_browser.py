@@ -1,5 +1,6 @@
 """Browser acceptance checks. Install Playwright + Chromium to run locally."""
 
+import json
 import shlex
 import threading
 from pathlib import Path
@@ -14,6 +15,108 @@ from tests.test_workspace import provider as protocol_provider
 @pytest.fixture
 def provider():
     yield from protocol_provider.__wrapped__()
+
+
+@pytest.mark.parametrize("width", [1440, 850])
+def test_browser_bulk_model_update_is_opt_in(tmp_path, provider, width):
+    playwright = pytest.importorskip("playwright.sync_api")
+    url, _requests = provider
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    app.workspace.save_api(dict(base_url=url, api_key="test-secret"))
+    agent = dict(backend="builtin", model="fixture-model", reasoning_effort="high")
+    first = app.workspace.create(dict(name="First chat", agent=agent))
+    second = app.workspace.create(dict(name="Second chat", agent=agent))
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        with playwright.sync_playwright() as runtime:
+            browser = runtime.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": width, "height": 720})
+            page.set_default_timeout(8000)
+            page.goto(f"http://127.0.0.1:{server.server_port}/workspace#project={first['id']}")
+            page.locator("#conversation-agent-picker").click()
+            apply = page.locator("#apply-bulk-model")
+            model = page.locator("#conversation-model")
+            effort = page.locator("#conversation-effort")
+            playwright.expect(apply).to_be_enabled()
+            playwright.expect(apply).to_have_css("font-size", "12px")
+            assert apply.evaluate("(b) => b.scrollWidth <= b.clientWidth")
+            with page.expect_response(lambda response: "/api/workspace/agent" in response.url):
+                model.select_option("fixture-alternate")
+            assert app.workspace.project(second["id"])["agent"] == agent
+
+            effort.select_option("low")
+            model.select_option("__custom__")
+            page.locator("#custom-model").fill("fixture-new")
+            apply.click()
+            page.get_by_role("button", name="Second chat", exact=True).click()
+            page.locator("#conversation-agent-picker").click()
+            playwright.expect(page.locator("#custom-model")).to_have_value("fixture-new")
+            playwright.expect(effort).to_have_value("low")
+            page.reload()
+            page.locator("#conversation-agent-picker").click()
+            playwright.expect(page.locator("#custom-model")).to_have_value("fixture-new")
+            playwright.expect(effort).to_have_value("low")
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_browser_send_from_open_tab_preserves_bulk_update(tmp_path, provider, monkeypatch):
+    playwright = pytest.importorskip("playwright.sync_api")
+    url, _requests = provider
+    app = SimjectureWebApplication(runs_root=tmp_path, scan_roots=(tmp_path,))
+    app.workspace.save_api(dict(base_url=url, api_key="test-secret"))
+    original = dict(backend="builtin", model="fixture-model", reasoning_effort="high")
+    first = app.workspace.create(dict(name="First chat", agent=original))
+    second = app.workspace.create(dict(name="Second chat", agent=original))
+    monkeypatch.setattr("conjecture_solver.web.workspace.spawn", lambda *args: {})
+    server = create_server(app, port=0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    origin = f"http://127.0.0.1:{server.server_port}"
+    try:
+        with playwright.sync_playwright() as runtime:
+            browser = runtime.chromium.launch(headless=True)
+            context = browser.new_context()
+            first_tab, second_tab = context.new_page(), context.new_page()
+            for page, project in ((first_tab, first), (second_tab, second)):
+                page.goto(f"{origin}/workspace#project={project['id']}")
+                playwright.expect(page.locator("#conversation-model")).to_have_value(
+                    "fixture-model"
+                )
+
+            # Reproduce sending before the second tab receives the next project poll.
+            stale_project = app.workspace.project(second["id"])
+            project_url = f"{origin}/api/workspace/project?id={second['id']}"
+            second_tab.route(project_url, lambda route: route.fulfill(json=stale_project))
+            first_tab.locator("#conversation-agent-picker").click()
+            first_tab.locator("#conversation-model").select_option("fixture-alternate")
+            first_tab.locator("#conversation-effort").select_option("low")
+            first_tab.locator("#apply-bulk-model").click()
+            playwright.expect(first_tab.locator("#toast")).to_contain_text(
+                "updated for all conversations"
+            )
+            expected = original | dict(model="fixture-alternate", reasoning_effort="low")
+            assert app.workspace.project(second["id"])["agent"] == expected
+            playwright.expect(second_tab.locator("#conversation-model")).to_have_value(
+                "fixture-model"
+            )
+            second_tab.locator("#chat-input").fill("Continue with the current model.")
+            with second_tab.expect_response(f"{origin}/api/workspace/message") as sent:
+                second_tab.locator("#send-message").click()
+            assert sent.value.ok
+            assert app.workspace.project(second["id"])["agent"] == expected
+            (request,) = (app.workspace.directory(second["id"]) / "turns").glob("*/request.json")
+            assert json.loads(request.read_text())["agent"] == expected
+
+            second_tab.unroute(project_url)
+            playwright.expect(second_tab.locator("#conversation-model")).to_have_value(
+                "fixture-alternate"
+            )
+            playwright.expect(second_tab.locator("#conversation-effort")).to_have_value("low")
+    finally:
+        server.shutdown()
+        server.server_close()
 
 
 def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
