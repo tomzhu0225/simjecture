@@ -491,6 +491,9 @@ class AgentSupervisor:
                             activity = observed
                             limit = time.monotonic() + self.args.turn_seconds
                     boundary = self.boundary()
+                    steering_due = (
+                        not judge and getattr(self, "steering_requested", lambda: False)()
+                    )
                     handoff = (
                         not judge and getattr(self, "worker_checkpoint_requested", lambda: False)()
                     )
@@ -502,14 +505,17 @@ class AgentSupervisor:
                     )
                     if (
                         boundary
+                        or steering_due
                         or handoff
                         or call_expired
                         or time.monotonic() >= min(limit, slice_limit)
                     ):
-                        turn_timed_out = boundary is None
+                        turn_timed_out = boundary is None and not steering_due
                         interruption_reason = (
                             "boundary"
                             if boundary
+                            else "direct_steering"
+                            if steering_due
                             else "review_handoff"
                             if handoff
                             else "absolute_call_boundary"
@@ -526,8 +532,13 @@ class AgentSupervisor:
                         except subprocess.TimeoutExpired:
                             os.killpg(child.pid, signal.SIGKILL)
                         break
-                    time.sleep(1)
+                    time.sleep(0.2 if getattr(self.args, "interactive_activity", False) else 1)
                 returncode = child.wait()
+                if interruption_reason == "direct_steering":
+                    self.event(
+                        "worker_steered", duration_seconds=time.monotonic() - provider_started
+                    )
+                    return 0
                 if turn_timed_out:
                     self.event(
                         "worker_turn_timeout",

@@ -61,6 +61,8 @@ window.WorkspacePanels = (() => {
     }
     requestAnimationFrame(positionTab);
   }
+  let wideMode = false;
+  let savedNormalRight = 320;
   function resize() {
     const split = $("research-layout");
     if (
@@ -69,13 +71,28 @@ window.WorkspacePanels = (() => {
       split.orientation === "vertical"
     )
       return;
+    const total = split.getBoundingClientRect().width;
     if (!collapsed.right)
       split.positionInPixels = clamp(
-        sizes.right,
+        wideMode ? Math.max(sizes.right, total * 0.56) : sizes.right,
         220,
-        split.getBoundingClientRect().width * 0.65,
+        total * 0.72,
       );
     requestAnimationFrame(positionTab);
+  }
+  function toggleWide() {
+    const split = $("research-layout");
+    if (!split || split.orientation === "vertical") return false;
+    set("right", false);
+    if (!wideMode) {
+      savedNormalRight = sizes.right;
+      wideMode = true;
+    } else {
+      wideMode = false;
+      sizes.right = savedNormalRight;
+    }
+    resize();
+    return wideMode;
   }
   function set(side, value) {
     const changed = collapsed[side] !== value;
@@ -203,5 +220,5 @@ window.WorkspacePanels = (() => {
     window.addEventListener("resize", positionTab);
     apply();
   });
-  return { set, resize };
+  return { set, resize, toggleWide };
 })();

@@ -229,6 +229,16 @@ window.WorkspaceMonitor = {
           const a = node("a", file.name, "file-row");
           a.href = window.WorkspaceRich.artifactURL(source, p, false);
           row.append(a);
+          if (!file.name.startsWith("__console__/") && window.WorkspaceFiles) {
+            const viewBtn = node("button", SimjectureI18n.message("workspace.files.viewInline"), "sim-file-view-btn");
+            viewBtn.type = "button";
+            viewBtn.onclick = () =>
+              window.WorkspaceFiles.open(file.name, {
+                source: shared ? "files" : "simulation",
+                simulation: shared ? null : identifier,
+              });
+            row.append(viewBtn);
+          }
           if (file.role === "modified_input")
             row.append(
               node("small", SimjectureI18n.message("ui.changed-from-the-copied-input"), "field-help"),

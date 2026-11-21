@@ -1,0 +1,169 @@
+/* Codex-style instant mid-turn direct steering and follow-up queue UI. */
+.steering-panel {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+.steering-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 9%, var(--white));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  font-size: 12px;
+}
+.steering-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.steering-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: activity-pulse 1.3s ease-in-out infinite;
+}
+.steering-modes {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+.steering-mode-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.steering-mode-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+.steering-mode-btn[data-steer-mode="interrupt"][aria-pressed="true"] {
+  background: #b84a39;
+}
+.steering-queue {
+  display: grid;
+  gap: 5px;
+}
+.steering-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  font-size: 12px;
+}
+.steering-chip-badge {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--accent);
+}
+.steering-chip-badge.interrupt {
+  background: #fcebe8;
+  color: #a73a2b;
+}
+.steering-chip-badge.applied {
+  background: #e4f4ec;
+  color: #1f6b47;
+}
+.steering-chip-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.steering-chip-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.steering-chip-actions button {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.steering-chip-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.prompt-composer .composer-steer {
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 650;
+  gap: 5px;
+}
+.prompt-composer .composer-steer.is-interrupt {
+  background: #b84a39;
+}
+.steer-timeline-marker {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 8px 11px;
+  border-radius: 9px;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper));
+  font-size: 13px;
+}
+.steer-timeline-marker.is-interrupt {
+  border-left-color: #b84a39;
+}
+.steer-timeline-marker strong {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--accent);
+}
+.steer-timeline-marker p {
+  margin: 2px 0 0;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+[data-theme="dark"] .steering-bar {
+  background: #25243e;
+  border-color: #464270;
+}
+[data-theme="dark"] .steering-modes,
+[data-theme="dark"] .steering-chip {
+  background: #1d2332;
+  border-color: var(--line);
+}
+[data-theme="dark"] .steering-chip-badge.interrupt {
+  background: #42252a;
+  color: #f4a498;
+}
+[data-theme="dark"] .steering-chip-badge.applied {
+  background: #1c3d30;
+  color: #8ee0b5;
+}
