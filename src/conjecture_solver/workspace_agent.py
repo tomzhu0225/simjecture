@@ -16,12 +16,14 @@ import os
 import signal
 import subprocess
 import sys
+import threading
 import time
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
 ACTIVE_COMMANDS: set[int] = set()
+STEER_INTERRUPT = threading.Event()
 
 
 def _save_brief_with_inherited_fallback(workspace, project_id, payload):
@@ -367,7 +369,17 @@ def readable_study_path(root, name, project=None):
     raise ValueError("Use a path inside this project's files directory")
 
 
-def agent_tools(root, deadline, project=None, workspace=None):
+def agent_tools(
+    root,
+    deadline,
+    project=None,
+    workspace=None,
+    *,
+    turn_dir=None,
+    swarm_dir=None,
+    swarm_member=None,
+    swarm_role=None,
+):
     from smolagents import tool
 
     from .agent_skills import research_skills
@@ -439,6 +451,11 @@ def agent_tools(root, deadline, project=None, workspace=None):
         p = contained(root, path)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(content)
+        emit(
+            "file_edit",
+            path=p.relative_to(root.resolve()).as_posix(),
+            bytes=len(content.encode()),
+        )
         return f"Saved {path} ({len(content)} characters)"
 
     @tool
@@ -473,7 +490,19 @@ def agent_tools(root, deadline, project=None, workspace=None):
             )
             emit("command", id=job["id"], name=job["name"])
             try:
+                from .web.steering import has_pending_steering
+
                 while True:
+                    if STEER_INTERRUPT.is_set() or has_pending_steering(
+                        turn_dir, interrupt_only=True
+                    ):
+                        STEER_INTERRUPT.clear()
+                        with contextlib.suppress(ValueError, OSError):
+                            workspace.stop_simulation(project, job["id"])
+                        return (
+                            "Command interrupted by urgent direct user steering. "
+                            "Apply the steering directive immediately."
+                        )
                     result = workspace.simulation(project, job["id"])
                     if result["status"] in {
                         "succeeded",
@@ -486,7 +515,7 @@ def agent_tools(root, deadline, project=None, workspace=None):
                             f"{result['status']} · exit code {result.get('returncode')}\n"
                             + result["output"]
                         )
-                    time.sleep(0.2)
+                    time.sleep(0.15)
             finally:
                 with contextlib.suppress(ValueError, OSError):
                     workspace.stop_simulation(project, job["id"])
@@ -886,6 +915,128 @@ def agent_tools(root, deadline, project=None, workspace=None):
             emit("review", review_id=result["review_id"], status=result["status"])
             return json.dumps(result)
 
+        @tool
+        def launch_swarm(
+            title: str,
+            members: list[dict],
+            objective: str = "",
+            strategy: str = "parallel_explore",
+            max_concurrent: int = 4,
+            wait: bool = True,
+        ) -> str:
+            """Launch a coordinated multi-agent swarm (1 to 8 workers) with roles, optional DAG
+            dependencies (depends_on), per-worker models, and a shared message board.
+
+            Args:
+                title: Short human-readable title for this swarm.
+                members: List of 1..8 member specs with name, role, task, completion_criteria,
+                    outputs, optional input_files, depends_on, timeout_seconds, backend, model.
+                objective: Shared research objective visible to all swarm workers.
+                strategy: parallel_explore, divide_and_conquer, adversarial_verify, or custom.
+                max_concurrent: Maximum active workers running simultaneously (1..4).
+                wait: Wait for all swarm stages to complete before returning.
+            """
+            result = workspace.launch_swarm(
+                project,
+                dict(
+                    title=title,
+                    objective=objective,
+                    strategy=strategy,
+                    members=members,
+                    max_concurrent=max_concurrent,
+                    wait=wait,
+                ),
+            )
+            emit("swarm", id=result["id"], title=result["title"], status=result.get("status"))
+            return json.dumps(result)
+
+        @tool
+        def swarm_status(swarm_id: str = "", include_board: bool = True) -> str:
+            """Inspect multi-agent swarm status, worker progress, deliverables, and board messages.
+
+            Args:
+                swarm_id: Swarm ID; omit to list all swarms in this conversation.
+                include_board: Include shared message board entries when inspecting one swarm.
+            """
+            if not swarm_id:
+                return json.dumps({"swarms": workspace.swarms(project)})
+            return json.dumps(
+                workspace.swarm_detail(project, swarm_id, include_board=include_board)
+            )
+
+        @tool
+        def swarm_message(
+            swarm_id: str,
+            message: str,
+            recipient: str = "all",
+            kind: str = "steering",
+        ) -> str:
+            """Post a message on a swarm's shared board and steer live target worker(s).
+
+            Args:
+                swarm_id: Target swarm identifier.
+                message: Finding, directive, or steering instruction.
+                recipient: 'all' to broadcast, or a specific member name.
+                kind: steering, finding, brief, question, or alert.
+            """
+            return json.dumps(
+                workspace.swarm_message(
+                    project,
+                    dict(
+                        swarm=swarm_id,
+                        message=message,
+                        recipient=recipient,
+                        kind=kind,
+                        sender="Coordinator",
+                        sender_role="coordinator",
+                    ),
+                )
+            )
+
+        @tool
+        def swarm_import(
+            swarm_id: str,
+            worker_id: str,
+            files: list[str] | None = None,
+            overwrite: bool = False,
+        ) -> str:
+            """Import validated SHA-256 deliverables from a swarm worker into conversation files.
+
+            Args:
+                swarm_id: Swarm identifier.
+                worker_id: Member name or worker job ID.
+                files: Optional deliverable paths to import; omit to import all validated outputs.
+                overwrite: Replace an existing conversation file when true.
+            """
+            return json.dumps(
+                workspace.swarm_import(
+                    project,
+                    dict(swarm=swarm_id, worker=worker_id, files=files, overwrite=overwrite),
+                )
+            )
+
+        @tool
+        def swarm_control(
+            swarm_id: str,
+            action: str,
+            worker_id: str = "",
+            worker: dict | None = None,
+        ) -> str:
+            """Control a swarm: stop_swarm, stop_worker, retry_worker, or add_worker.
+
+            Args:
+                swarm_id: Swarm identifier.
+                action: stop_swarm, stop_worker, retry_worker, or add_worker.
+                worker_id: Member name or job ID for stop_worker / retry_worker.
+                worker: Member specification dictionary for add_worker.
+            """
+            return json.dumps(
+                workspace.swarm_control(
+                    project,
+                    dict(swarm=swarm_id, action=action, worker_id=worker_id, worker=worker),
+                )
+            )
+
         tools += [
             draft_study,
             research_tools,
@@ -896,6 +1047,11 @@ def agent_tools(root, deadline, project=None, workspace=None):
             simulation_status,
             run_subagents,
             subagent_status,
+            launch_swarm,
+            swarm_status,
+            swarm_message,
+            swarm_import,
+            swarm_control,
             run_micro_study,
             review_work,
             progress_update,
@@ -928,6 +1084,43 @@ def agent_tools(root, deadline, project=None, workspace=None):
             return json.dumps(result, ensure_ascii=False)
 
         tools += [knowledge_search, knowledge_read]
+    if swarm_dir is not None:
+        from .web.swarm import append_board, read_board
+
+        @tool
+        def swarm_board_read(limit: int = 40) -> str:
+            """Read recent shared messages, sibling findings, and steering on the swarm board.
+
+            Args:
+                limit: Maximum number of recent board entries to read (1..120).
+            """
+            bounded = min(max(1, int(limit)), 120)
+            return json.dumps(read_board(Path(swarm_dir), limit=bounded), ensure_ascii=False)
+
+        @tool
+        def swarm_board_post(
+            message: str,
+            recipient: str = "all",
+            kind: str = "finding",
+        ) -> str:
+            """Post a concise finding, question, or alert to the shared swarm board.
+
+            Args:
+                message: Concise discovery, result, or coordination note for peers.
+                recipient: 'all' or a specific peer member name.
+                kind: finding, question, alert, or handoff.
+            """
+            entry = append_board(
+                Path(swarm_dir),
+                sender=swarm_member or "worker",
+                sender_role=swarm_role or "worker",
+                recipient=recipient,
+                kind=kind,
+                content=message,
+            )
+            return json.dumps(entry, ensure_ascii=False)
+
+        tools += [swarm_board_read, swarm_board_post]
     return tools
 
 
@@ -944,6 +1137,10 @@ def run_agent(
     session_dir=None,
     action_limit=None,
     review_root=None,
+    turn_dir=None,
+    swarm_dir=None,
+    swarm_member=None,
+    swarm_role=None,
 ):
     if judge and session_dir is not None:
         raise ValueError("Independent reviewers cannot resume a worker session")
@@ -1061,7 +1258,11 @@ def run_agent(
     if action_limit is not None and (type(action_limit) is not int or action_limit < 1):
         raise ValueError("action_limit must be a positive integer or omitted")
 
-    ToolCallingAgent = agent_type(native_tools=native_tools, checkpoint=session_dir is not None)
+    ToolCallingAgent = agent_type(
+        native_tools=native_tools,
+        checkpoint=session_dir is not None,
+        steering_dir=turn_dir,
+    )
 
     def step_event(step, **kwargs):
         if time.time() >= deadline:
@@ -1080,7 +1281,16 @@ def run_agent(
             )
 
     agent = ToolCallingAgent(
-        tools=agent_tools(root, deadline, project, workspace),
+        tools=agent_tools(
+            root,
+            deadline,
+            project,
+            workspace,
+            turn_dir=turn_dir,
+            swarm_dir=swarm_dir,
+            swarm_member=swarm_member,
+            swarm_role=swarm_role,
+        ),
         model=llm,
         max_steps=action_limit or sys.maxsize,
         return_full_result=True,
@@ -1274,6 +1484,13 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "'completion_criteria':'Save the measured errors.','outputs':['result.json'],"
             "'input_files':[]}],'wait':True}) and w.subagent_status("
             f"{root.parent.name!r}, 'subagent-id', import_files=['result.json']). "
+            "For coordinated multi-agent swarms with roles, DAG stages (depends_on) and a shared "
+            f"message board use w.launch_swarm({root.parent.name!r}, {{'title':'Exploration swarm',"
+            "'strategy':'parallel_explore','members':[...],'wait':True}), "
+            f"w.swarm_detail({root.parent.name!r}, 'swarm-id'), "
+            f"w.swarm_message({root.parent.name!r}, {{'swarm':'swarm-id','recipient':'all',"
+            "'message':'...'}) and w.swarm_import("
+            f"{root.parent.name!r}, {{'swarm':'swarm-id','worker':'member-name'}}). "
             "For a self-contained bounded autonomous study inside a turn use w.run_micro_study("
             f"{root.parent.name!r}, {{'question':'Is mass conserved?',"
             "'success_criteria':'Measure mass drift.','minutes':15,'wait':True}), "
@@ -1305,8 +1522,39 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
             "differences before calling it a replication. Do not silently remove driving "
             "or change boundaries just to get a run."
         )
+    from .web.steering import (
+        consume_pending_steering,
+        format_steering_injection,
+        has_pending_steering,
+    )
+
+    steering_dir = turn
+    supervisor.steering_requested = lambda: has_pending_steering(steering_dir)
+    current_prompt = bridge + "\n\n" + prompt
+    steer_round = 0
     try:
-        rc = supervisor.launch(output, bridge + "\n\n" + prompt)
+        while True:
+            rc = supervisor.launch(output, current_prompt)
+            if workspace and supervisor.state.get("worker_cursor"):
+                save_session(root.parent, config, cursor=supervisor.state["worker_cursor"])
+            pending = consume_pending_steering(steering_dir)
+            if not pending or steer_round >= 24:
+                break
+            steer_round += 1
+            prior = output / "response.json"
+            if prior.is_file():
+                prior.replace(output / f"response-steer-{steer_round}.json")
+            emit(
+                "activity",
+                state="steering",
+                label="Applying steering",
+                detail=pending[-1].get("message", "")[:240],
+            )
+            injected = format_steering_injection(pending)
+            if supervisor.state.get("worker_cursor"):
+                current_prompt = injected
+            else:
+                current_prompt = f"{bridge}\n\n{prompt}\n\n{injected}"
     finally:
         if workspace and supervisor.state.get("worker_cursor"):
             save_session(root.parent, config, cursor=supervisor.state["worker_cursor"])
@@ -1374,6 +1622,10 @@ def main(argv=None):
     parser.add_argument("--session-dir", type=Path)
     parser.add_argument("--action-limit", type=int)
     parser.add_argument("--review-root", type=Path)
+    parser.add_argument("--turn-dir", type=Path)
+    parser.add_argument("--swarm-dir", type=Path)
+    parser.add_argument("--swarm-member")
+    parser.add_argument("--swarm-role")
     args = parser.parse_args(argv)
     config = read_provider(args.provider_config, api_only=args.judge)
     workspace = None
@@ -1381,6 +1633,8 @@ def main(argv=None):
         from .web.workspace import Workspace
 
         workspace = Workspace(args.workspace)
+    turn_dir = args.turn_dir or (args.prompt_file.parent if workspace and args.project else None)
+    clean_completion = False
     try:
 
         def expired(signum, *_):
@@ -1396,9 +1650,14 @@ def main(argv=None):
             )
             raise KeyboardInterrupt(summary)
 
+        def on_steer_interrupt(*_):
+            STEER_INTERRUPT.set()
+
         signal.signal(signal.SIGALRM, expired)
         signal.signal(signal.SIGTERM, expired)
         signal.signal(signal.SIGINT, expired)
+        if hasattr(signal, "SIGUSR1"):
+            signal.signal(signal.SIGUSR1, on_steer_interrupt)
         if args.wall_seconds is not None:
             signal.alarm(max(1, int(args.wall_seconds)))
         if config.get("backend", "builtin") != "builtin":
@@ -1410,7 +1669,7 @@ def main(argv=None):
                 args.prompt_file.read_text(),
                 args.cwd.resolve(),
                 config,
-                args.prompt_file.parent,
+                turn_dir or args.prompt_file.parent,
                 workspace,
                 wall_seconds=args.wall_seconds,
             )
@@ -1436,7 +1695,12 @@ def main(argv=None):
                 session_dir=args.session_dir,
                 action_limit=args.action_limit,
                 review_root=args.review_root,
+                turn_dir=turn_dir,
+                swarm_dir=args.swarm_dir,
+                swarm_member=args.swarm_member,
+                swarm_role=args.swarm_role,
             )
+        clean_completion = True
         emit("result", subtype="success", result=answer)
         return 0
     except Exception as error:
@@ -1453,6 +1717,9 @@ def main(argv=None):
         if workspace and args.project:
             with contextlib.suppress(OSError, ValueError):
                 workspace.write_conversation(args.project)
+            if clean_completion:
+                with contextlib.suppress(OSError, ValueError):
+                    workspace.dispatch_queued_steering(args.project, excluding_pid=os.getpid())
 
 
 if __name__ == "__main__":

@@ -518,6 +518,15 @@ async function openProject(id) {
   if (state.mode === "autonomous") await renderStudies();
   return request === state.projectRequest && state.project?.id === id;
 }
+async function refreshProject(id = state.project?.id) {
+  if (!id) return null;
+  const updated = await api(`project?id=${encodeURIComponent(id)}`);
+  if (state.project?.id === id) {
+    state.project = updated;
+    renderProject();
+  }
+  return updated;
+}
 function mode(name) {
   state.mode = name;
   renderStudyNavigation();
@@ -615,6 +624,8 @@ function renderProject(force = false) {
     }
   }
   monitor.render(p);
+  window.WorkspaceSteering?.render(p);
+  window.WorkspaceSwarm?.render(p);
   const revision = JSON.stringify([
     p.messages,
     p.files,
@@ -684,6 +695,7 @@ function renderProject(force = false) {
       }
       article.append(content);
       globalThis.WorkspaceKnowledge?.renderCitations(article, message.knowledge_citations);
+      window.WorkspaceSteering?.renderTimelineMarkers(article, message.events);
       const tools = (message.events || []).filter(
         (e) => e.type === "tool" || e.type === "observation",
       );
@@ -814,19 +826,23 @@ function renderProject(force = false) {
   const inspectorScroll = inspector.scrollTop;
   SimjectureI18n.content($("project-path"), p.files_directory);
   SimjectureI18n.content($("file-count"), p.files.length);
-  $("project-files").replaceChildren();
-  for (const file of p.files) {
-    const row = el("div", undefined, "file-row"),
-      link = el("a", file.name);
-    link.href = workspaceURL(`/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`);
-    SimjectureI18n.attribute(link, "title", () => file.name);
-    row.append(link, el("small", bytes(file.bytes)));
-    $("project-files").append(row);
+  if (window.WorkspaceFiles) {
+    window.WorkspaceFiles.render(p);
+  } else {
+    $("project-files").replaceChildren();
+    for (const file of p.files) {
+      const row = el("div", undefined, "file-row"),
+        link = el("a", file.name);
+      link.href = workspaceURL(`/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`);
+      SimjectureI18n.attribute(link, "title", () => file.name);
+      row.append(link, el("small", bytes(file.bytes)));
+      $("project-files").append(row);
+    }
+    if (!p.files.length)
+      $("project-files").append(
+        window.SimjectureI18n.text(el("p"), "workspace.fileEmpty"),
+      );
   }
-  if (!p.files.length)
-    $("project-files").append(
-      window.SimjectureI18n.text(el("p"), "workspace.fileEmpty"),
-    );
   $("brief-summary").replaceChildren(
     p.brief?.question
       ? el("p", p.brief.question)
@@ -2400,6 +2416,10 @@ $("dismiss-study-explainer").onclick = () => {
 };
 $("chat-form").onsubmit = (e) => {
   e.preventDefault();
+  if (window.WorkspaceSteering?.isActive()) {
+    window.WorkspaceSteering.submitFromKeyboard(false);
+    return;
+  }
   action($("send-message"), send);
 };
 for (const [input, form] of [
@@ -2414,6 +2434,10 @@ for (const [input, form] of [
       e.keyCode !== 229
     ) {
       e.preventDefault();
+      if (input === "chat-input" && window.WorkspaceSteering?.isActive()) {
+        window.WorkspaceSteering.submitFromKeyboard(e.ctrlKey || e.metaKey);
+        return;
+      }
       const submit = $(form).querySelector("button[type=submit]");
       if (!state.readonly && !submit.disabled) $(form).requestSubmit(submit);
     }
@@ -2554,6 +2578,20 @@ const monitor = window.WorkspaceMonitor.create({
   notify: toast,
   readonly: () => state.readonly,
 });
+const workspaceExtensionContext = {
+  api,
+  project: () => state.project,
+  notify: toast,
+  readonly: () => state.readonly,
+  hosted,
+  action,
+  workspaceURL,
+  refreshProject,
+  openSimulation: (id) => monitor.open(id),
+};
+window.WorkspaceFiles?.init(workspaceExtensionContext);
+window.WorkspaceSteering?.init(workspaceExtensionContext);
+window.WorkspaceSwarm?.init(workspaceExtensionContext);
 window.addEventListener("hashchange", () =>
   followRoute().catch((e) => toast(e.message, true)),
 );

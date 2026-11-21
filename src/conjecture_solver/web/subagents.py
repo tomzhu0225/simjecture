@@ -73,10 +73,19 @@ def normalize_tasks(payload: dict) -> list[SubagentTaskSpec]:
     return specs
 
 
-def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path, *, selected=None):
+def launch_subagent(
+    project: Path,
+    spec: SubagentTaskSpec,
+    connection_file: Path,
+    *,
+    selected=None,
+    extra_metadata: dict | None = None,
+    upstream_artifacts: list[tuple[Path, Path]] | None = None,
+):
     project = Path(project).resolve()
     if selected is None:
         selected = selected_inputs(project, spec.input_files)
+    extra_metadata = dict(extra_metadata or {})
     directory = project / "simulations"
     directory.mkdir(exist_ok=True)
     slug = re.sub(r"[^a-z0-9]+", "-", spec.name.lower()).strip("-")[:56] or "subagent"
@@ -93,12 +102,18 @@ def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path
         work = root / "workspace"
         (work / "inputs").mkdir(parents=True, exist_ok=True)
         inputs, input_manifest = [], {}
-        for path, relative in selected:
+        all_inputs = list(selected) + list(upstream_artifacts or [])
+        for path, relative in all_inputs:
             frozen = work / "inputs" / relative
             frozen.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, frozen)
             working = frozen
-            if relative.parts[0] not in {"inputs", "CONTEXT.json", "HELPER_RESULT.json"}:
+            if relative.parts[0] not in {
+                "inputs",
+                "upstream",
+                "CONTEXT.json",
+                "HELPER_RESULT.json",
+            }:
                 working = work / relative
                 working.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(frozen, working)
@@ -120,6 +135,9 @@ def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path
             outputs=spec.outputs,
             inputs={k: v["sha256"] for k, v in input_manifest.items()},
         )
+        for key in ("swarm_id", "swarm_role", "swarm_member"):
+            if extra_metadata.get(key):
+                context_data[key] = extra_metadata[key]
         put(work / "CONTEXT.json", context_data)
         request = dict(
             id=identifier,
@@ -139,7 +157,7 @@ def launch_subagent(project: Path, spec: SubagentTaskSpec, connection_file: Path
             created_at=time.time(),
             scientific_status="exploration",
             source_turn=read(project / "project.json").get("active_turn"),
-        )
+        ) | extra_metadata
         put(root / "request.json", request)
         put(root / "state.json", dict(status="queued", updated_at=time.time()))
         env = os.environ.copy()
@@ -325,7 +343,7 @@ def build_subagent_prompt(request: dict, work: Path) -> str:
     from ..agent_skills import skill_context
 
     remaining = max(1.0, request["created_at"] + request["timeout_seconds"] - time.time())
-    return (
+    prompt = (
         "You are an isolated interactive subagent working on a bounded task for the parent "
         "conversation.\n"
         "Read CONTEXT.json and any copied input files in the working directory (preserved under "
@@ -343,6 +361,17 @@ def build_subagent_prompt(request: dict, work: Path) -> str:
         f"Required deliverables: {json.dumps(request['expected_outputs'])}\n"
         f"Time remaining: {remaining:.0f} seconds."
     )
+    if request.get("swarm_dir"):
+        prompt += (
+            f"\nSwarm role: {request.get('swarm_role', 'worker')} "
+            f"(member: {request.get('swarm_member', request.get('name', 'worker'))}). "
+            "You are part of a coordinated multi-agent swarm with a shared message board. "
+            "Use swarm_board_read / swarm_board_post tools (or in Python: "
+            "from conjecture_solver.web.swarm import read_board, append_board; "
+            f"swarm_dir = Path({request['swarm_dir']!r})) to read sibling findings "
+            "and share key discoveries, counterexamples, or blockers concisely."
+        )
+    return prompt
 
 
 def run_subagent(root: Path) -> int:
@@ -382,7 +411,18 @@ def run_subagent(root: Path) -> int:
             str(work),
             "--wall-seconds",
             str(timeout),
+            "--turn-dir",
+            str(root),
         ]
+        if request.get("swarm_dir"):
+            cmd += [
+                "--swarm-dir",
+                str(request["swarm_dir"]),
+                "--swarm-member",
+                str(request.get("swarm_member") or request.get("name") or "worker"),
+                "--swarm-role",
+                str(request.get("swarm_role") or "worker"),
+            ]
         with (root / "output.log").open("a+b", buffering=0) as output:
             child = subprocess.Popen(
                 cmd,

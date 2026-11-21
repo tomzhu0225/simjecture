@@ -62,6 +62,26 @@ def describe_tool(name, arguments):
         )
         label = "Running subagents" if normalized == "run_subagents" else "Checking subagent"
         detail = names or args.get("identifier", "")
+    elif normalized in {
+        "launch_swarm",
+        "swarm_status",
+        "swarm_message",
+        "swarm_import",
+        "swarm_control",
+    }:
+        label = {
+            "launch_swarm": "Launching swarm",
+            "swarm_status": "Checking swarm",
+            "swarm_message": "Messaging swarm",
+            "swarm_import": "Importing swarm artifact",
+            "swarm_control": "Controlling swarm",
+        }[normalized]
+        detail = args.get("title") or args.get("swarm_id") or args.get("recipient") or ""
+    elif normalized in {"swarm_board_read", "swarm_board_post"}:
+        label = (
+            "Reading swarm board" if normalized == "swarm_board_read" else "Posting to swarm board"
+        )
+        detail = args.get("recipient") or args.get("kind") or ""
     elif normalized == "run_micro_study":
         label = "Running micro-study"
         detail = args.get("question", "")
