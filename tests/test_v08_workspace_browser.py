@@ -73,7 +73,7 @@ if Path("CONTEXT.json").is_file():
     print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 1}}), flush=True)
     sys.exit(0)
 
-is_steered = "resume" in args or "LIVE USER STEERING" in prompt
+is_steered = "resume" in args or "DIRECT USER STEERING" in prompt
 if not is_steered:
     print(json.dumps({"type": "thread.started", "thread_id": "browser-thread-1"}), flush=True)
     Path("turn_running").touch()
@@ -219,7 +219,10 @@ def test_direct_steering_live_bar_queue_and_timeline_marker(v08_site, page_expec
     expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
     page.locator("[data-language-select]").select_option("en")
     expect(page.locator("html")).to_have_attribute("lang", "en")
-    page.locator("#setting-steering-mode").select_option("queue")
+    with page.expect_response(
+        lambda r: "/api/workspace/steering-settings" in r.url and r.ok
+    ):
+        page.locator("#setting-steering-mode").select_option("queue")
     expect(page.locator("#toast")).to_be_visible(timeout=5000)
 
     # Return to conversation and start a long-running turn
@@ -241,7 +244,11 @@ def test_direct_steering_live_bar_queue_and_timeline_marker(v08_site, page_expec
 
     # Switch Settings back to default Steer mode and press Enter to steer seamlessly mid-turn
     page.locator("#rail-settings").click()
-    page.locator("#setting-steering-mode").select_option("steer")
+    with page.expect_response(
+        lambda r: "/api/workspace/steering-settings" in r.url and r.ok
+    ):
+        page.locator("#setting-steering-mode").select_option("steer")
+    expect(page.locator("#setting-steering-mode")).to_be_enabled(timeout=5000)
     page.goto(f"{base}/workspace#project={pid}&view=interactive")
     expect(page.locator("#steer-message")).to_be_visible(timeout=5000)
     page.locator("#chat-input").fill("Focus immediately on Courant number 0.5")

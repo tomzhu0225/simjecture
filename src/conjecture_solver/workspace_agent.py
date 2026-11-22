@@ -1531,6 +1531,15 @@ def run_external(prompt, root, config, turn, workspace=None, *, wall_seconds=Non
     steering_dir = turn
     supervisor.steering_requested = lambda: has_pending_steering(steering_dir)
     current_prompt = bridge + "\n\n" + prompt
+    initial_pending = consume_pending_steering(steering_dir)
+    if initial_pending:
+        emit(
+            "activity",
+            state="steering",
+            label="Applying steering",
+            detail=initial_pending[-1].get("message", "")[:240],
+        )
+        current_prompt = f"{current_prompt}\n\n{format_steering_injection(initial_pending)}"
     steer_round = 0
     try:
         while True:
