@@ -328,5 +328,86 @@
   background: #1c3d30;
   color: #8ee0b5;
 }
+/* Clean viewer-first Files panel layout */
+.files-panel-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 100%;
+}
+.files-panel-shell .files-toolbar {
+  margin: 0;
+  flex-shrink: 0;
+}
+.files-folder-disclosure {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.files-folder-disclosure summary {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.files-folder-disclosure code {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  word-break: break-all;
+}
+#inspector-tabs wa-tab-panel[name="files"].has-active-file {
+  overflow: hidden;
+}
+#inspector-tabs wa-tab-panel[name="files"].has-active-file::part(base) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 8px 0 4px;
+}
+.files-panel-shell.has-active-file {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+.files-panel-shell.has-active-file #project-files {
+  flex: 0 1 auto;
+  max-height: 136px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.files-panel-shell.has-active-file .files-folder-disclosure {
+  display: none;
+}
+.files-panel-shell.has-active-file .file-viewer-pane {
+  flex: 1;
+  min-height: 0;
+  margin: 4px 0 0;
+}
+.files-panel-shell.has-active-file .file-viewer-body {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+.files-panel-shell.has-active-file .file-viewer-table-wrap {
+  max-height: none;
+  height: 100%;
+}
+.settings-preferences {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.project-view {
+  padding-top: 16px;
+}
+.project-heading {
+  margin-bottom: 10px;
+}
+.study-navigation {
+  margin-bottom: 10px;
+}
 [data-theme="dark"] .file-diff-stat .diff-add { color: #7ee0ab; }
 [data-theme="dark"] .file-diff-stat .diff-del { color: #f49ca5; }

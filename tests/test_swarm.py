@@ -173,6 +173,43 @@ def test_swarm_activity_labels():
     assert describe_tool("swarm_board_post", {})["label"] == "Posting to swarm board"
 
 
+def test_composer_swarm_mode_persists_and_injects_coordinator_directive(tmp_path: Path):
+    ws = Workspace(tmp_path / ".workspace")
+    ws.save_api({"base_url": "http://127.0.0.1:9999/v1"})
+    proj = ws.create(
+        {
+            "name": "Auto Swarm",
+            "agent": {"backend": "builtin", "model": "test-model"},
+            "swarm_mode": "auto",
+        }
+    )
+    pid = proj["id"]
+    assert ws.project(pid)["swarm_mode"] == "auto"
+    assert set(ws.project(pid)["agent"]) == {"backend", "model", "reasoning_effort"}
+
+    ws.select_agent(
+        pid,
+        {
+            "backend": "builtin",
+            "model": "test-model",
+            "reasoning_effort": "high",
+            "swarm_mode": "adversarial_verify",
+        },
+    )
+    assert ws.project(pid)["swarm_mode"] == "adversarial_verify"
+    assert ws.project(pid)["agent"] == {
+        "backend": "builtin",
+        "model": "test-model",
+        "reasoning_effort": "high",
+    }
+
+    from conjecture_solver.web.workspace import swarm_coordination_prompt
+
+    directive = swarm_coordination_prompt("adversarial_verify")
+    assert "SWARM COORDINATION MODE IS ENABLED (adversarial_verify)" in directive
+    assert "launch_swarm" in directive
+
+
 def test_swarm_dag_execution_upstream_staging_board_and_import(tmp_path: Path, monkeypatch):
     binary = tmp_path / "codex"
     _write_swarm_codex_stub(binary)

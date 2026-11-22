@@ -72,6 +72,13 @@ window.WorkspaceFiles = (() => {
     }
   }
 
+  function setViewerOpenState(openState) {
+    const shell = document.querySelector(".files-panel-shell");
+    const tabPanel = document.querySelector('#inspector-tabs wa-tab-panel[name="files"]');
+    if (shell) shell.classList.toggle("has-active-file", Boolean(openState));
+    if (tabPanel) tabPanel.classList.toggle("has-active-file", Boolean(openState));
+  }
+
   function reset(projectId) {
     if (activeFile && activeFile.projectId !== projectId) {
       activeFile = null;
@@ -81,6 +88,7 @@ window.WorkspaceFiles = (() => {
         pane.hidden = true;
         pane.replaceChildren();
       }
+      setViewerOpenState(false);
     }
     listSignature = "";
   }
@@ -229,6 +237,7 @@ window.WorkspaceFiles = (() => {
     const prevScroll = prevBody ? prevBody.scrollTop : 0;
     if (!silent) {
       pane.hidden = false;
+      setViewerOpenState(true);
       pane.replaceChildren(
         el("div", SimjectureI18n.message("workspace.files.loading"), "file-viewer-binary"),
       );
@@ -332,6 +341,7 @@ window.WorkspaceFiles = (() => {
       activeData = null;
       pane.hidden = true;
       pane.replaceChildren();
+      setViewerOpenState(false);
       listSignature = "";
       render(ctx.project());
     };

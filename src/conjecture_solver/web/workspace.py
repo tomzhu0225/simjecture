@@ -111,6 +111,46 @@ def alive(record):
 
 _TERMINAL_CONTROL = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*\x07|[@-Z\\-_])")
 
+SWARM_MODES = frozenset(
+    {"off", "auto", "parallel_explore", "adversarial_verify", "divide_and_conquer"}
+)
+
+
+def swarm_coordination_prompt(mode: str) -> str:
+    """Prompt directive instructing the coordinator agent to orchestrate a swarm."""
+    base = (
+        f"SWARM COORDINATION MODE IS ENABLED ({mode}). "
+        "You are the Swarm Coordinator. Use launch_swarm (or the CLI swarm commands) to run "
+        "specialized workers in isolated workspaces with explicit outputs and depends_on stages, "
+        "track progress with swarm_status, guide workers via swarm_message on the shared board, "
+        "import verified deliverables with swarm_import, and synthesize the final answer. "
+        "All swarm outputs remain exploratory until independently reviewed.\n"
+    )
+    guidance = {
+        "auto": (
+            "Decide autonomously whether the request benefits from parallel or staged workers "
+            "(roles: explorer, analyst, solver, falsifier, verifier, critic, synthesizer); "
+            "for non-trivial research, computation, proof, or comparison tasks, decompose and "
+            "coordinate a focused 2-5 agent swarm."
+        ),
+        "parallel_explore": (
+            "Use strategy='parallel_explore': launch 2-3 independent explorer agents pursuing "
+            "distinct methods or hypotheses in parallel, followed by a downstream synthesizer "
+            "(depends_on all explorers) that compares and reconciles their deliverables."
+        ),
+        "adversarial_verify": (
+            "Use strategy='adversarial_verify': launch a solver and an independent falsifier in "
+            "parallel, followed by a verifier (depends_on both) that audits upstream artifacts "
+            "and reports unresolved gaps or counterexamples."
+        ),
+        "divide_and_conquer": (
+            "Use strategy='divide_and_conquer': partition the problem into independent analyst or "
+            "solver branches running in parallel, followed by a synthesizer (depends_on all "
+            "branches) to merge the quantitative results."
+        ),
+    }
+    return base + guidance.get(mode, guidance["auto"]) + "\n"
+
 
 def readable_log(value):
     """Show installer output as a terminal would: no colour codes or redrawn bars."""
@@ -223,6 +263,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
             "has_key": bool(api.get("api_key")),
             "api_configured": bool(api.get("base_url")),
             "base_url": api.get("base_url", ""),
+            "steering_mode": config.get("steering_mode", "steer"),
             "runtime_installed": importlib.util.find_spec("smolagents") is not None,
             "machine": platform.node(),
             "platform": platform.system(),
@@ -453,6 +494,12 @@ class Workspace(MachineWorkspace, ProjectCollections):
             raise ValueError("Unknown reasoning effort")
         if backend == "agy" and effort:
             raise ValueError("AGY uses its own reasoning settings; choose Default")
+        raw_swarm = payload.get("swarm_mode")
+        swarm_mode = None
+        if raw_swarm is not None:
+            swarm_mode = str(raw_swarm).strip().lower() or "off"
+            if swarm_mode not in SWARM_MODES:
+                raise ValueError("Unknown swarm mode")
         agent = dict(backend=backend, model=model, reasoning_effort=effort)
         with self.lock():
             if identifier is not None:
@@ -463,14 +510,22 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     if current.get("model"):
                         return current
                 record.update(agent=agent, updated_at=time.time())
+                if swarm_mode is not None:
+                    record["swarm_mode"] = swarm_mode
                 put(path, record)
                 if update_all:
                     for other in self.projects_root.glob("*/project.json"):
                         if other == path or other.is_symlink() or other.parent.is_symlink():
                             continue
                         project = load(other)
+                        changed = False
                         if project.get("agent") != agent:
                             project["agent"] = agent
+                            changed = True
+                        if swarm_mode is not None and project.get("swarm_mode") != swarm_mode:
+                            project["swarm_mode"] = swarm_mode
+                            changed = True
+                        if changed:
                             put(other, project)
             if model:
                 private_json(self.preferences_path, agent)
@@ -718,6 +773,9 @@ class Workspace(MachineWorkspace, ProjectCollections):
             if payload.get("agent")
             else self.default_agent()
         )
+        swarm_mode = str(payload.get("swarm_mode") or "off").strip().lower() or "off"
+        if swarm_mode not in SWARM_MODES:
+            raise ValueError("Unknown swarm mode")
         with self.lock():
             base = f"{date.today().isoformat()}-{folder_name(name)}"
             identifier = base
@@ -738,6 +796,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     studies=[],
                     brief=None,
                     agent=agent,
+                    swarm_mode=swarm_mode,
                     collection=collection or None,
                     knowledge_sources=knowledge_sources,
                 ),
@@ -1167,6 +1226,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
         files, edited_files = describe_project_files(directory, limit=200)
         return project | {
             "agent": self.normalize_agent(project.get("agent") or self.default_agent()),
+            "swarm_mode": project.get("swarm_mode", "off"),
             "messages": messages,
             "running": running,
             "files": files,
@@ -1318,11 +1378,20 @@ class Workspace(MachineWorkspace, ProjectCollections):
             turn = directory / "turns" / f"{time.time_ns()}"
             turn.mkdir()
             capture_file_baseline(directory, turn)
+            raw_swarm = payload.get("swarm_mode")
+            swarm_mode = (
+                str(raw_swarm).strip().lower()
+                if raw_swarm is not None
+                else str(project.get("swarm_mode") or "off").strip().lower()
+            ) or "off"
+            if swarm_mode not in SWARM_MODES:
+                raise ValueError("Unknown swarm mode")
             put(
                 turn / "request.json",
                 dict(
                     message=message,
                     agent=agent,
+                    swarm_mode=swarm_mode,
                     created_at=time.time(),
                     report_campaign=report_campaign,
                     knowledge_refs=references,
@@ -1405,6 +1474,8 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     + "\nUse draft_study when ready. Prior outputs are not fresh evidence. "
                     "Preparing a brief does not authorize launching an autonomous study."
                 )
+            if swarm_mode != "off" and not getattr(self, "hosted", False):
+                prompt += "\n" + swarm_coordination_prompt(swarm_mode)
             (turn / "prompt.txt").write_text(prompt)
             command = [
                 sys.executable,
@@ -2639,7 +2710,8 @@ class Workspace(MachineWorkspace, ProjectCollections):
 
         directory = self.directory(identifier)
         active = self._active_live_turn(directory)
-        mode = payload.get("mode", "steer")
+        default_mode = load(self.settings_path).get("steering_mode", "steer")
+        mode = payload.get("mode") or default_mode
         if not active:
             # Turn finished before steering arrived: smoothly start a new turn.
             started = self.send(identifier, {"message": payload.get("message", "")})
@@ -2652,6 +2724,20 @@ class Workspace(MachineWorkspace, ProjectCollections):
             request_key=payload.get("request_key"),
         )
         return {"project": identifier, "steering": record, "mode": record["mode"]}
+
+    def save_steering_settings(self, payload):
+        from .steering import STEERING_MODES
+
+        mode = str((payload or {}).get("steering_mode") or "steer").strip().lower()
+        if mode not in STEERING_MODES:
+            raise ValueError("Steering mode must be steer, interrupt, or queue")
+        with self.lock():
+            config = load(self.settings_path)
+            if not isinstance(config, dict):
+                config = {}
+            config["steering_mode"] = mode
+            private_json(self.settings_path, config)
+        return self.settings()
 
     def cancel_steer(self, identifier, payload):
         from .steering import cancel_steering

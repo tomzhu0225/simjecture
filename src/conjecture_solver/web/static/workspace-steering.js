@@ -2,7 +2,6 @@
 "use strict";
 window.WorkspaceSteering = (() => {
   let ctx = null;
-  let selectedMode = "steer"; // "steer" | "interrupt" | "queue"
   let queueSignature = "";
   let pendingKey = null;
 
@@ -14,79 +13,45 @@ window.WorkspaceSteering = (() => {
     return node;
   };
 
+  function currentMode() {
+    const mode = ctx?.settings?.()?.steering_mode || "steer";
+    return ["steer", "interrupt", "queue"].includes(mode) ? mode : "steer";
+  }
+
   function init(options) {
     ctx = options;
-    for (const btn of document.querySelectorAll("[data-steer-mode]")) {
-      btn.onclick = () => {
-        selectedMode = btn.dataset.steerMode || "steer";
-        updateModeButtons();
-        updateComposerControls(ctx.project());
-      };
-    }
     const steerButton = $("steer-message");
     if (steerButton) {
       steerButton.onclick = () => {
-        ctx.action(steerButton, () => submit(selectedMode));
+        ctx.action(steerButton, () => submit(currentMode()));
       };
     }
-    updateModeButtons();
-  }
-
-  function updateModeButtons() {
-    for (const btn of document.querySelectorAll("[data-steer-mode]")) {
-      btn.setAttribute("aria-pressed", String(btn.dataset.steerMode === selectedMode));
-    }
-  }
-
-  function modeLabelKey(mode) {
-    if (mode === "interrupt") return "workspace.steering.interruptButton";
-    if (mode === "queue") return "workspace.steering.queueButton";
-    return "workspace.steering.steerButton";
   }
 
   function updateComposerControls(p) {
     const canSteer = Boolean(p && p.running && !ctx.hosted && !ctx.readonly());
     const panel = $("steering-panel");
-    const bar = $("steering-bar");
     const sendBtn = $("send-message");
     const steerBtn = $("steer-message");
-    const input = $("chat-input");
     const queued = p?.steering?.queued || [];
-    const active = (p?.steering?.active || []).filter((item) => item.status !== "cancelled");
 
-    if (panel) panel.hidden = !canSteer && queued.length === 0;
-    if (bar) bar.hidden = !canSteer;
+    if (panel) panel.hidden = queued.length === 0;
     if (sendBtn && steerBtn) {
       sendBtn.hidden = canSteer;
       steerBtn.hidden = !canSteer;
       steerBtn.disabled = !canSteer;
-      steerBtn.classList.toggle("is-interrupt", selectedMode === "interrupt");
-      SimjectureI18n.bindText(steerBtn, () => SimjectureI18n.t(modeLabelKey(selectedMode)));
-      SimjectureI18n.attribute(steerBtn, "title", () =>
-        SimjectureI18n.t(modeLabelKey(selectedMode)),
-      );
     }
-    if (input) {
-      SimjectureI18n.attribute(input, "placeholder", () =>
-        SimjectureI18n.t(
-          canSteer ? "workspace.steering.placeholder" : "workspace.chatPlaceholder",
-        ),
-      );
-    }
-    renderQueue(p, active, queued);
+    renderQueue(p, queued);
   }
 
-
-  function renderQueue(p, active, queued) {
+  function renderQueue(p, queued) {
     const host = $("steering-queue");
     if (!host) return;
-    const items = [
-      ...active.slice(-4).map((item) => ({ ...item, bucket: "active" })),
-      ...queued.map((item) => ({ ...item, bucket: "queued" })),
-    ];
+    const items = queued.map((item) => ({ ...item, bucket: "queued" }));
     const sig = JSON.stringify([
       p?.id,
-      items.map((i) => [i.id, i.mode, i.status, i.message, i.bucket]),
+      Boolean(p?.running),
+      items.map((i) => [i.id, i.mode, i.status, i.message]),
     ]);
     if (sig === queueSignature) return;
     queueSignature = sig;
@@ -95,25 +60,13 @@ window.WorkspaceSteering = (() => {
     for (const item of items) {
       const chip = el("div", undefined, "steering-chip");
       chip.dataset.steerId = item.id;
-      const badgeClass =
-        item.status === "applied"
-          ? "applied"
-          : item.mode === "interrupt"
-            ? "interrupt"
-            : item.mode;
-      const badgeKey =
-        item.status === "applied"
-          ? "workspace.steering.statusApplied"
-          : item.bucket === "queued"
-            ? "workspace.steering.statusQueued"
-            : item.mode === "interrupt"
-              ? "workspace.steering.statusInterrupting"
-              : "workspace.steering.statusDelivering";
+      const badge = el("span", SimjectureI18n.message("workspace.steering.statusQueued"), "steering-chip-badge");
+      badge.classList.add("queue");
       chip.append(
-        el("span", SimjectureI18n.message(badgeKey), `steering-chip-badge ${badgeClass}`),
+        badge,
         el("span", item.message, "steering-chip-text"),
       );
-      if (item.bucket === "queued" && !ctx.readonly()) {
+      if (!ctx.readonly()) {
         const actions = el("div", undefined, "steering-chip-actions");
         if (p?.running) {
           const promote = el("button", SimjectureI18n.message("workspace.steering.steerNow"));
@@ -150,7 +103,7 @@ window.WorkspaceSteering = (() => {
     const draft = input.value;
     const message = draft.trim();
     if (!message) return;
-    const mode = modeOverride || selectedMode;
+    const mode = modeOverride || currentMode();
     pendingKey ||= crypto.randomUUID();
     const key = pendingKey;
     const result = await ctx.api("steer", {
@@ -206,7 +159,7 @@ window.WorkspaceSteering = (() => {
   function submitFromKeyboard(urgent = false) {
     const btn = $("steer-message");
     if (!btn || btn.disabled) return;
-    ctx.action(btn, () => submit(urgent ? "interrupt" : selectedMode));
+    ctx.action(btn, () => submit(urgent ? "interrupt" : currentMode()));
   }
 
   return { init, render: updateComposerControls, renderTimelineMarkers, isActive, submitFromKeyboard };

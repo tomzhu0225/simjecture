@@ -205,6 +205,16 @@ def test_steering_queue_promote_cancel_and_http_auth(tmp_path: Path, monkeypatch
             token = boot["control_token"]
             headers = {"X-Simjecture-Token": token}
 
+            # Default steering mode can be tuned in settings and persists
+            pref = c.post(
+                "/api/workspace/steering-settings",
+                headers=headers,
+                json={"steering_mode": "interrupt"},
+            )
+            assert pref.status_code == 200
+            assert pref.json()["steering_mode"] == "interrupt"
+            assert app.workspace.settings()["steering_mode"] == "interrupt"
+
             # Unauthenticated POST must be rejected (403)
             unauth = c.post(
                 "/api/workspace/steer",

@@ -97,11 +97,19 @@ window.WorkspaceComposer = (() => {
     if (!editor) return;
     const selects = editor.controls.querySelectorAll("select");
     const backend = selects[0], model = selects[1];
+    const swarm = document.getElementById(scope === "home" ? "home-swarm" : "conversation-swarm");
+    const swarmBadge = editor.picker.querySelector(".agent-swarm-badge");
     const custom = document.getElementById(scope === "home" ? "home-custom-model" : "custom-model");
     const name = () => model?.value === "__custom__" ? custom?.value : model?.selectedOptions[0]?.textContent;
+    const swarmActive = Boolean(swarm && swarm.value && swarm.value !== "off");
     editor.picker.disabled = !backend?.options.length;
+    editor.picker.classList.toggle("is-swarm", swarmActive);
+    if (swarmBadge) swarmBadge.hidden = !swarmActive;
     SimjectureI18n.bindText(editor.summary, () => editor.picker.disabled ? SimjectureI18n.t("ui.loading-agent") : ((name() || backend?.value) || SimjectureI18n.t("ui.choose-agent-2")));
-    SimjectureI18n.attribute(editor.picker, "title", () => `${(backend?.value || SimjectureI18n.t("ui.agent-2"))} · ${(name() || SimjectureI18n.t("ui.choose-model-2"))}`);
+    SimjectureI18n.attribute(editor.picker, "title", () => {
+      const base = `${(backend?.value || SimjectureI18n.t("ui.agent-2"))} · ${(name() || SimjectureI18n.t("ui.choose-model-2"))}`;
+      return swarmActive ? `${base} · ${SimjectureI18n.t("workspace.swarm.tab")}` : base;
+    });
     editor.update();
   }
   window.addEventListener("simjecture-language", () => {

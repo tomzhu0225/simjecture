@@ -675,6 +675,8 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 )
             elif endpoint == "message":
                 result = workspace.send(payload.get("project"), payload)
+            elif endpoint == "steering-settings":
+                result = workspace.save_steering_settings(payload)
             elif endpoint == "steer":
                 result = workspace.steer(payload.get("project"), payload)
             elif endpoint == "cancel-steer":

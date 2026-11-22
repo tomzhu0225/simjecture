@@ -132,6 +132,14 @@ window.WorkspaceSwarm = (() => {
     if (launchBtn) launchBtn.onclick = openLauncher;
     const emptyLaunchBtn = $("swarm-empty-launch");
     if (emptyLaunchBtn) emptyLaunchBtn.onclick = openLauncher;
+    const enableModeBtn = $("swarm-enable-mode");
+    if (enableModeBtn) {
+      enableModeBtn.onclick = () =>
+        ctx.action(enableModeBtn, async () => {
+          await ctx.setSwarmMode?.("auto");
+          ctx.notify(SimjectureI18n.message("workspace.swarm.enabledNotice"));
+        });
+    }
     const closeBtn = $("swarm-dialog-close");
     if (closeBtn) closeBtn.onclick = () => $("swarm-launch-dialog")?.close();
     const cancelBtn = $("swarm-dialog-cancel");
@@ -349,6 +357,25 @@ window.WorkspaceSwarm = (() => {
     if (emptyLaunch) {
       emptyLaunch.hidden = ctx.hosted;
       emptyLaunch.disabled = ctx.readonly() || ctx.hosted;
+    }
+    const enableBtn = $("swarm-enable-mode");
+    if (enableBtn) {
+      enableBtn.hidden = ctx.hosted || (p.swarm_mode && p.swarm_mode !== "off");
+      enableBtn.disabled = ctx.readonly() || ctx.hosted;
+    }
+    const modeIndicator = $("swarm-mode-indicator");
+    if (modeIndicator) {
+      const mode = p.swarm_mode || "off";
+      modeIndicator.hidden = ctx.hosted || mode === "off";
+      if (mode !== "off") {
+        const modeKey =
+          mode === "auto"
+            ? "workspace.swarm.modeAuto"
+            : `workspace.swarm.strategy.${mode}`;
+        SimjectureI18n.bindText(modeIndicator, () =>
+          SimjectureI18n.t("workspace.swarm.modeIndicator", { mode: SimjectureI18n.t(modeKey) }),
+        );
+      }
     }
 
     if (!swarms.some((s) => s.id === selectedSwarmId)) {

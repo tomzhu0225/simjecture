@@ -155,10 +155,12 @@ def test_integrated_file_viewer_diff_xss_and_responsive_layout(v08_site, page_ex
     expect(page.locator('#project-files a[data-view-file="solver.py"]')).to_be_visible()
     expect(page.locator('#project-files a[data-view-file="unchanged.txt"]')).to_have_count(0)
 
-    # Open solver.py inline and switch to Diff view
+    # Open solver.py inline -> files panel enters viewer-first full-height layout
     page.locator('#project-files a[data-view-file="solver.py"]').click()
     viewer = page.locator("#file-viewer-pane")
     expect(viewer).to_be_visible()
+    expect(page.locator(".files-panel-shell.has-active-file")).to_be_visible()
+    expect(page.locator("#brief-summary")).to_be_hidden()
     expect(viewer).to_contain_text("return -2 * u")
     viewer.locator('button[data-viewer-mode="diff"]').click()
     expect(viewer.locator(".file-diff-line.add")).to_contain_text("-2 * u")
@@ -200,25 +202,38 @@ def test_direct_steering_live_bar_queue_and_timeline_marker(v08_site, page_expec
     page, expect = page_expect
     page.goto(f"{base}/workspace#project={pid}&view=interactive")
 
-    # Start a long-running turn
+    # Configure Queue mode first in Settings, plus verify Settings language selector works
+    page.locator('button[data-view="settings"]').click()
+    expect(page.locator("#settings-language-select")).to_be_enabled(timeout=5000)
+    page.locator("#settings-language-select").select_option("zh-CN")
+    expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
+    page.locator("#settings-language-select").select_option("en")
+    expect(page.locator("html")).to_have_attribute("lang", "en")
+    page.locator("#setting-steering-mode").select_option("queue")
+    expect(page.locator("#toast")).to_be_visible(timeout=5000)
+
+    # Return to conversation and start a long-running turn
+    page.goto(f"{base}/workspace#project={pid}&view=interactive")
     page.locator("#chat-input").fill("Begin initial parameter sweep")
     page.locator("#send-message").click()
 
-    # Live steering bar appears and Steer button replaces Send button
-    expect(page.locator("#steering-bar")).to_be_visible(timeout=8000)
-    expect(page.locator("#steer-message")).to_be_visible()
+    # No noisy steering banner pops up; normal arrow button stays active
+    expect(page.locator("#steer-message")).to_be_visible(timeout=8000)
+    expect(page.locator("#steering-bar")).to_have_count(0)
     expect(page.locator("#send-message")).to_be_hidden()
 
-    # Queue a follow-up message first, verify chip appears, then cancel it
-    page.locator('[data-steer-mode="queue"]').click()
+    # In Queue setting, submitting while running queues a chip, which we can cancel
     page.locator("#chat-input").fill("Follow-up after sweep")
     page.locator("#steer-message").click()
     expect(page.locator("#steering-queue .steering-chip")).to_have_count(1, timeout=5000)
     page.locator("#steering-queue .steering-chip-actions button").last.click()
     expect(page.locator("#steering-queue .steering-chip")).to_have_count(0, timeout=5000)
 
-    # Switch back to Steer mode and press Enter to steer mid-turn
-    page.locator('[data-steer-mode="steer"]').click()
+    # Switch Settings back to default Steer mode and press Enter to steer seamlessly mid-turn
+    page.locator('button[data-view="settings"]').click()
+    page.locator("#setting-steering-mode").select_option("steer")
+    page.goto(f"{base}/workspace#project={pid}&view=interactive")
+    expect(page.locator("#steer-message")).to_be_visible(timeout=5000)
     page.locator("#chat-input").fill("Focus immediately on Courant number 0.5")
     page.locator("#chat-input").press("Enter")
 
@@ -233,8 +248,18 @@ def test_swarm_gui_launcher_dag_board_and_inline_artifact_import(v08_site, page_
     page, expect = page_expect
     page.goto(f"{base}/workspace#project={pid}&view=interactive")
 
-    # Open Swarm tab and launch modal
+    # Select Swarm mode right alongside Reasoning effort inside the composer popover
+    page.locator("#conversation-agent-picker").click()
+    expect(page.locator("#conversation-swarm")).to_be_visible(timeout=5000)
+    page.locator("#conversation-swarm").select_option("parallel_explore")
+    expect(page.locator("#conversation-agent-picker .agent-swarm-badge")).to_be_visible(
+        timeout=5000
+    )
+    page.keyboard.press("Escape")
+
+    # Open Swarm tab: mode indicator shows active composer swarm mode, custom launcher works
     page.locator('wa-tab[panel="swarm"]').click()
+    expect(page.locator("#swarm-mode-indicator")).to_contain_text("Parallel exploration")
     expect(page.locator("#swarm-empty")).to_be_visible()
     page.locator("#swarm-launch-open").click()
     expect(page.locator("#swarm-launch-dialog")).to_be_visible()

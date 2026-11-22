@@ -115,15 +115,15 @@
   color: var(--accent);
 }
 .prompt-composer .composer-steer {
-  height: 36px;
-  padding: 0 13px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 650;
-  gap: 5px;
-}
-.prompt-composer .composer-steer.is-interrupt {
-  background: #b84a39;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  font-size: 25px;
+  line-height: 1;
+  gap: 0;
 }
 .steer-timeline-marker {
   display: flex;

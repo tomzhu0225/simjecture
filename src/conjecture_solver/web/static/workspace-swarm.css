@@ -19,6 +19,14 @@
   padding: 5px 10px;
   font-size: 12px;
   border-radius: 7px;
+  margin-left: auto;
+}
+.swarm-empty-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
 .swarm-header-card {
   padding: 11px 12px;
