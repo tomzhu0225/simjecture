@@ -108,6 +108,9 @@ window.WorkspaceMonitor = {
       const simulations = jobs.filter((j) => panelFor(j) === "simulations");
       SimjectureI18n.content($("simulation-count"), simulations.length);
       SimjectureI18n.content($("command-count"), jobs.length - simulations.length);
+      // Zero counts are hidden by CSS so the four inspector tabs stay compact.
+      $("simulation-count").dataset.count = String(simulations.length);
+      $("command-count").dataset.count = String(jobs.length - simulations.length);
       $("sidebar-simulations").hidden = !simulations.length;
       for (const panel of ["simulations", "commands"]) {
         const entries = jobs.filter((j) => panelFor(j) === panel);

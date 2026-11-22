@@ -349,6 +349,7 @@ window.WorkspaceSwarm = (() => {
           : String(totalWorkers),
       );
       badge.classList.toggle("is-active", activeWorkers > 0);
+      badge.dataset.count = String(totalWorkers);
     }
     const launchBtn = $("swarm-launch-open");
     if (launchBtn) {

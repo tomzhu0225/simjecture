@@ -204,10 +204,13 @@ def test_direct_steering_live_bar_queue_and_timeline_marker(v08_site, page_expec
 
     # Configure Queue mode first in Settings (via rail Settings button), plus verify language toggle
     page.locator("#rail-settings").click()
-    expect(page.locator("#settings-language-select")).to_be_enabled(timeout=5000)
-    page.locator("#settings-language-select").select_option("zh-CN")
+    # The single interface-language picker lives in Settings, not the sidebar.
+    expect(page.locator("#view-settings [data-language-select]")).to_have_count(1)
+    expect(page.locator(".sidebar [data-language-select]")).to_have_count(0)
+    expect(page.locator("[data-language-select]")).to_be_enabled(timeout=5000)
+    page.locator("[data-language-select]").select_option("zh-CN")
     expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
-    page.locator("#settings-language-select").select_option("en")
+    page.locator("[data-language-select]").select_option("en")
     expect(page.locator("html")).to_have_attribute("lang", "en")
     page.locator("#setting-steering-mode").select_option("queue")
     expect(page.locator("#toast")).to_be_visible(timeout=5000)

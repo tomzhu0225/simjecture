@@ -1,0 +1,103 @@
+/* v0.8 minimal refresh: quieter chrome, fewer explanatory notes and a single
+   place for preferences. Loaded after page sheets, before interface.css. */
+
+/* Sidebar footer: execution readiness becomes one quiet status line. */
+.sidebar-bottom { padding-top: 8px; }
+.sidebar .sidebar-status {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 6px 4px; border: 0; background: transparent;
+  color: #98a1b6; font-size: 12px; text-align: left;
+}
+.sidebar .sidebar-status::before {
+  content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%;
+  background: #e0a84a;
+}
+.sidebar .sidebar-status:disabled { color: #98a1b6; }
+.sidebar .sidebar-status:disabled::before { background: #5fbf86; }
+.sidebar .sidebar-status:not(:disabled):hover { color: #e1e5f0; }
+
+/* Conversation: one compact activity disclosure per turn. */
+.message .turn-activity { margin-top: 8px; }
+.message .turn-activity > summary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 9px 3px 7px; border-radius: 999px;
+  color: var(--muted); font-size: 12.5px; cursor: pointer; list-style: none;
+}
+.message .turn-activity > summary::-webkit-details-marker { display: none; }
+.message .turn-activity > summary::before {
+  content: "›"; display: inline-block; font-size: 14px; line-height: 1;
+  transition: transform 140ms ease;
+}
+.message .turn-activity[open] > summary::before { transform: rotate(90deg); }
+.message .turn-activity > summary:hover { background: var(--surface-soft); color: var(--text); }
+.message .turn-activity .agent-activity-list { margin: 8px 0 0; }
+
+/* Inspector tabs: hide zero counts so all four tabs fit a narrow pane. */
+#inspector-tabs .count-badge[data-count="0"] { display: none; }
+
+/* Agent picker: labelled fields, icon-only refresh, notes only for problems. */
+.agent-picker-popup .agent-controls .field-help[hidden] { display: none !important; }
+.agent-picker-popup .agent-controls :is(#refresh-models, #home-refresh-models) {
+  width: 32px; height: 32px; padding: 0; font-size: 16px; text-align: center;
+  border-radius: 8px; color: var(--muted);
+}
+.agent-picker-popup .agent-controls :is(#refresh-models, #home-refresh-models):hover {
+  background: var(--surface-soft); color: var(--text);
+}
+:is(.composer, #home-agent-host) .agent-picker-popup .agent-controls label {
+  position: static; width: auto; height: auto; overflow: visible; clip-path: none;
+}
+
+/* Settings: one calm column of grouped rows instead of cards and side notes. */
+.settings-view { max-width: 760px; }
+.settings-view .settings-title { margin: 6px 0 28px; font-size: 28px; letter-spacing: -0.5px; }
+.settings-group { margin: 0 0 32px; padding: 0; border: 0; background: none; box-shadow: none; }
+.settings-group > h2 {
+  display: flex; align-items: baseline; gap: 8px; margin: 0 0 6px;
+  color: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: 0;
+}
+.settings-group > h2 small { font-size: 12px; font-weight: 400; opacity: 0.8; }
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 56px; padding: 10px 0; border-top: 1px solid var(--line);
+}
+.settings-group > .settings-row:last-of-type { border-bottom: 1px solid var(--line); }
+.settings-row > label, .settings-row-label {
+  margin: 0; color: var(--text); font-size: 14px; font-weight: 500;
+}
+.settings-row > select { width: auto; min-width: 220px; max-width: 55%; margin: 0; }
+.settings-row-value {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px;
+}
+#settings-environment .machine-card {
+  display: flex; align-items: baseline; gap: 8px; margin: 0; padding: 0;
+  border: 0; background: none;
+}
+#settings-environment .machine-card strong { font-size: 14px; }
+#settings-environment .machine-card small { color: var(--muted); font-size: 12px; }
+#settings-environment #check-machine { padding: 6px 12px; font-size: 13px; }
+#settings-environment #machine-result:empty, #runtime-status[hidden] { display: none; }
+#settings-environment #machine-result, #runtime-status { margin: 8px 0 0; }
+#detected-agents { color: var(--muted); font-size: 13px; }
+#detected-agents .cli-chip {
+  margin: 0; padding: 3px 10px; border: 0; border-radius: 999px;
+  background: var(--surface-soft); color: var(--text); font-size: 12px;
+}
+#settings-form #api-fields {
+  display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line);
+}
+#settings-form #api-fields label { margin: 8px 0 0; font-size: 13px; font-weight: 500; }
+#settings-form .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+#connection-result { color: var(--muted); font-size: 13px; }
+@media (max-width: 600px) {
+  .settings-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .settings-row > select { width: 100%; min-width: 0; max-width: none; }
+  .settings-row-value { justify-content: flex-start; }
+}
+
+/* Inspector tabs shrink to the pane instead of hiding Files behind scroll arrows. */
+.project-context #inspector-tabs::part(tabs) { flex: 1 1 auto; min-width: 0; }
+.project-context #inspector-tabs wa-tab { flex: 0 1 auto; min-width: 0; }
+
+/* Settings controls use the same quiet 14px scale as their labels. */
+.settings-view :is(select, input) { min-height: 38px; padding: 7px 10px; font-size: 14px; }

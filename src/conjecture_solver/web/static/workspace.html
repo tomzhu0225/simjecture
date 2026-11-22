@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="/assets/workspace-files.css" />
     <link rel="stylesheet" href="/assets/workspace-steering.css" />
     <link rel="stylesheet" href="/assets/workspace-swarm.css" />
+    <link rel="stylesheet" href="/assets/workspace-refresh.css" />
     <link rel="stylesheet" href="/assets/interface.css" />
     <script type="module" src="/assets/workspace-components.js"></script>
     <script src="/assets/vendor/marked-18.0.10.umd.js" defer></script>
@@ -88,7 +89,12 @@
           <button id="knowledge-nav" data-view="knowledge" class="nav-item" hidden>
             <span aria-hidden="true">▤</span> <span data-i18n="ui.knowledge-2">Knowledge</span>
           </button>
-          <button id="sidebar-settings" data-view="settings" class="nav-item">
+          <button
+            id="connection-button"
+            data-view="settings"
+            class="nav-item"
+            disabled
+          >
             <span aria-hidden="true">⚙</span> <span data-i18n="workspace.settings.nav">Settings</span>
           </button>
           <details class="workspace-resources" open><summary><span data-i18n="ui.resources">Resources</span> <span aria-hidden="true">⌄</span></summary>
@@ -100,14 +106,6 @@
           </button>
           <button data-view="machines" class="nav-item">
             <span aria-hidden="true">▣</span> <span data-i18n="ui.machines">Machines</span>
-          </button>
-          <button
-            id="connection-button"
-            data-view="settings"
-            class="nav-item"
-            disabled
-          >
-            <span aria-hidden="true">⚙</span> <span data-i18n="ui.connections">Connections</span>
           </button>
           </details>
         </nav>
@@ -124,7 +122,6 @@
           <div id="sidebar-run-list"></div>
         </div>
         <div class="sidebar-bottom">
-          <label class="language-picker"><span class="sr-only" data-i18n="ui.interface-language">Interface language</span><select id="language-select" data-language-select aria-label="Interface language" data-i18n-aria-label="ui.interface-language" disabled><option value="en" lang="en">English</option></select></label>
           <button
             id="execution-status"
             class="sidebar-status"
@@ -264,7 +261,6 @@
               <p class="mode-card-kicker"><span aria-hidden="true">◐</span> <span data-i18n="ui.interactive">Interactive</span></p>
               <h2 data-i18n="workspace.interactiveIntro">Explore with your agent</h2>
               <p class="mode-card-summary" data-i18n="workspace.interactiveSummary">Chat, run code and simulations, look at plots and decide the next step together. You stay in the loop.</p>
-              <p class="mode-card-best"><strong data-i18n="ui.best-for">Best for</strong> <span data-i18n="workspace.interactiveBest">getting started, debugging, and working out what to ask.</span></p>
               <div class="mode-card-examples" role="group" aria-label="Interactive examples" data-i18n-aria-label="ui.interactive-examples">
                 <button class="mode-example" type="button" data-example="Simulate a double pendulum with Python and SciPy for 20 seconds. Use two 1 m links and two 1 kg masses, g=9.81 m/s², initial angles 120° and -10°, and zero initial angular velocities. Save the trajectory CSV, plot the paths of both masses, and report the numerical energy drift. Run the calculation and link the actual plots and outputs.">
                   <span class="mode-example-text"><strong data-i18n="ui.simulate-a-double-pendulum">Simulate a double pendulum</strong><small data-i18n="ui.plot-both-paths-and-check-energy-drift-python">Plot both paths and check energy drift · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
@@ -278,13 +274,11 @@
               <p class="mode-card-kicker"><span aria-hidden="true">◎</span> <span data-i18n="ui.autonomous-study-2">Autonomous study</span></p>
               <h2 data-i18n="workspace.autonomousIntro">Let a study run on its own</h2>
               <p class="mode-card-summary" data-i18n="workspace.autonomousSummary">Give it a claim and a time budget. It runs experiments and looks for counterexamples; an independent review checks the evidence before anything counts.</p>
-              <p class="mode-card-best"><strong data-i18n="ui.best-for">Best for</strong> <span data-i18n="workspace.autonomousBest">“is this true?” questions you can state precisely.</span></p>
               <div class="mode-card-examples" role="group" aria-label="Autonomous study examples" data-i18n-aria-label="ui.autonomous-study-examples">
                 <button class="mode-example" type="button" data-example="Prepare a 10-minute autonomous research study with this hypothesis: a lossless 1 m single pendulum released from rest has a period within 1% of 2π√(L/g) for every initial angle from 5° to 120°, with g=9.81 m/s². Use Python to integrate the nonlinear equation, measure periods from the trajectory, and search for a counterexample. Require numerical tolerance controls, retained trajectories, a period-versus-angle plot and independent review. If the claim fails, propose the smallest supported refinement of its amplitude range. Save an editable study brief so I can review and launch the autonomous run.">
                   <span class="mode-example-text"><strong data-i18n="ui.does-a-pendulum-keep-the-same-period">Does a pendulum keep the same period?</strong><small data-i18n="ui.your-agent-drafts-a-10-minute-study-for-you-to-review-python">Your agent drafts a 10-minute study for you to review · Python</small></span><span class="mode-example-arrow" aria-hidden="true">↗</span>
                 </button>
               </div>
-              <p class="mode-card-note" data-i18n="workspace.autonomousNote">Start in Interactive; when your claim is clear, switch to Autonomous study inside the conversation.</p>
             </article>
           </section>
         </section>
@@ -341,31 +335,41 @@
             </form>
           </dialog>
         </section>
-        <section id="view-settings" class="view" hidden>
-          <div class="page-intro compact">
-            <p class="eyebrow" data-i18n="ui.your-agent-your-machine">YOUR AGENT, YOUR MACHINE</p>
-            <h1 data-i18n="workspace.settings.nav">Settings</h1>
-            <p class="lead" data-i18n="workspace.settingsIntro">
-              Choose your agent and model inside each conversation. Installed
-              CLI agents need no API setup here.
-            </p>
-          </div>
-          <div class="settings-layout">
-            <div class="settings-main-stack">
-              <div class="panel form-panel settings-preferences-panel">
-                <p class="eyebrow" data-i18n="workspace.settings.preferencesTitle">WORKSPACE PREFERENCES</p>
-                <label for="settings-language-select" data-i18n="ui.interface-language">Interface language</label>
-                <select id="settings-language-select" disabled></select>
-                <label for="setting-steering-mode" data-i18n="workspace.steering.settingLabel">When sending while an agent is working</label>
-                <select id="setting-steering-mode">
-                  <option value="steer" data-i18n="workspace.steering.settingSteer">Steer immediately (default)</option>
-                  <option value="interrupt" data-i18n="workspace.steering.settingInterrupt">Interrupt and redirect</option>
-                  <option value="queue" data-i18n="workspace.steering.settingQueue">Queue for next turn</option>
-                </select>
-                <p class="field-help" data-i18n="workspace.steering.settingHelp">Press Enter while a turn is running to apply this behavior. Ctrl+Enter always interrupts immediately.</p>
+        <section id="view-settings" class="view settings-view" hidden>
+          <h1 class="settings-title" data-i18n="workspace.settings.nav">Settings</h1>
+          <section class="settings-group" aria-labelledby="settings-general-title">
+            <h2 id="settings-general-title" data-i18n="workspace.settings.general">General</h2>
+            <div class="settings-row">
+              <label for="language-select" data-i18n="ui.interface-language">Interface language</label>
+              <select id="language-select" data-language-select disabled><option value="en" lang="en">English</option></select>
+            </div>
+            <div class="settings-row">
+              <label for="setting-steering-mode" data-i18n="workspace.steering.settingLabel">When sending while an agent is working</label>
+              <select id="setting-steering-mode">
+                <option value="steer" data-i18n="workspace.steering.settingSteer">Steer immediately (default)</option>
+                <option value="interrupt" data-i18n="workspace.steering.settingInterrupt">Interrupt and redirect</option>
+                <option value="queue" data-i18n="workspace.steering.settingQueue">Queue for next turn</option>
+              </select>
+            </div>
+          </section>
+          <section id="settings-environment" class="settings-group" aria-labelledby="settings-environment-title">
+            <h2 id="settings-environment-title" data-i18n="workspace.settings.environment">Environment</h2>
+            <div class="settings-row">
+              <span class="settings-row-label" data-i18n="workspace.settings.machine">Machine</span>
+              <div class="settings-row-value">
+                <div id="machine-card" class="machine-card"></div>
+                <button id="check-machine" class="secondary" type="button" data-i18n="ui.check-experiment-readiness">Check experiment readiness</button>
               </div>
-              <form id="settings-form" class="panel form-panel">
-                <p class="eyebrow" data-i18n="ui.optional-compatible-api">OPTIONAL · COMPATIBLE API</p>
+            </div>
+            <p id="machine-result" class="field-help" role="status"></p>
+            <div class="settings-row">
+              <span class="settings-row-label" data-i18n="workspace.settings.agents">Coding agents</span>
+              <div id="detected-agents" class="settings-row-value"></div>
+            </div>
+            <p id="runtime-status" class="field-help" hidden></p>
+          </section>
+          <form id="settings-form" class="settings-group" aria-labelledby="settings-api-title">
+            <h2 id="settings-api-title"><span data-i18n="workspace.settings.apiTitle">API connection</span> <small data-i18n="workspace.settings.optional">Optional</small></h2>
                 <div id="api-fields">
                   <label for="provider-preset" data-i18n="ui.provider">Provider</label
                   ><select id="provider-preset">
@@ -385,40 +389,12 @@
                     autocomplete="new-password"
                     placeholder="Enter a key; stored only on this machine"
                    data-i18n-placeholder="ui.enter-a-key-stored-only-on-this-machine"/>
-                  <p class="field-help" data-i18n="workspace.settingsSecretHelp">
-                    Stored in a private file on the execution machine. Never
-                    returned to the browser or included in project exports.
-                  </p>
                 </div>
                 <div class="form-actions">
-                  <button class="primary" type="submit" id="save-connection" data-i18n="ui.save-api-connection">
-                    Save API connection</button
-                  ><span id="connection-result" role="status"></span>
+                  <button class="primary" type="submit" id="save-connection" data-i18n="ui.save-api-connection">Save API connection</button>
+                  <span id="connection-result" role="status"></span>
                 </div>
-              </form>
-            </div>
-            <aside class="setup-notes">
-              <h3 data-i18n="ui.where-your-work-runs">Where your work runs</h3>
-              <p data-i18n="workspace.settingsHostHelp">
-                Files, installations, and experiments stay on the machine
-                serving this page.
-              </p>
-              <div id="machine-card" class="machine-card"></div>
-              <button id="check-machine" class="secondary" data-i18n="ui.check-experiment-readiness">
-                Check experiment readiness
-              </button>
-              <p id="machine-result" class="field-help" role="status"></p>
-              <hr />
-              <h3 data-i18n="ui.already-using-a-cli">Already using a CLI?</h3>
-              <p data-i18n="workspace.settingsCliHelp">
-                Installed agents are detected automatically. They keep their
-                existing login and native tools.
-              </p>
-              <div id="detected-agents"></div>
-              <hr />
-              <p id="runtime-status" class="field-help"></p>
-            </aside>
-          </div>
+          </form>
         </section>
         <section id="view-benchmarks" class="view benchmark-view" hidden>
           <div class="benchmark-heading">
@@ -683,10 +659,9 @@
                         class="quiet"
                         type="button"
                         title="Refresh model choices"
-                       data-i18n-title="ui.refresh-model-choices" data-i18n="ui.refresh">
-                        ↻ Refresh
-                      </button>
-                      <p id="model-note" class="field-help"></p>
+                        aria-label="Refresh model choices"
+                       data-i18n-title="ui.refresh-model-choices" data-i18n-aria-label="ui.refresh-model-choices">↻</button>
+                      <p id="model-note" class="field-help" hidden></p>
                     </div>
                     <span id="agent-label"></span
                     ><button
@@ -939,21 +914,21 @@
                   >⇔</button>
                 </div>
               </div>
-              <wa-tab-group id="inspector-tabs" active="files">
+              <wa-tab-group id="inspector-tabs" active="files" without-scroll-controls>
                 <wa-tab panel="files" data-i18n="ui.files">Files</wa-tab>
                 <wa-tab panel="swarm"
                   ><span data-i18n="workspace.swarm.tab">Swarm</span>
-                  <span id="swarm-count" class="count-badge">0</span></wa-tab
+                  <span id="swarm-count" class="count-badge" data-count="0">0</span></wa-tab
                 >
                 <wa-tab panel="simulations"
                   ><span data-i18n="ui.simulations-2">Simulations</span>
-                  <span id="simulation-count" class="count-badge"
+                  <span id="simulation-count" class="count-badge" data-count="0"
                     >0</span
                   ></wa-tab
                 >
                 <wa-tab panel="commands"
                   ><span data-i18n="ui.commands">Commands</span>
-                  <span id="command-count" class="count-badge">0</span></wa-tab
+                  <span id="command-count" class="count-badge" data-count="0">0</span></wa-tab
                 >
                 <wa-tab-panel name="files" active>
                   <div class="files-panel-shell">

@@ -401,6 +401,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                     "Could not read AGY's model list. Run agy models to check its login. "
                     "Choose an AGY model rather than a Grok model."
                 )
+                result["warning"] = True
                 return result
         if backend != "builtin":
             return self.local_models(backend)
@@ -411,7 +412,8 @@ class Workspace(MachineWorkspace, ProjectCollections):
             return dict(
                 models=[],
                 default="",
-                note="Add an optional API endpoint in Connections, or choose an installed CLI.",
+                note="Add an optional API endpoint in Settings, or choose an installed CLI.",
+                warning=True,
             )
         try:
             headers = (
@@ -443,6 +445,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 default=config.get("model", ""),
                 note="Could not list models. Enter your provider's model ID. "
                 + public_error(error, config),
+                warning=True,
             )
 
     def save_api(self, payload):

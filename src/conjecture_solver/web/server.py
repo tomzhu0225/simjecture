@@ -88,6 +88,7 @@ STATIC_ASSETS = frozenset(
         "workspace-steering.css",
         "workspace-swarm.js",
         "workspace-swarm.css",
+        "workspace-refresh.css",
         "vendor/highlight-11.11.1.min.js",
         "vendor/highlight-github-dark.css",
         "vendor/dagre-2.0.0.min.js",

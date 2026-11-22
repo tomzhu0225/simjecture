@@ -137,7 +137,7 @@ function md(node, text) {
   window.WorkspaceRich.render(node, String(text || ""), state.project);
 }
 function view(name) {
-  if(hosted && (["settings","machines"].includes(name) ||
+  if(hosted && (name === "machines" ||
     (name === "knowledge" && !state.hosting?.permissions?.knowledge))) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
@@ -181,7 +181,8 @@ function renderStudyNavigation() {
     page: state.mode === "autonomous" ? "study" : "conversation",
     title: study?.question || "",
   });
-  $("study-navigation").hidden = !state.routeStudy && state.mode === "interactive";
+  // The Interactive / Autonomous switch already covers these peers in chat.
+  $("study-navigation").hidden = state.mode === "interactive" || !state.routeStudy;
   for (const card of $("study-runs").querySelectorAll(".study-card")) {
     const selected = card.id === `study-${state.routeStudy}`;
     card.classList.toggle("selected-study", selected);
@@ -258,7 +259,6 @@ function renderSettings() {
   $("api-key").value = "";
   SimjectureI18n.attribute($("api-key"), "placeholder", () => s.has_key ? SimjectureI18n.t("ui.saved-leave-blank-to-keep-this-key") : SimjectureI18n.t("ui.api-key-optional-for-a-local-server"));
   const installed = (s.clis || []).filter((c) => c.path);
-  SimjectureI18n.attribute($("connection-button"), "title", () => SimjectureI18n.t("ui.configure-api-connections"));
   $("connection-button").disabled = false;
   if(hosted) $("connection-button").hidden=true;
   SimjectureI18n.bindText($("connection-indicator"), () => installed.length ? SimjectureI18n.t("ui.cli-agents-detected", {p0: installed.length}) : (s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved") : SimjectureI18n.t("ui.choose-an-agent-in-your-project")));
@@ -278,8 +278,10 @@ function renderSettings() {
   );
   if (!$("detected-agents").children.length)
     SimjectureI18n.bindText($("detected-agents"), () => SimjectureI18n.t("ui.no-supported-cli-agents-found-you-can-use-the-built-in-api-agent"));
-  SimjectureI18n.bindText($("runtime-status"), () => s.runtime_installed ? SimjectureI18n.t("ui.built-in-agent-powered-by-hugging-face-smolagents-your-existing-simj") : SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
-  SimjectureI18n.bindText($("connection-result"), () => s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation") : SimjectureI18n.t("ui.optional-you-can-use-an-installed-cli-without-adding-an-api-key"));
+  $("runtime-status").hidden = !!s.runtime_installed;
+  if (!s.runtime_installed) SimjectureI18n.bindText($("runtime-status"), () => SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
+  if (s.api_configured) SimjectureI18n.bindText($("connection-result"), () => SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation"));
+  else SimjectureI18n.content($("connection-result"), "");
   const steeringSelect = $("setting-steering-mode");
   if (steeringSelect) {
     steeringSelect.value = s.steering_mode || "steer";
@@ -419,6 +421,8 @@ async function renderAgent(backend, scope = "conversation") {
   }
   if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
   SimjectureI18n.content(controls.note, localizeModelNote(choices.note));
+  // Informational catalogue notes stay quiet; only actionable problems show.
+  controls.note.hidden = !choices.warning;
   globalThis.WorkspaceComposer?.refresh(scope);
   return true;
 }
@@ -717,27 +721,47 @@ function renderProject(force = false) {
       const tools = (message.events || []).filter(
         (e) => e.type === "tool" || e.type === "observation",
       );
-      if (tools.length) {
-        const details = el("details");
+      const recent = message.activity?.recent_actions || [];
+      const recentList = () => {
+        const list = el("ol", undefined, "agent-activity-list");
+        for (const item of recent.slice(-5)) {
+          const row = el("li");
+          row.append(
+            el("strong", SimjectureI18n.live(() => activityLabel(item.label))),
+            el("small", SimjectureI18n.live(() => SimjectureI18n.label(item.status, item.status.replaceAll("_", " ")))),
+          );
+          if (item.detail) row.append(el("span", item.detail));
+          list.append(row);
+        }
+        return list;
+      };
+      // One quiet disclosure per turn: tool trace, or recent actions when no trace exists.
+      const finishedRecent = !message.running && !tools.length && recent.length;
+      if (tools.length || finishedRecent) {
+        const details = el("details", undefined, "turn-activity");
         details.dataset.turn = message.turn;
         details.open = openSteps.has(message.turn);
-        const actionCount = tools.filter((e) => e.type === "tool").length;
+        const actionCount = tools.length
+          ? tools.filter((e) => e.type === "tool").length
+          : recent.length;
         const key = actionCount === 1 ? "workspace.singleActionActivity" : "ui.actions-view-activity";
         details.append(el("summary", SimjectureI18n.message(key, {count: actionCount})));
-        const trace = el("div", undefined, "trace");
-        for (const item of tools) {
-          trace.append(el("p", item.type === "tool" ? item.name : item.text));
-          if (item.arguments)
-            trace.append(
-              el(
-                "pre",
-                typeof item.arguments === "string"
-                  ? item.arguments
-                  : JSON.stringify(item.arguments, null, 2),
-              ),
-            );
-        }
-        details.append(trace);
+        if (tools.length) {
+          const trace = el("div", undefined, "trace");
+          for (const item of tools) {
+            trace.append(el("p", item.type === "tool" ? item.name : item.text));
+            if (item.arguments)
+              trace.append(
+                el(
+                  "pre",
+                  typeof item.arguments === "string"
+                    ? item.arguments
+                    : JSON.stringify(item.arguments, null, 2),
+                ),
+              );
+          }
+          details.append(trace);
+        } else details.append(recentList());
         article.append(details);
       }
       for (const related of message.links || []) {
@@ -799,29 +823,9 @@ function renderProject(force = false) {
           ),
         );
       else if (message.status === "error") article.classList.add("error-text");
-      const recent = message.activity?.recent_actions || [];
-      if (recent.length) {
-        const history = el(
-          message.running ? "div" : "details",
-          undefined,
-          "agent-activity-history",
-        );
-        if (!message.running) {
-          history.dataset.turn = `recent-${message.turn}`;
-          history.open = openSteps.has(history.dataset.turn);
-          history.append(el("summary", SimjectureI18n.message("ui.recent-agent-activity")));
-        }
-        const list = el("ol", undefined, "agent-activity-list");
-        for (const item of recent.slice(-5)) {
-          const row = el("li");
-          row.append(
-            el("strong", SimjectureI18n.live(() => activityLabel(item.label))),
-            el("small", SimjectureI18n.live(() => SimjectureI18n.label(item.status, item.status.replaceAll("_", " ")))),
-          );
-          if (item.detail) row.append(el("span", item.detail));
-          list.append(row);
-        }
-        history.append(list);
+      if (message.running && recent.length) {
+        const history = el("div", undefined, "agent-activity-history");
+        history.append(recentList());
         article.append(history);
       }
       desiredArticles.push(article);
@@ -2633,25 +2637,6 @@ if (settingSteeringSelect) {
       toast(SimjectureI18n.message("workspace.steering.settingSaved"));
     });
   };
-}
-const settingsLanguageSelect = $("settings-language-select");
-if (settingsLanguageSelect) {
-  const syncSettingsLanguage = () => {
-    if (!window.SimjectureLanguages) return;
-    settingsLanguageSelect.replaceChildren(
-      ...Object.entries(window.SimjectureLanguages).map(([code, name]) => {
-        const option = new Option(name, code);
-        option.lang = code;
-        return option;
-      }),
-    );
-    settingsLanguageSelect.value = SimjectureI18n.getLanguage();
-    settingsLanguageSelect.disabled = false;
-  };
-  SimjectureI18n.ready.then(syncSettingsLanguage);
-  window.addEventListener("simjecture-language", syncSettingsLanguage);
-  settingsLanguageSelect.onchange = () =>
-    SimjectureI18n.setLanguage(settingsLanguageSelect.value);
 }
 window.addEventListener("hashchange", () =>
   followRoute().catch((e) => toast(e.message, true)),
