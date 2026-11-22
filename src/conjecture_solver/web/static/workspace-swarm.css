@@ -159,6 +159,18 @@
   border-color: var(--accent);
   color: var(--accent);
 }
+.swarm-worker-console {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: #171a26;
+  color: #dbe1f0;
+  font: 11px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .swarm-deliverables {
   display: flex;
   flex-wrap: wrap;

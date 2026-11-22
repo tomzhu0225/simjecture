@@ -15,6 +15,7 @@ window.WorkspaceMonitor = {
       detailRevision = {},
       visibleCounts = { simulations: 50, commands: 50 },
       listRevision = "";
+    const isSwarmJob = (job) => Boolean(job?.swarm_id);
     const panelFor = (job) =>
       job.kind === "command" ? "commands" : "simulations";
     const prefixFor = (panel) =>
@@ -42,7 +43,7 @@ window.WorkspaceMonitor = {
       subagents.open = false;
     });
     function renderSubagents(p, jobs, fresh) {
-      const tasks = jobs.filter((job) => job.subagent).reverse();
+      const tasks = jobs.filter((job) => job.subagent && !isSwarmJob(job)).reverse();
       const revision = JSON.stringify([p.id, tasks.map((j) => [j.id, j.kind, j.name, j.status])]);
       if (revision === subagentRevision) return;
       subagentRevision = revision;
@@ -84,7 +85,7 @@ window.WorkspaceMonitor = {
     }
     function render(p) {
       if (!p) return;
-      const jobs = p.simulations || [];
+      const jobs = (p.simulations || []).filter((job) => !isSwarmJob(job));
       if (currentProject !== p.id) {
         currentProject = p.id;
         subagents.open = false;

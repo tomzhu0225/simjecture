@@ -395,10 +395,13 @@
   max-height: none;
   height: 100%;
 }
-.settings-preferences {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+.settings-main-stack {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.settings-preferences-panel > label:first-of-type {
+  margin-top: 8px;
 }
 .project-view {
   padding-top: 16px;

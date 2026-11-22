@@ -54,6 +54,7 @@
       <button id="rail-toggle" class="rail-action" type="button" title="Toggle conversations" aria-label="Toggle conversations" data-i18n-title="ui.toggle-conversations" data-i18n-aria-label="ui.toggle-conversations">☰</button>
       <button id="rail-new-project" class="rail-action" type="button" title="New conversation" aria-label="New conversation" data-i18n-title="ui.new-conversation" data-i18n-aria-label="ui.new-conversation">＋</button>
       <a href="/monitor" class="rail-action rail-monitor" title="Experiment monitor" aria-label="Experiment monitor" data-i18n-title="ui.experiment-monitor" data-i18n-aria-label="ui.experiment-monitor"><img src="/assets/monitor-icon.svg" alt="" /></a>
+      <button id="rail-settings" class="rail-action" type="button" data-view="settings" title="Settings" aria-label="Settings" data-i18n-title="workspace.settings.nav" data-i18n-aria-label="workspace.settings.nav">⚙</button>
       <button id="account-button" class="account-avatar" type="button" title="Loading workspace" aria-label="Loading workspace" aria-haspopup="dialog" aria-expanded="false" aria-controls="hosting-account" disabled data-i18n-title="ui.loading-workspace" data-i18n-aria-label="ui.loading-workspace"><span class="avatar-fallback">S</span></button>
     </aside>
     <section id="hosting-account" class="hosting-account account-popover" role="dialog" aria-label="Your account" hidden data-i18n-aria-label="ui.your-account">
@@ -86,6 +87,9 @@
           </button>
           <button id="knowledge-nav" data-view="knowledge" class="nav-item" hidden>
             <span aria-hidden="true">▤</span> <span data-i18n="ui.knowledge-2">Knowledge</span>
+          </button>
+          <button id="sidebar-settings" data-view="settings" class="nav-item">
+            <span aria-hidden="true">⚙</span> <span data-i18n="workspace.settings.nav">Settings</span>
           </button>
           <details class="workspace-resources" open><summary><span data-i18n="ui.resources">Resources</span> <span aria-hidden="true">⌄</span></summary>
           <button data-view="tools" class="nav-item">
@@ -340,45 +344,15 @@
         <section id="view-settings" class="view" hidden>
           <div class="page-intro compact">
             <p class="eyebrow" data-i18n="ui.your-agent-your-machine">YOUR AGENT, YOUR MACHINE</p>
-            <h1 data-i18n="ui.api-connections-if-you-need-them">API connections, if you need them.</h1>
+            <h1 data-i18n="workspace.settings.nav">Settings</h1>
             <p class="lead" data-i18n="workspace.settingsIntro">
               Choose your agent and model inside each conversation. Installed
               CLI agents need no API setup here.
             </p>
           </div>
           <div class="settings-layout">
-            <form id="settings-form" class="panel form-panel">
-              <p class="eyebrow" data-i18n="ui.optional-compatible-api">OPTIONAL · COMPATIBLE API</p>
-              <div id="api-fields">
-                <label for="provider-preset" data-i18n="ui.provider">Provider</label
-                ><select id="provider-preset">
-                  <option value="custom" data-i18n="ui.custom-openai-compatible">Custom / OpenAI-compatible</option>
-                  <option value="deepseek">DeepSeek</option>
-                  <option value="openrouter">OpenRouter</option>
-                  <option value="local" data-i18n="ui.local-model-server">Local model server</option></select
-                ><label for="base-url" data-i18n="ui.api-base-url">API base URL</label
-                ><input
-                  id="base-url"
-                  type="url"
-                  placeholder="https://your-provider.example/v1"
-                /><label for="api-key" data-i18n="ui.api-key">API key</label
-                ><input
-                  id="api-key"
-                  type="password"
-                  autocomplete="new-password"
-                  placeholder="Enter a key; stored only on this machine"
-                 data-i18n-placeholder="ui.enter-a-key-stored-only-on-this-machine"/>
-                <p class="field-help" data-i18n="workspace.settingsSecretHelp">
-                  Stored in a private file on the execution machine. Never
-                  returned to the browser or included in project exports.
-                </p>
-              </div>
-              <div class="form-actions">
-                <button class="primary" type="submit" id="save-connection" data-i18n="ui.save-api-connection">
-                  Save API connection</button
-                ><span id="connection-result" role="status"></span>
-              </div>
-              <div class="settings-preferences">
+            <div class="settings-main-stack">
+              <div class="panel form-panel settings-preferences-panel">
                 <p class="eyebrow" data-i18n="workspace.settings.preferencesTitle">WORKSPACE PREFERENCES</p>
                 <label for="settings-language-select" data-i18n="ui.interface-language">Interface language</label>
                 <select id="settings-language-select" disabled></select>
@@ -390,7 +364,39 @@
                 </select>
                 <p class="field-help" data-i18n="workspace.steering.settingHelp">Press Enter while a turn is running to apply this behavior. Ctrl+Enter always interrupts immediately.</p>
               </div>
-            </form>
+              <form id="settings-form" class="panel form-panel">
+                <p class="eyebrow" data-i18n="ui.optional-compatible-api">OPTIONAL · COMPATIBLE API</p>
+                <div id="api-fields">
+                  <label for="provider-preset" data-i18n="ui.provider">Provider</label
+                  ><select id="provider-preset">
+                    <option value="custom" data-i18n="ui.custom-openai-compatible">Custom / OpenAI-compatible</option>
+                    <option value="deepseek">DeepSeek</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="local" data-i18n="ui.local-model-server">Local model server</option></select
+                  ><label for="base-url" data-i18n="ui.api-base-url">API base URL</label
+                  ><input
+                    id="base-url"
+                    type="url"
+                    placeholder="https://your-provider.example/v1"
+                  /><label for="api-key" data-i18n="ui.api-key">API key</label
+                  ><input
+                    id="api-key"
+                    type="password"
+                    autocomplete="new-password"
+                    placeholder="Enter a key; stored only on this machine"
+                   data-i18n-placeholder="ui.enter-a-key-stored-only-on-this-machine"/>
+                  <p class="field-help" data-i18n="workspace.settingsSecretHelp">
+                    Stored in a private file on the execution machine. Never
+                    returned to the browser or included in project exports.
+                  </p>
+                </div>
+                <div class="form-actions">
+                  <button class="primary" type="submit" id="save-connection" data-i18n="ui.save-api-connection">
+                    Save API connection</button
+                  ><span id="connection-result" role="status"></span>
+                </div>
+              </form>
+            </div>
             <aside class="setup-notes">
               <h3 data-i18n="ui.where-your-work-runs">Where your work runs</h3>
               <p data-i18n="workspace.settingsHostHelp">

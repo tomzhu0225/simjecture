@@ -202,8 +202,8 @@ def test_direct_steering_live_bar_queue_and_timeline_marker(v08_site, page_expec
     page, expect = page_expect
     page.goto(f"{base}/workspace#project={pid}&view=interactive")
 
-    # Configure Queue mode first in Settings, plus verify Settings language selector works
-    page.locator('button[data-view="settings"]').click()
+    # Configure Queue mode first in Settings (via rail Settings button), plus verify language toggle
+    page.locator("#rail-settings").click()
     expect(page.locator("#settings-language-select")).to_be_enabled(timeout=5000)
     page.locator("#settings-language-select").select_option("zh-CN")
     expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
@@ -230,7 +230,7 @@ def test_direct_steering_live_bar_queue_and_timeline_marker(v08_site, page_expec
     expect(page.locator("#steering-queue .steering-chip")).to_have_count(0, timeout=5000)
 
     # Switch Settings back to default Steer mode and press Enter to steer seamlessly mid-turn
-    page.locator('button[data-view="settings"]').click()
+    page.locator("#rail-settings").click()
     page.locator("#setting-steering-mode").select_option("steer")
     page.goto(f"{base}/workspace#project={pid}&view=interactive")
     expect(page.locator("#steer-message")).to_be_visible(timeout=5000)
@@ -278,6 +278,13 @@ def test_swarm_gui_launcher_dag_board_and_inline_artifact_import(v08_site, page_
     expect(page.locator("#swarm-detail")).to_contain_text("3/3 done", timeout=20000)
     expect(page.locator(".swarm-stage-label")).to_have_count(2)
     expect(page.locator(".swarm-worker-card")).to_have_count(3)
+    # Swarm workers must NOT show up as Simulations or pop up the legacy Subagents header pill
+    expect(page.locator("#simulation-count")).to_have_text("0")
+    expect(page.locator("#subagent-panel")).to_be_hidden()
+    # Inspecting a worker opens inline console inside the Swarm card
+    verifier_card = page.locator('.swarm-worker-card[data-worker="Verifier"]')
+    verifier_card.locator(".swarm-worker-actions button").first.click()
+    expect(verifier_card.locator(".swarm-worker-console")).to_be_visible(timeout=5000)
 
     # Post a message on the shared swarm board
     page.locator("#swarm-board-input").fill("Great convergence across all 3 roles")

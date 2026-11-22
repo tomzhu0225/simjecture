@@ -1184,6 +1184,7 @@ class Workspace(MachineWorkspace, ProjectCollections):
                 if j.get("source_turn") == turn.name
                 and j.get("kind") == "simulation"
                 and not j.get("native")
+                and not j.get("swarm_id")
             ]
             messages.append(
                 dict(

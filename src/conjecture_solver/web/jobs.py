@@ -257,6 +257,8 @@ def snapshot(project, identifier, *, include_files=False, summary=False):
                 "name",
                 "kind",
                 "subagent",
+                "swarm_id",
+                "swarm_role",
                 "status",
                 "live",
                 "created_at",

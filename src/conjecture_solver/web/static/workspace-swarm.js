@@ -11,6 +11,8 @@ window.WorkspaceSwarm = (() => {
   let boardRecipient = "all";
   let activePreset = "parallel_explore";
   let draftMembers = [];
+  let inspectedWorkerJob = null;
+  let inspectedWorkerLog = "";
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, text, cls) => {
@@ -450,6 +452,8 @@ window.WorkspaceSwarm = (() => {
       swarm.board?.length,
       swarm.board?.at(-1)?.id,
       boardRecipient,
+      inspectedWorkerJob,
+      inspectedWorkerLog.length,
     ]);
     if (sig === detailSignature) return;
     detailSignature = sig;
@@ -606,9 +610,13 @@ window.WorkspaceSwarm = (() => {
 
     const actions = el("div", undefined, "swarm-worker-actions");
     if (member.job_id) {
-      const inspectBtn = el("button", SimjectureI18n.message("workspace.swarm.inspectWorker"));
+      const showing = inspectedWorkerJob === member.job_id;
+      const inspectBtn = el(
+        "button",
+        SimjectureI18n.message(showing ? "workspace.swarm.hideConsole" : "workspace.swarm.inspectWorker"),
+      );
       inspectBtn.type = "button";
-      inspectBtn.onclick = () => ctx.openSimulation?.(member.job_id);
+      inspectBtn.onclick = () => toggleWorkerConsole(p.id, member.job_id);
       actions.append(inspectBtn);
     }
     if (!swarm.legacy && !ctx.readonly() && !ctx.hosted) {
@@ -650,7 +658,41 @@ window.WorkspaceSwarm = (() => {
       }
     }
     if (actions.children.length) card.append(actions);
+    if (member.job_id && inspectedWorkerJob === member.job_id) {
+      const consoleBox = el("pre", undefined, "swarm-worker-console");
+      if (inspectedWorkerLog) {
+        consoleBox.textContent = inspectedWorkerLog;
+      } else {
+        SimjectureI18n.text(consoleBox, "workspace.swarm.noConsoleYet");
+      }
+      card.append(consoleBox);
+    }
     return card;
+  }
+
+  async function toggleWorkerConsole(projectId, jobId) {
+    if (inspectedWorkerJob === jobId) {
+      inspectedWorkerJob = null;
+      inspectedWorkerLog = "";
+      detailSignature = "";
+      if (detailCache && ctx?.project()) renderDetail(detailCache, ctx.project());
+      return;
+    }
+    inspectedWorkerJob = jobId;
+    inspectedWorkerLog = "";
+    detailSignature = "";
+    if (detailCache && ctx?.project()) renderDetail(detailCache, ctx.project());
+    try {
+      const job = await ctx.api(
+        `simulation?id=${encodeURIComponent(projectId)}&simulation=${encodeURIComponent(jobId)}`,
+      );
+      if (inspectedWorkerJob !== jobId) return;
+      inspectedWorkerLog = String(job.output || job.controller_output || "").trim();
+      detailSignature = "";
+      if (detailCache && ctx?.project()) renderDetail(detailCache, ctx.project());
+    } catch (error) {
+      ctx.notify(error.message, true);
+    }
   }
 
   function renderBoard(swarm, p, prevDraft, feedPinned, prevFeedScroll) {
