@@ -905,6 +905,7 @@ def run_swarm_controller(swarm_dir: Path) -> int:
         workspace = Workspace(record["workspace_root"])
         cancelled = stopped or read(swarm_dir / "control.json").get("command") == "cancel"
         members = record.get("members", [])
+        initial_jobs = {m["name"]: m.get("job_id") for m in members}
         member_map = {m["name"]: m for m in members}
         changed = False
         active_live = 0
@@ -1005,7 +1006,13 @@ def run_swarm_controller(swarm_dir: Path) -> int:
             with _swarm_lock(swarm_dir):
                 fresh = read(swarm_dir / "swarm.json")
                 by_name = {m["name"]: m for m in members}
-                merged = [by_name.get(m["name"], m) for m in fresh.get("members", [])]
+                merged = [
+                    by_name[fm["name"]]
+                    if fm["name"] in by_name
+                    and fm.get("job_id") == initial_jobs.get(fm["name"])
+                    else fm
+                    for fm in fresh.get("members", [])
+                ]
                 fresh["members"] = merged
                 fresh["updated_at"] = time.time()
                 put(swarm_dir / "swarm.json", fresh)

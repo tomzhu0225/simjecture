@@ -73,8 +73,8 @@ if Path("CONTEXT.json").is_file():
     print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 1}}), flush=True)
     sys.exit(0)
 
-is_resume = "resume" in args
-if not is_resume:
+is_steered = "resume" in args or "LIVE USER STEERING" in prompt
+if not is_steered:
     print(json.dumps({"type": "thread.started", "thread_id": "browser-thread-1"}), flush=True)
     Path("turn_running").touch()
     deadline = time.time() + 18
