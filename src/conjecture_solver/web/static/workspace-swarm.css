@@ -358,3 +358,67 @@
   .swarm-preset-grid,
   .swarm-member-draft-row { grid-template-columns: 1fr; }
 }
+
+/* v0.8 clarity pass: compact header with progress, Agents / Board switch,
+   status-coloured worker cards and file-name deliverables. */
+.swarm-header-card { padding: 2px 0 10px; border: 0; border-radius: 0; background: none; margin-bottom: 8px; }
+.swarm-header-top h3 { font-size: 15px; }
+.swarm-status-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; font-size: 11.5px; color: var(--muted); }
+.swarm-status-line .swarm-progress-text { margin-left: auto; font-variant-numeric: tabular-nums; }
+.swarm-progress { height: 4px; margin-top: 8px; border-radius: 999px; background: var(--soft); overflow: hidden; }
+.swarm-progress-fill { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 240ms ease; }
+.swarm-progress-fill.completed { background: #2f9e67; }
+.swarm-progress-fill.partial { background: #d39a2c; }
+.swarm-progress-fill:is(.failed, .cancelled) { background: #c2513f; }
+.swarm-objective {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  overflow: hidden; cursor: pointer;
+}
+.swarm-objective.is-expanded { display: block; }
+.swarm-subnav {
+  display: flex; gap: 2px; padding: 2px; margin: 0 0 10px;
+  border-radius: 9px; background: var(--soft);
+}
+.swarm-subnav-btn {
+  flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 5px 8px; border: 0; border-radius: 7px; background: transparent;
+  color: var(--muted); font-size: 12px; font-weight: 600;
+}
+.swarm-subnav-btn[aria-pressed="true"] { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px #00000014; }
+.swarm-subnav-btn .count-badge { font-size: 10.5px; }
+.swarm-stage-label {
+  display: flex; align-items: center; gap: 8px; letter-spacing: 0.4px;
+}
+.swarm-stage-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.swarm-stage-group + .swarm-stage-group .swarm-stage-label::before { content: "↓"; font-size: 11px; }
+.swarm-worker-card { position: relative; padding: 9px 11px 9px 13px; overflow: hidden; }
+.swarm-worker-card::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--line);
+}
+.swarm-worker-card:has(.run-state.succeeded)::before,
+.swarm-worker-card:has(.run-state.completed)::before { background: #2f9e67; }
+.swarm-worker-card:has(.run-state.failed)::before,
+.swarm-worker-card:has(.run-state.timed_out)::before { background: #c2513f; }
+.swarm-worker-card.is-running::before { background: var(--accent); }
+.swarm-worker-card .run-state { font-size: 11px; color: var(--muted); }
+.swarm-worker-summary {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+  color: var(--text-soft, var(--ink));
+}
+.swarm-worker-actions { justify-content: flex-end; margin-top: 6px; }
+.swarm-worker-actions button { border: 0; background: transparent; color: var(--muted); padding: 3px 7px; }
+.swarm-worker-actions button:hover { background: var(--soft); color: var(--ink); }
+.swarm-artifact-chip { padding: 1px 2px 1px 4px; background: transparent; }
+.swarm-artifact-chip .swarm-artifact-open {
+  color: var(--ink); font: 500 11px ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.swarm-artifact-chip .swarm-artifact-open::before { content: "▤ "; color: var(--muted); }
+.swarm-artifact-chip .swarm-artifact-open:hover { color: var(--accent); text-decoration: underline; }
+.swarm-board-section { margin-top: 0; }
+.swarm-board-feed { max-height: none; min-height: 160px; }
+.swarm-toolbar { margin-bottom: 6px; }
+.swarm-board-msg-body {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; line-clamp: 6;
+  overflow: hidden; cursor: pointer;
+}
+.swarm-board-msg-body.is-expanded { display: block; }

@@ -161,31 +161,38 @@ def test_integrated_file_viewer_diff_xss_and_responsive_layout(v08_site, page_ex
     expect(viewer).to_be_visible()
     expect(page.locator(".files-panel-shell.has-active-file")).to_be_visible()
     expect(page.locator("#brief-summary")).to_be_hidden()
+    # Viewer-first: the file list steps away and a narrow pane widens for reading
+    expect(page.locator("#project-files")).to_be_hidden()
+    expect(page.locator("#inspector-wide-toggle")).to_have_attribute("aria-pressed", "true")
+    switcher = viewer.locator(".file-viewer-switcher")
+    expect(switcher).to_have_value("solver.py")
     expect(viewer).to_contain_text("return -2 * u")
     viewer.locator('button[data-viewer-mode="diff"]').click()
     expect(viewer.locator(".file-diff-line.add")).to_contain_text("-2 * u")
     expect(viewer.locator(".file-diff-line.del")).to_contain_text("-u")
 
     # Open Markdown file with XSS payload -> sanitized, never executes
-    page.locator('#project-files a[data-view-file="report.md"]').click()
+    switcher.select_option("report.md")
     expect(viewer.locator(".file-viewer-markdown h1")).to_have_text("Findings")
     assert page.evaluate("window.__xss === undefined")
 
     # Open CSV -> renders structured table
-    page.locator('#project-files a[data-view-file="table.csv"]').click()
+    switcher.select_option("table.csv")
     expect(viewer.locator(".file-viewer-table th")).to_have_count(2)
     expect(viewer.locator(".file-viewer-table tbody tr")).to_have_count(2)
 
     # Open PNG -> renders image preview
-    page.locator('#project-files a[data-view-file="figure.png"]').click()
+    switcher.select_option("figure.png")
     expect(viewer.locator("img.file-viewer-image")).to_be_visible()
 
     # Live auto-refresh when solver.py changes on disk
-    page.locator('#project-files a[data-view-file="solver.py"]').click()
+    switcher.select_option("solver.py")
     (pdir / "files/solver.py").write_text("def rhs(u):\n    return -4 * u\n", encoding="utf-8")
     expect(viewer).to_contain_text("-4 * u", timeout=8000)
 
     # Toggle wide pane, dark mode, zh-CN, and check zero horizontal overflow at desktop + mobile
+    page.locator("#inspector-wide-toggle").click()
+    expect(page.locator("#inspector-wide-toggle")).to_have_attribute("aria-pressed", "false")
     page.locator("#inspector-wide-toggle").click()
     expect(page.locator("#inspector-wide-toggle")).to_have_attribute("aria-pressed", "true")
     page.evaluate("WorkspaceTheme.set('dark')")
@@ -290,6 +297,7 @@ def test_swarm_gui_launcher_dag_board_and_inline_artifact_import(v08_site, page_
     expect(verifier_card.locator(".swarm-worker-console")).to_be_visible(timeout=5000)
 
     # Post a message on the shared swarm board
+    page.locator('[data-swarm-view="board"]').click()
     page.locator("#swarm-board-input").fill("Great convergence across all 3 roles")
     page.locator(".swarm-board-composer button[type=submit]").click()
     expect(page.locator(".swarm-board-feed")).to_contain_text(
@@ -297,6 +305,7 @@ def test_swarm_gui_launcher_dag_board_and_inline_artifact_import(v08_site, page_
     )
 
     # View a worker deliverable directly in the integrated File Viewer
+    page.locator('[data-swarm-view="agents"]').click()
     verifier_card = page.locator('.swarm-worker-card[data-worker="Verifier"]')
     verifier_card.locator(".swarm-artifact-chip button").first.click()
     expect(page.locator("#file-viewer-pane")).to_be_visible(timeout=5000)
@@ -305,7 +314,10 @@ def test_swarm_gui_launcher_dag_board_and_inline_artifact_import(v08_site, page_
     # Switch back to Swarm tab and one-click Import verdict.md into conversation files
     page.locator('wa-tab[panel="swarm"]').click()
     verifier_card.locator(".swarm-artifact-chip button").nth(1).click()
-    expect(page.locator('#project-files a[data-view-file="verdict.md"]')).to_be_visible(
-        timeout=8000
+    expect(page.locator("#file-viewer-pane .file-viewer-switcher")).to_have_value(
+        "verdict.md", timeout=8000
     )
+    # Back to all files restores the list with the imported file
+    page.locator("#file-viewer-pane .file-viewer-back").click()
+    expect(page.locator('#project-files a[data-view-file="verdict.md"]')).to_be_visible()
     assert (pdir / "files/verdict.md").is_file()

@@ -8,6 +8,8 @@ window.WorkspaceFiles = (() => {
   let activeData = null;
   let loadRequest = 0;
   let listSignature = "";
+  // True when opening a file widened the pane for us; closing restores the layout.
+  let autoWidened = false;
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, text, cls) => {
@@ -15,6 +17,20 @@ window.WorkspaceFiles = (() => {
     if (text !== undefined) SimjectureI18n.content(node, text);
     if (cls) node.className = cls;
     return node;
+  };
+  const iconButton = (glyph, key, onclick) => {
+    const button = el("button", glyph, "file-viewer-icon");
+    button.type = "button";
+    SimjectureI18n.attribute(button, "title", () => SimjectureI18n.t(key));
+    SimjectureI18n.attribute(button, "aria-label", () => SimjectureI18n.t(key));
+    button.onclick = onclick;
+    return button;
+  };
+  const isWide = () => $("inspector-wide-toggle")?.getAttribute("aria-pressed") === "true";
+  const setWide = (wide) => {
+    if (isWide() === wide) return;
+    const result = window.WorkspacePanels?.toggleWide?.();
+    $("inspector-wide-toggle")?.setAttribute("aria-pressed", String(Boolean(result)));
   };
   const fmtBytes = (n) => {
     const value = Number(n || 0);
@@ -66,10 +82,35 @@ window.WorkspaceFiles = (() => {
     }
     if (wideToggle) {
       wideToggle.onclick = () => {
+        autoWidened = false;
         const wide = window.WorkspacePanels?.toggleWide?.();
         wideToggle.setAttribute("aria-pressed", String(Boolean(wide)));
       };
     }
+  }
+
+  function closeViewer() {
+    activeFile = null;
+    activeData = null;
+    const pane = $("file-viewer-pane");
+    if (pane) {
+      pane.hidden = true;
+      pane.replaceChildren();
+    }
+    setViewerOpenState(false);
+    if (autoWidened) setWide(false);
+    autoWidened = false;
+    listSignature = "";
+    if (ctx?.project()) render(ctx.project());
+  }
+
+  // Give the document room: widen a narrow pane while a file is being read.
+  function ensureViewingRoom() {
+    const inspector = $("research-inspector");
+    if (isWide() || !inspector || matchMedia("(max-width: 900px)").matches) return;
+    if (inspector.getBoundingClientRect().width >= 460) return;
+    setWide(true);
+    autoWidened = isWide();
   }
 
   function setViewerOpenState(openState) {
@@ -225,8 +266,8 @@ window.WorkspaceFiles = (() => {
     };
     listSignature = "";
     render(p);
+    ensureViewingRoom();
     await loadViewer(activeFile, { silent: false });
-    $("file-viewer-pane")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   async function loadViewer(target, { silent = false } = {}) {
@@ -268,11 +309,24 @@ window.WorkspaceFiles = (() => {
     pane.hidden = false;
     pane.replaceChildren();
 
+    // Row 1: back to all files, file switcher, quiet icon actions.
     const head = el("div", undefined, "file-viewer-head");
+    head.append(iconButton("‹", "workspace.files.allFiles", closeViewer));
+    head.lastChild.classList.add("file-viewer-back");
     const titleBox = el("div", undefined, "file-viewer-title");
-    const nameEl = el("strong", data.path);
-    SimjectureI18n.attribute(nameEl, "title", () => data.path);
-    titleBox.append(nameEl);
+    const siblings = activeFile.source === "files" ? (ctx.project()?.files || []).map((f) => f.name) : [];
+    if (siblings.length > 1 && siblings.includes(data.path)) {
+      const switcher = el("select", undefined, "file-viewer-switcher");
+      SimjectureI18n.attribute(switcher, "aria-label", () => SimjectureI18n.t("workspace.files.switchFile"));
+      for (const name of siblings) switcher.add(new Option(name, name));
+      switcher.value = data.path;
+      switcher.onchange = () => open(switcher.value, { source: "files" });
+      titleBox.append(switcher);
+    } else {
+      const nameEl = el("strong", data.path);
+      SimjectureI18n.attribute(nameEl, "title", () => data.path);
+      titleBox.append(nameEl);
+    }
     if (data.change && data.change !== "unchanged") {
       const key =
         data.change === "created" ? "workspace.files.newBadge" : "workspace.files.editedBadge";
@@ -281,8 +335,43 @@ window.WorkspaceFiles = (() => {
     if (data.source === "simulation" && data.source_label) {
       titleBox.append(el("span", data.source_label, "file-viewer-source"));
     }
+    const actions = el("div", undefined, "file-viewer-actions");
+    const index = siblings.indexOf(data.path);
+    if (index >= 0 && siblings.length > 1) {
+      const step = (delta) => () =>
+        open(siblings[(index + delta + siblings.length) % siblings.length], { source: "files" });
+      actions.append(
+        iconButton("↑", "workspace.files.previous", step(-1)),
+        iconButton("↓", "workspace.files.next", step(1)),
+      );
+    }
+    if (data.content !== undefined) {
+      const wrapBtn = iconButton("↵", "workspace.files.wrap", () => {
+        activeFile.wrap = !activeFile.wrap;
+        renderViewer(data, pane.querySelector(".file-viewer-body")?.scrollTop || 0);
+      });
+      wrapBtn.setAttribute("aria-pressed", String(activeFile.wrap));
+      const copyBtn = iconButton("⧉", "ui.copy", async () => {
+        try {
+          await navigator.clipboard.writeText(data.content || "");
+          ctx.notify(SimjectureI18n.message("ui.copied"));
+        } catch {
+          ctx.notify(SimjectureI18n.message("ui.press-ctrl-c-to-copy"));
+        }
+      });
+      actions.append(wrapBtn, copyBtn);
+    }
+    const dl = el("a", "⤓", "file-viewer-icon");
+    dl.href = ctx.workspaceURL(data.download_url);
+    dl.download = data.name;
+    SimjectureI18n.attribute(dl, "title", () => SimjectureI18n.t("workspace.files.download"));
+    SimjectureI18n.attribute(dl, "aria-label", () => SimjectureI18n.t("workspace.files.download"));
+    actions.append(dl);
+    head.append(titleBox, actions);
+    pane.append(head);
 
-    const controls = el("div", undefined, "file-viewer-controls");
+    // Row 2: view modes on the left, size / lines / diff stat on the right.
+    const toolbar = el("div", undefined, "file-viewer-toolbar");
     const modes = [];
     if (data.kind === "markdown") {
       modes.push(["primary", "workspace.files.viewRendered"], ["raw", "workspace.files.viewSource"]);
@@ -291,64 +380,25 @@ window.WorkspaceFiles = (() => {
     } else if (data.kind === "text") {
       modes.push(["primary", "workspace.files.viewCode"]);
     }
-    if (data.diff?.has_diff) {
-      modes.push(["diff", "workspace.files.viewDiff"]);
-    }
+    if (data.diff?.has_diff) modes.push(["diff", "workspace.files.viewDiff"]);
     if (!modes.some(([id]) => id === activeFile.viewMode)) {
       activeFile.viewMode = modes[0]?.[0] || "primary";
     }
-    for (const [modeId, labelKey] of modes) {
-      const btn = el("button", SimjectureI18n.message(labelKey));
-      btn.type = "button";
-      btn.dataset.viewerMode = modeId;
-      btn.setAttribute("aria-pressed", String(activeFile.viewMode === modeId));
-      btn.onclick = () => {
-        activeFile.viewMode = modeId;
-        renderViewer(data, 0);
-      };
-      controls.append(btn);
+    const modeGroup = el("div", undefined, "file-viewer-modes");
+    modeGroup.setAttribute("role", "group");
+    if (modes.length > 1) {
+      for (const [modeId, labelKey] of modes) {
+        const btn = el("button", SimjectureI18n.message(labelKey));
+        btn.type = "button";
+        btn.dataset.viewerMode = modeId;
+        btn.setAttribute("aria-pressed", String(activeFile.viewMode === modeId));
+        btn.onclick = () => {
+          activeFile.viewMode = modeId;
+          renderViewer(data, 0);
+        };
+        modeGroup.append(btn);
+      }
     }
-    if (data.content !== undefined) {
-      const wrapBtn = el("button", SimjectureI18n.message("workspace.files.wrap"));
-      wrapBtn.type = "button";
-      wrapBtn.setAttribute("aria-pressed", String(activeFile.wrap));
-      wrapBtn.onclick = () => {
-        activeFile.wrap = !activeFile.wrap;
-        renderViewer(data, pane.querySelector(".file-viewer-body")?.scrollTop || 0);
-      };
-      const copyBtn = el("button", SimjectureI18n.message("ui.copy"));
-      copyBtn.type = "button";
-      copyBtn.onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(data.content || "");
-          ctx.notify(SimjectureI18n.message("ui.copied"));
-        } catch {
-          ctx.notify(SimjectureI18n.message("ui.press-ctrl-c-to-copy"));
-        }
-      };
-      controls.append(wrapBtn, copyBtn);
-    }
-    const dl = el("a", SimjectureI18n.message("workspace.files.download"));
-    dl.href = ctx.workspaceURL(data.download_url);
-    dl.download = data.name;
-    const closeBtn = el("button", "×");
-    closeBtn.type = "button";
-    SimjectureI18n.attribute(closeBtn, "aria-label", () =>
-      SimjectureI18n.t("workspace.files.closeViewer"),
-    );
-    closeBtn.onclick = () => {
-      activeFile = null;
-      activeData = null;
-      pane.hidden = true;
-      pane.replaceChildren();
-      setViewerOpenState(false);
-      listSignature = "";
-      render(ctx.project());
-    };
-    controls.append(dl, closeBtn);
-    head.append(titleBox, controls);
-    pane.append(head);
-
     const meta = el("div", undefined, "file-viewer-meta");
     const leftMeta = el(
       "span",
@@ -369,7 +419,8 @@ window.WorkspaceFiles = (() => {
       );
       meta.append(stat);
     }
-    pane.append(meta);
+    toolbar.append(modeGroup, meta);
+    pane.append(toolbar);
 
     const body = el("div", undefined, "file-viewer-body");
     renderViewerBody(body, data);

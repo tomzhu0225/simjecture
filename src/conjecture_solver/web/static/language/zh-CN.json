@@ -1803,5 +1803,11 @@
   "workspace.settings.machine": "机器",
   "workspace.settings.agents": "编程智能体",
   "workspace.settings.apiTitle": "API 连接",
-  "workspace.settings.optional": "可选"
+  "workspace.settings.optional": "可选",
+  "workspace.files.allFiles": "全部文件",
+  "workspace.files.switchFile": "切换文件",
+  "workspace.files.previous": "上一个文件",
+  "workspace.files.next": "下一个文件",
+  "workspace.swarm.viewAgents": "智能体",
+  "workspace.swarm.viewBoard": "看板"
 }

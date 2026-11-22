@@ -13,6 +13,7 @@ window.WorkspaceSwarm = (() => {
   let draftMembers = [];
   let inspectedWorkerJob = null;
   let inspectedWorkerLog = "";
+  let swarmView = "agents";
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, text, cls) => {
@@ -337,6 +338,7 @@ window.WorkspaceSwarm = (() => {
       detailSignature = "";
       listSignature = "";
       boardRecipient = "all";
+      swarmView = "agents";
     }
     const activeWorkers = swarms.reduce((acc, s) => acc + (s.counts?.active || 0), 0);
     const totalWorkers = swarms.reduce((acc, s) => acc + (s.counts?.total || 0), 0);
@@ -397,7 +399,7 @@ window.WorkspaceSwarm = (() => {
         for (const s of swarms) {
           select.add(new Option(`${s.title} (${s.counts?.succeeded || 0}/${s.counts?.total || 0})`, s.id));
         }
-        select.hidden = swarms.length === 0;
+        select.hidden = swarms.length <= 1;
         if (selectedSwarmId) select.value = selectedSwarmId;
       }
       const empty = $("swarm-empty");
@@ -455,6 +457,7 @@ window.WorkspaceSwarm = (() => {
       boardRecipient,
       inspectedWorkerJob,
       inspectedWorkerLog.length,
+      swarmView,
     ]);
     if (sig === detailSignature) return;
     detailSignature = sig;
@@ -465,6 +468,7 @@ window.WorkspaceSwarm = (() => {
     const prevDraft = host.querySelector(".swarm-board-composer input")?.value || "";
 
     host.replaceChildren();
+    // Header: title + stop, one status line, and a progress bar.
     const header = el("div", undefined, "swarm-header-card");
     const top = el("div", undefined, "swarm-header-top");
     top.append(el("h3", swarm.title));
@@ -481,32 +485,63 @@ window.WorkspaceSwarm = (() => {
       top.append(stopBtn);
     }
     header.append(top);
-
-    const pills = el("div", undefined, "swarm-meta-pills");
-    pills.append(
+    const done = swarm.counts?.succeeded || 0;
+    const total = swarm.counts?.total || 0;
+    const status = el("div", undefined, "swarm-status-line");
+    status.append(
       el(
         "span",
         SimjectureI18n.live(() => SimjectureI18n.label(swarm.status, swarm.status.replaceAll("_", " "))),
         `swarm-pill ${swarm.status}`,
       ),
-      el(
-        "span",
-        SimjectureI18n.message(`workspace.swarm.strategy.${swarm.strategy}`),
-        "swarm-pill",
-      ),
-      el(
-        "span",
-        SimjectureI18n.message("workspace.swarm.progressPill", {
-          done: swarm.counts?.succeeded || 0,
-          total: swarm.counts?.total || 0,
-        }),
-        "swarm-pill",
-      ),
+      el("span", SimjectureI18n.message(`workspace.swarm.strategy.${swarm.strategy}`), "swarm-strategy"),
+      el("span", SimjectureI18n.message("workspace.swarm.progressPill", { done, total }), "swarm-progress-text"),
     );
-    header.append(pills);
-    if (swarm.objective) header.append(el("p", swarm.objective, "swarm-objective"));
+    header.append(status);
+    const bar = el("div", undefined, "swarm-progress");
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-valuemin", "0");
+    bar.setAttribute("aria-valuemax", String(total));
+    bar.setAttribute("aria-valuenow", String(done));
+    const fill = el("span", undefined, `swarm-progress-fill ${swarm.status}`);
+    fill.style.width = `${total ? Math.round((100 * done) / total) : 0}%`;
+    bar.append(fill);
+    header.append(bar);
+    if (swarm.objective) {
+      const objective = el("p", swarm.objective, "swarm-objective");
+      objective.tabIndex = 0;
+      objective.onclick = () => objective.classList.toggle("is-expanded");
+      header.append(objective);
+    }
     host.append(header);
 
+    // Agents / Board switch keeps one focused view instead of a long scroll.
+    const views = [["agents", "workspace.swarm.viewAgents", (swarm.members || []).length]];
+    if (!swarm.legacy) views.push(["board", "workspace.swarm.viewBoard", (swarm.board || []).length]);
+    if (!views.some(([id]) => id === swarmView)) swarmView = "agents";
+    if (views.length > 1) {
+      const nav = el("div", undefined, "swarm-subnav");
+      nav.setAttribute("role", "group");
+      for (const [id, key, count] of views) {
+        const btn = el("button", undefined, "swarm-subnav-btn");
+        btn.type = "button";
+        btn.dataset.swarmView = id;
+        btn.setAttribute("aria-pressed", String(swarmView === id));
+        btn.append(el("span", SimjectureI18n.message(key)), el("span", String(count), "count-badge"));
+        btn.onclick = () => {
+          swarmView = id;
+          detailSignature = "";
+          renderDetail(swarm, p);
+        };
+        nav.append(btn);
+      }
+      host.append(nav);
+    }
+
+    if (swarmView === "board") {
+      host.append(renderBoard(swarm, p, prevDraft, feedPinned, prevFeedScroll));
+      return;
+    }
     const stages = new Map();
     for (const member of swarm.members || []) {
       const stage = Number(member.stage || 0);
@@ -528,10 +563,6 @@ window.WorkspaceSwarm = (() => {
         group.append(renderWorkerCard(member, swarm, p));
       }
       host.append(group);
-    }
-
-    if (!swarm.legacy) {
-      host.append(renderBoard(swarm, p, prevDraft, feedPinned, prevFeedScroll));
     }
   }
 
@@ -580,9 +611,10 @@ window.WorkspaceSwarm = (() => {
       const box = el("div", undefined, "swarm-deliverables");
       for (const art of member.deliverables) {
         const chip = el("span", undefined, "swarm-artifact-chip");
-        chip.append(el("code", art.name));
-        const viewBtn = el("button", SimjectureI18n.message("workspace.files.viewInline"));
+        // The file name itself opens the document in the Files viewer.
+        const viewBtn = el("button", art.name, "swarm-artifact-open");
         viewBtn.type = "button";
+        SimjectureI18n.attribute(viewBtn, "title", () => SimjectureI18n.t("workspace.files.viewInline"));
         viewBtn.onclick = () =>
           window.WorkspaceFiles?.open(art.name, { source: "simulation", simulation: member.job_id });
         chip.append(viewBtn);
@@ -698,12 +730,6 @@ window.WorkspaceSwarm = (() => {
 
   function renderBoard(swarm, p, prevDraft, feedPinned, prevFeedScroll) {
     const section = el("section", undefined, "swarm-board-section");
-    const head = el("div", undefined, "swarm-board-head");
-    head.append(
-      el("span", SimjectureI18n.message("workspace.swarm.boardTitle")),
-      el("span", String((swarm.board || []).length), "count-badge"),
-    );
-    section.append(head);
 
     const feed = el("div", undefined, "swarm-board-feed");
     for (const msg of swarm.board || []) {
@@ -721,7 +747,9 @@ window.WorkspaceSwarm = (() => {
           ),
         );
       }
-      row.append(meta, el("p", msg.content || "", "swarm-board-msg-body"));
+      const body = el("p", msg.content || "", "swarm-board-msg-body");
+      body.onclick = () => body.classList.toggle("is-expanded");
+      row.append(meta, body);
       feed.append(row);
     }
     if (!(swarm.board || []).length) {
@@ -794,6 +822,7 @@ window.WorkspaceSwarm = (() => {
 
   function focusSteer(memberName) {
     boardRecipient = memberName;
+    swarmView = "board";
     detailSignature = "";
     if (detailCache && ctx?.project()) renderDetail(detailCache, ctx.project());
     const input = $("swarm-board-input");

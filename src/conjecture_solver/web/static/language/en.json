@@ -1803,5 +1803,11 @@
   "workspace.settings.machine": "Machine",
   "workspace.settings.agents": "Coding agents",
   "workspace.settings.apiTitle": "API connection",
-  "workspace.settings.optional": "Optional"
+  "workspace.settings.optional": "Optional",
+  "workspace.files.allFiles": "All files",
+  "workspace.files.switchFile": "Switch file",
+  "workspace.files.previous": "Previous file",
+  "workspace.files.next": "Next file",
+  "workspace.swarm.viewAgents": "Agents",
+  "workspace.swarm.viewBoard": "Board"
 }
