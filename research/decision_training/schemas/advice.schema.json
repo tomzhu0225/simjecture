@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "advice",
+  "type": "object",
+  "properties": {
+    "action": {
+      "enum": [
+        "propose_experiments",
+        "reorganize",
+        "request_evidence",
+        "closeout"
+      ]
+    },
+    "experiments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scientific_question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "competing_hypotheses": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "solver": {
+            "type": "string",
+            "minLength": 1
+          },
+          "physical_model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parameters": {
+            "type": "object"
+          },
+          "initial_boundary_conditions": {
+            "type": "object"
+          },
+          "scale": {
+            "type": "object",
+            "properties": {
+              "spatial_dimensions": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              },
+              "mesh": {
+                "type": "object"
+              },
+              "particles": {
+                "type": "object"
+              },
+              "time_integration": {
+                "type": "object"
+              },
+              "parallel_resources": {
+                "type": "object"
+              },
+              "estimated_wall_seconds": {
+                "type": "number",
+                "minimum": 0
+              },
+              "expected_numerical_error": {
+                "type": "string",
+                "minLength": 1
+              },
+              "refinement_condition": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "spatial_dimensions",
+              "mesh",
+              "particles",
+              "time_integration",
+              "parallel_resources",
+              "estimated_wall_seconds",
+              "expected_numerical_error",
+              "refinement_condition"
+            ],
+            "additionalProperties": false
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "success_or_falsification_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "experiment_id",
+          "scientific_question",
+          "competing_hypotheses",
+          "solver",
+          "physical_model",
+          "parameters",
+          "initial_boundary_conditions",
+          "scale",
+          "diagnostics",
+          "success_or_falsification_criteria",
+          "dependencies",
+          "evidence_ids"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "organization": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parameter_justification": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_hierarchy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budget_allocation": {
+      "type": "object"
+    },
+    "public_justification": {
+      "type": "string",
+      "minLength": 1
+    },
+    "change_of_mind_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "requested_evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "action",
+    "experiments",
+    "organization",
+    "parameter_justification",
+    "model_hierarchy",
+    "budget_allocation",
+    "public_justification",
+    "change_of_mind_conditions",
+    "requested_evidence_ids"
+  ],
+  "additionalProperties": false
+}

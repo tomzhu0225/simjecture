@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+PACKAGE=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+REPOSITORY=$(CDPATH= cd -- "$PACKAGE/../.." && pwd)
+export PYTHONPATH="$PACKAGE:$REPOSITORY/src${PYTHONPATH:+:$PYTHONPATH}"
+export PATH="$PACKAGE/bin:$PATH"
+exec "${SIMJECTURE_CONTROLLER_PYTHON:-$PACKAGE/.venv/bin/python}" "$@"

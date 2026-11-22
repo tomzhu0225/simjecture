@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /app/bin/python -m research_decision.transport "$@"

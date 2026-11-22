@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "phase_conclusion",
+  "type": "object",
+  "properties": {
+    "supported": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "falsified": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "termination_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "include_in_C": {
+      "const": true
+    },
+    "include_in_D": {
+      "const": true
+    }
+  },
+  "required": [
+    "supported",
+    "falsified",
+    "unresolved",
+    "scope",
+    "evidence_ids",
+    "termination_reason",
+    "include_in_C",
+    "include_in_D"
+  ],
+  "additionalProperties": false
+}

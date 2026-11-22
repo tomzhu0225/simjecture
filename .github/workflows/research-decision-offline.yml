@@ -1,0 +1,25 @@
+name: Research decision offline checks
+on:
+  push:
+    paths:
+      - 'research/decision_training/**'
+      - '.github/workflows/research-decision-offline.yml'
+  pull_request:
+    paths:
+      - 'research/decision_training/**'
+      - '.github/workflows/research-decision-offline.yml'
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: research/decision_training:src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'jsonschema>=4.23,<5' 'cryptography>=44,<51'
+      - run: python research/decision_training/scripts/verify_preparation.py --public-only
+      - run: python research/decision_training/scripts/qualify_autonomous_rules.py
+      - run: python research/decision_training/scripts/qualify_pilot_autonomy.py
+      - run: python research/decision_training/scripts/qualify_managed_ssh.py
