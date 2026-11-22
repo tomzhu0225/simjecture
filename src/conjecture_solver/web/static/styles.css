@@ -1106,3 +1106,24 @@ dialog footer { justify-content: flex-end; gap: 8px; padding-top: 3px; }
 #guidance-details[open] { max-height: 250px; overflow-y: auto; }
 .review-detail { margin-top: 8px; }
 #study-route { max-width: 100%; white-space: normal; }
+
+/* v0.8 viewing-first monitor: one calm top bar, inapplicable controls hidden,
+   and a readable study title instead of a page-filling headline. */
+.topbar { grid-template-columns: auto minmax(220px, 440px) 1fr; gap: 20px; min-height: 60px; padding-block: 8px; }
+.topbar .brand small { display: none; }
+.campaign-picker label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.campaign-picker { grid-template-columns: minmax(0, 1fr); }
+.topbar-actions { flex-wrap: wrap; gap: 6px; }
+.topbar-actions :is(#pause-button, #resume-button, #cancel-button):disabled { display: none; }
+.topbar-actions .button { min-height: 34px; padding: 6px 12px; font-size: 13px; }
+.topbar-actions .language-picker select { min-height: 34px; border-color: transparent; background-color: transparent; color: var(--muted); }
+.topbar-actions .language-picker select:hover { border-color: var(--line); }
+#conversation-return { text-decoration: none; }
+.campaign-heading { align-items: start; gap: 28px; margin-bottom: 18px; }
+.campaign-heading h1 {
+  margin-top: 10px; font-size: clamp(20px, 1.6vw, 26px); font-weight: 650; letter-spacing: -0.02em; line-height: 1.35;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; cursor: pointer;
+}
+.campaign-heading h1.is-expanded { display: block; }
+#guidance-details { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.topbar-actions a.button { text-decoration: none; }

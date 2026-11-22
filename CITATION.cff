@@ -3,7 +3,7 @@ message: "If you use this software, please cite the exact software version and G
 title: "Simjecture"
 type: software
 version: 0.8.0
-date-released: 2026-11-21
+date-released: 2026-11-22
 abstract: >-
   An evidence-governed runtime for autonomous computational experimentation and
   falsification over hypothesis trees.

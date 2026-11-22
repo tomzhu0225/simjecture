@@ -431,7 +431,7 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
     page.goto(base + f"/monitor?campaign={campaign}")
     expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
     expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
-    expect(page.locator('[data-i18n="monitor.evidenceHelp"]')).to_contain_text("独立评估")
+    expect(page.locator('[data-i18n="ui.claims"]')).to_have_text("论断")
     expect(page.locator("#new-run-button")).to_have_text("新建假设")
     page.evaluate("renderExecutions()")
     expect(page.locator("#execution-list")).to_contain_text("尚未记录数值计算运行")
@@ -440,9 +440,7 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
         path=str(tmp_path / f"monitor-zh-CN-{width}.png"), full_page=True, animations="disabled"
     )
     choose_language(page, "en")
-    expect(page.locator('[data-i18n="monitor.evidenceHelp"]')).to_contain_text(
-        "Recorded experiments"
-    )
+    expect(page.locator('[data-i18n="ui.claims"]')).to_have_text("Claims")
     expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
     page.go_back()
     expect(page.locator("html")).to_have_attribute("lang", "en")

@@ -107,17 +107,20 @@ def test_owned_conversation_study_evidence_round_trip_and_reload(
     with serve(app) as base:
         page.goto(base + workspace_route(project, original, "interactive"))
         nav = page.get_by_role("navigation", name="Research navigation", exact=True)
-        expect(nav.locator('[aria-current="page"]')).to_have_text("Conversation")
-        nav.get_by_role("link", name="Study", exact=True).click()
+        # Chat stays uncluttered: the Interactive / Autonomous switch replaces the breadcrumb.
+        expect(page.locator("#study-navigation")).to_be_hidden()
+        page.get_by_role("button", name="Autonomous study", exact=True).click()
         expect(nav.locator('[aria-current="page"]')).to_have_text("Study")
         expect(page.locator(f"#study-{original}")).to_have_class("study-card selected-study")
         assert_workspace_route(page, project, original, "autonomous")
         nav.get_by_role("link", name="Evidence & review", exact=True).click()
         expect(page.locator("#root-hypothesis")).to_have_text(studies[0]["question"])
-        expect(nav.locator('[aria-current="page"]')).to_have_text("Evidence & review")
+        # The monitor is a viewing page; its single way back is the conversation link.
+        expect(page.locator("#study-navigation")).to_be_hidden()
         assert parse_qs(urlsplit(page.url).query)["campaign"] == [original]
         screenshot(page, f"owned-evidence-{width}")
-        nav.get_by_role("link", name="Conversation", exact=True).click()
+        expect(page.locator("#conversation-return")).to_have_text("Back to this conversation")
+        page.locator("#conversation-return").click()
         expect(page.locator("#interactive-panel")).to_be_visible()
         assert_workspace_route(page, project, original, "interactive")
         page.get_by_role("button", name="Autonomous study", exact=True).click()
@@ -160,10 +163,8 @@ def test_direct_cli_evidence_is_standalone_and_readonly_safe(
     page, expect = rendered_page
     with serve(app) as base:
         page.goto(base + f"/monitor?campaign={standalone}")
-        nav = page.get_by_role("navigation", name="Research navigation", exact=True)
-        expect(nav.get_by_text("Standalone study", exact=True)).to_be_visible()
-        expect(nav.get_by_role("link", name="Conversation", exact=True)).to_have_count(0)
-        expect(nav.get_by_role("link", name="Study", exact=True)).to_have_count(0)
+        # Standalone evidence has no owning conversation, so the only way back is Workspace.
+        expect(page.locator("#study-navigation")).to_be_hidden()
         expect(page.locator("#conversation-return")).to_have_text("Workspace")
         expect(page.locator("#conversation-return")).to_have_attribute("href", "/workspace")
         assert len(app.workspace.projects()) == 1
@@ -172,6 +173,8 @@ def test_direct_cli_evidence_is_standalone_and_readonly_safe(
             expect(page.locator("#steer-study-link")).to_be_hidden()
             for control in ["pause-button", "resume-button", "cancel-button"]:
                 expect(page.locator(f"#{control}")).to_be_disabled()
+                # Inapplicable controls step out of the viewing-first top bar.
+                expect(page.locator(f"#{control}")).to_be_hidden()
         screenshot(page, f"standalone-{'readonly' if readonly else 'editable'}")
 
 

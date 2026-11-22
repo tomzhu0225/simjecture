@@ -110,6 +110,9 @@ function bindEvents() {
   ui["resume-button"].addEventListener("click", () => controlCampaign("resume"));
   ui["cancel-button"].addEventListener("click", () => controlCampaign("cancel"));
   ui["theme-button"].addEventListener("click", toggleTheme);
+  // Long hypotheses stay at three lines until the reader asks for the rest.
+  ui["root-hypothesis"].addEventListener("click", () =>
+    ui["root-hypothesis"].classList.toggle("is-expanded"));
   ui["claim-kind-toggle"].addEventListener("click", toggleClaimKinds);
   ui["zoom-in"].addEventListener("click", () => changeZoom(0.15));
   ui["zoom-out"].addEventListener("click", () => changeZoom(-0.15));
@@ -526,15 +529,8 @@ function heartbeatAge(data) {
 function renderStudyNavigation(data) {
   const context = data.workspace_context;
   const campaign = state.selectedCampaign;
-  const nav = document.getElementById("study-navigation");
-  nav.hidden = false;
-  window.StudyNavigation.render(nav, {
-    project: context?.project_id,
-    campaign,
-    page: "evidence",
-    title: data.display_name || "",
-    space: context?.workspace,
-  });
+  // The monitor is a viewing page: the Workspace / conversation link is the only way back.
+  document.getElementById("study-navigation").hidden = true;
   const returned = document.getElementById("conversation-return");
   SimjectureI18n.bindText(returned, () => context ? SimjectureI18n.t("ui.back-to-this-conversation") : SimjectureI18n.t("ui.workspace"));
   returned.href = context
