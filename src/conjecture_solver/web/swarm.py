@@ -445,7 +445,7 @@ def _refresh_member_state(
         enriched["live"] = False
         return enriched
     enriched["status"] = job["status"]
-    enriched["live"] = bool(job.get("live"))
+    enriched["live"] = bool(job.get("live")) and job["status"] not in TERMINAL
     enriched["elapsed_seconds"] = job.get("elapsed_seconds", 0)
     enriched["created_at"] = job.get("created_at")
     enriched["error"] = job.get("error")
@@ -739,7 +739,7 @@ def control_swarm(
                 raise ValueError("Swarm worker not found")
             if member.get("job_id"):
                 current = snapshot(project_dir, member["job_id"], summary=True)
-                if current.get("live"):
+                if current.get("live") and current.get("status") not in TERMINAL:
                     raise ValueError("Stop the running worker before retrying it")
                 member.setdefault("history", []).append(member["job_id"])
             member_map = {m["name"]: m for m in record.get("members", [])}
@@ -921,7 +921,7 @@ def run_swarm_controller(swarm_dir: Path) -> int:
             if job["status"] != m.get("status"):
                 m["status"] = job["status"]
                 changed = True
-            if job.get("live"):
+            if job.get("live") and job["status"] not in TERMINAL:
                 active_live += 1
                 if cancelled:
                     with contextlib.suppress(ValueError, OSError):
