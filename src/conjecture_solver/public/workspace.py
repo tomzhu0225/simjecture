@@ -602,6 +602,91 @@ class HostedWorkspace:
             if not row:
                 raise LookupError("Simulation not found")
             return row
+        if name == "file-content":
+            from ..web.file_viewer import read_file_view
+
+            organization.conversation(identifier)
+            p = self.require_project(identifier, owner)
+            source = query.get("source", "files")
+            rel_path = query.get("path", "")
+            if source == "simulation":
+                sim_id = query.get("simulation", "")
+                job_id, _, exp_id = sim_id.partition(".")
+                job = self.require_job(job_id, owner)
+                if job["project"] != p["id"]:
+                    raise LookupError("Simulation not found")
+                path = self.artifact(job_id, f"experiments/{exp_id}/workspace/{rel_path}", owner)
+                root = path.parent
+                while root != self.store.root and root.name != "workspace":
+                    root = root.parent
+                rel = path.relative_to(root).as_posix()
+                from urllib.parse import urlencode
+
+                from ..web.file_viewer import (
+                    IMAGE_SUFFIXES,
+                    MARKDOWN_SUFFIXES,
+                    MAX_INLINE_BYTES,
+                    TABLE_SUFFIXES,
+                    _is_binary_bytes,
+                    _parse_table,
+                    file_category,
+                    file_language,
+                )
+
+                stat = path.stat()
+                suffix = path.suffix.lower()
+                q = urlencode({"id": p["id"], "simulation": sim_id, "path": rel})
+                base = {
+                    "path": rel,
+                    "name": path.name,
+                    "source": "simulation",
+                    "source_label": sim_id,
+                    "simulation": sim_id,
+                    "bytes": stat.st_size,
+                    "mtime": stat.st_mtime,
+                    "language": file_language(rel),
+                    "category": file_category(suffix),
+                    "download_url": f"/api/workspace/simulation-file?{q}",
+                    "change": "unchanged",
+                    "diff": {"has_diff": False, "added_lines": 0, "removed_lines": 0, "lines": []},
+                }
+                if suffix in IMAGE_SUFFIXES:
+                    return base | {
+                        "kind": "image",
+                        "preview_url": f"/api/workspace/simulation-file?{q}&preview=1",
+                        "truncated": False,
+                    }
+                raw = path.read_bytes()[: MAX_INLINE_BYTES + 1]
+                truncated = len(raw) > MAX_INLINE_BYTES
+                if _is_binary_bytes(raw[:MAX_INLINE_BYTES]):
+                    return base | {"kind": "binary", "truncated": truncated}
+                text_content = raw[:MAX_INLINE_BYTES].decode("utf-8", errors="replace")
+                kind = (
+                    "markdown"
+                    if suffix in MARKDOWN_SUFFIXES
+                    else "table"
+                    if suffix in TABLE_SUFFIXES
+                    else "text"
+                )
+                out = base | {
+                    "kind": kind,
+                    "content": text_content,
+                    "line_count": len(text_content.splitlines()),
+                    "truncated": truncated,
+                }
+                if kind == "table":
+                    out["table"] = _parse_table(text_content, "\t" if suffix == ".tsv" else ",")
+                return out
+            self.project_file(p["id"], rel_path, owner)
+            return read_file_view(
+                self.store.root / "projects" / p["id"],
+                p["id"],
+                rel_path,
+                source="files",
+                workspace_space=space,
+            )
+        if name == "swarms":
+            return {"swarms": []}
         if name == "study":
             return self.study(identifier, owner)
         raise PermissionError("This operation is managed by the host")

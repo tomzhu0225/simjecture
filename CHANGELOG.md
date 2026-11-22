@@ -2,7 +2,53 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
-## Unreleased
+## 0.8.0 — 2026-11-22
+
+- **Integrated right-sidebar file viewer and edited-files tracking:** refactor
+  the `#research-inspector` panel to capture pre-turn file baselines, surface
+  `New` / `Edited` badges and `+N/-M` diff stats, filter by All/Edited or
+  filename, and inspect files inline without leaving the conversation. Supports
+  syntax-highlighted code, rendered Markdown + KaTeX, CSV/TSV table previews,
+  structured unified diffs, image previews, live auto-refresh on disk edits,
+  wide-pane expansion, and simulation/swarm artifact inspection with strict path
+  containment and symlink rejection.
+
+- **Codex-style instant direct steering:** keep the conversation composer active
+  during running turns with `Steer`, `Interrupt`, and `Queue` modes. Supports
+  mid-turn prompt injection and premature `final_answer` interception in the
+  built-in `smolagents` agent, immediate `SIGUSR1` terminal interruption,
+  interrupt-and-resume session continuity for external CLIs (`codex`,
+  `codex-glm`, `grok`, `agy`), automatic follow-up queue dispatch with
+  promote/cancel controls, and inline steering timeline markers.
+
+- **Coordinated multi-agent swarm runtime and GUI:** add durable DAG-staged
+  swarms (`depends_on` topological stages with automatic upstream deliverable
+  staging under `inputs/upstream/<slug>/`), role-typed workers (`explorer`,
+  `analyst`, `solver`, `verifier`, `falsifier`, `critic`, `synthesizer`,
+  `worker`), an append-only shared swarm message board (`board.jsonl`) with
+  targeted `@worker` and broadcast `@all` live steering, worker controls
+  (`stop_swarm`, `stop_worker`, `retry_worker`, `add_worker`), SHA-256 verified
+  one-click artifact view/import, new agent swarm tools (`launch_swarm`,
+  `swarm_status`, `swarm_message`, `swarm_import`, `swarm_control`,
+  `swarm_board_read`, `swarm_board_post`), and a dedicated right-sidebar
+  `Swarm` tab with a strategy-preset launch dialog (`Parallel exploration`,
+  `Solve, falsify & verify`, `Divide & conquer`, `Custom roster`). Swarm
+  execution remains tagged `scientific_status: "exploration"` and preserves all
+  independent review gates.
+
+- **Swarm mode beside reasoning effort:** choose `Off`, `Auto` or a strategy in
+  the composer's agent picker and the conversation agent coordinates swarms on
+  its own. Swarm workers stay out of `Simulations` and the `Subagents` pill; the
+  `Swarm` tab shows a compact header with a progress bar, an Agents / Board
+  switch, status-coloured worker cards and inline worker logs.
+
+- **Lean, viewing-first interface refresh:** a single `Settings` page (rail ⚙ and
+  sidebar) holds interface language and the mid-turn send behaviour (steer by
+  default, interrupt or queue) without a steering pop-up. The Files tab becomes
+  viewer-first (file switcher, prev/next, modes, auto-widening pane); chat turns
+  show one compact activity disclosure; informational model notes, "Best for"
+  hints and duplicate breadcrumbs are removed; and the experiment monitor gets a
+  one-row top bar, hides inapplicable controls and clamps long hypotheses.
 
 - Preserve a revised continuation brief when an invalid inherited file selection
   is rejected (both native `STUDY_BRIEF.json` imports and `draft_study`), keeping

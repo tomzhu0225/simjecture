@@ -15,6 +15,7 @@ window.WorkspaceMonitor = {
       detailRevision = {},
       visibleCounts = { simulations: 50, commands: 50 },
       listRevision = "";
+    const isSwarmJob = (job) => Boolean(job?.swarm_id);
     const panelFor = (job) =>
       job.kind === "command" ? "commands" : "simulations";
     const prefixFor = (panel) =>
@@ -42,7 +43,7 @@ window.WorkspaceMonitor = {
       subagents.open = false;
     });
     function renderSubagents(p, jobs, fresh) {
-      const tasks = jobs.filter((job) => job.subagent).reverse();
+      const tasks = jobs.filter((job) => job.subagent && !isSwarmJob(job)).reverse();
       const revision = JSON.stringify([p.id, tasks.map((j) => [j.id, j.kind, j.name, j.status])]);
       if (revision === subagentRevision) return;
       subagentRevision = revision;
@@ -84,7 +85,7 @@ window.WorkspaceMonitor = {
     }
     function render(p) {
       if (!p) return;
-      const jobs = p.simulations || [];
+      const jobs = (p.simulations || []).filter((job) => !isSwarmJob(job));
       if (currentProject !== p.id) {
         currentProject = p.id;
         subagents.open = false;
@@ -107,6 +108,9 @@ window.WorkspaceMonitor = {
       const simulations = jobs.filter((j) => panelFor(j) === "simulations");
       SimjectureI18n.content($("simulation-count"), simulations.length);
       SimjectureI18n.content($("command-count"), jobs.length - simulations.length);
+      // Zero counts are hidden by CSS so the four inspector tabs stay compact.
+      $("simulation-count").dataset.count = String(simulations.length);
+      $("command-count").dataset.count = String(jobs.length - simulations.length);
       $("sidebar-simulations").hidden = !simulations.length;
       for (const panel of ["simulations", "commands"]) {
         const entries = jobs.filter((j) => panelFor(j) === panel);
@@ -229,6 +233,16 @@ window.WorkspaceMonitor = {
           const a = node("a", file.name, "file-row");
           a.href = window.WorkspaceRich.artifactURL(source, p, false);
           row.append(a);
+          if (!file.name.startsWith("__console__/") && window.WorkspaceFiles) {
+            const viewBtn = node("button", SimjectureI18n.message("workspace.files.viewInline"), "sim-file-view-btn");
+            viewBtn.type = "button";
+            viewBtn.onclick = () =>
+              window.WorkspaceFiles.open(file.name, {
+                source: shared ? "files" : "simulation",
+                simulation: shared ? null : identifier,
+              });
+            row.append(viewBtn);
+          }
           if (file.role === "modified_input")
             row.append(
               node("small", SimjectureI18n.message("ui.changed-from-the-copied-input"), "field-help"),

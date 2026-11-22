@@ -82,6 +82,13 @@ STATIC_ASSETS = frozenset(
         "workspace-rich.js",
         "workspace-monitor.js",
         "workspace-benchmarks.js",
+        "workspace-files.js",
+        "workspace-files.css",
+        "workspace-steering.js",
+        "workspace-steering.css",
+        "workspace-swarm.js",
+        "workspace-swarm.css",
+        "workspace-refresh.css",
         "vendor/highlight-11.11.1.min.js",
         "vendor/highlight-github-dark.css",
         "vendor/dagre-2.0.0.min.js",
@@ -156,8 +163,10 @@ class SimjectureHTTPServer(ThreadingHTTPServer):
             return
         self._handoff_at = time.monotonic() + 5
         self._handoff_thread = threading.Thread(
-            target=self.application.maintain_workspaces,
-            args=("deliver_study_reports",),
+            target=lambda: (
+                self.application.maintain_workspaces("deliver_study_reports"),
+                self.application.maintain_workspaces("dispatch_all_queued_steering"),
+            ),
             daemon=True,
         )
         self._handoff_thread.start()
@@ -418,6 +427,25 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                         self._one_value(query, "id"), self._one_value(query, "simulation")
                     )
                 )
+            elif endpoint == "file-content":
+                self._json(
+                    workspace.file_view(
+                        self._one_value(query, "id"),
+                        self._one_value(query, "path"),
+                        source=query.get("source", ["files"])[0],
+                        simulation=query.get("simulation", [None])[0],
+                        workspace_space=space,
+                    )
+                )
+            elif endpoint == "swarms":
+                self._json({"swarms": workspace.swarms(self._one_value(query, "id"))})
+            elif endpoint == "swarm":
+                self._json(
+                    workspace.swarm_detail(
+                        self._one_value(query, "id"),
+                        self._one_value(query, "swarm"),
+                    )
+                )
             elif endpoint == "tools":
                 self._json(workspace.catalogue())
             elif endpoint == "tool-progress":
@@ -648,6 +676,22 @@ class SimjectureRequestHandler(BaseHTTPRequestHandler):
                 )
             elif endpoint == "message":
                 result = workspace.send(payload.get("project"), payload)
+            elif endpoint == "steering-settings":
+                result = workspace.save_steering_settings(payload)
+            elif endpoint == "steer":
+                result = workspace.steer(payload.get("project"), payload)
+            elif endpoint == "cancel-steer":
+                result = workspace.cancel_steer(payload.get("project"), payload)
+            elif endpoint == "promote-steer":
+                result = workspace.promote_steer(payload.get("project"), payload)
+            elif endpoint == "swarm-launch":
+                result = workspace.launch_swarm(payload.get("project"), payload)
+            elif endpoint == "swarm-message":
+                result = workspace.swarm_message(payload.get("project"), payload)
+            elif endpoint == "swarm-control":
+                result = workspace.swarm_control(payload.get("project"), payload)
+            elif endpoint == "swarm-import":
+                result = workspace.swarm_import(payload.get("project"), payload)
             elif endpoint == "stop":
                 result = workspace.stop(payload.get("project"))
             elif endpoint == "brief":

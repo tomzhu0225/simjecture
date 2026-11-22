@@ -74,23 +74,51 @@ def step_messages(step):
     return [json.loads(m.model_dump_json()) for m in step.to_messages()]
 
 
-def agent_type(*, native_tools=False, checkpoint=False):
+def agent_type(*, native_tools=False, checkpoint=False, steering_dir=None):
     """Construct only after the optional builtin-agent dependency is installed."""
     from smolagents import ToolCallingAgent
-    from smolagents.agents import ToolOutput
+    from smolagents.agents import ActionOutput, ToolOutput
+    from smolagents.memory import TaskStep
     from smolagents.models import ChatMessage
 
-    if not native_tools and not checkpoint:
+    if not native_tools and not checkpoint and steering_dir is None:
         return ToolCallingAgent
 
     class ProtocolAgent(ToolCallingAgent):
+        def _inject_steering(self):
+            if steering_dir is None:
+                return False
+            from .web.steering import consume_pending_steering, format_steering_injection
+            from .workspace_agent import emit
+
+            pending = consume_pending_steering(steering_dir)
+            if not pending:
+                return False
+            detail = pending[-1].get("message", "")[:240]
+            emit("activity", state="steering", label="Applying steering", detail=detail)
+            self.memory.steps.append(TaskStep(task=format_steering_injection(pending)))
+            return True
+
         def write_memory_to_messages(self, summary_mode=False):
+            self._inject_steering()
             if not native_tools:
                 return super().write_memory_to_messages(summary_mode=summary_mode)
             messages = self.memory.system_prompt.to_messages(summary_mode=summary_mode)
             for step in self.memory.steps:
                 messages.extend(step_messages(step))
             return messages
+
+        def _step_stream(self, memory_step):
+            for event in super()._step_stream(memory_step):
+                if (
+                    isinstance(event, ActionOutput)
+                    and event.is_final_answer
+                    and self._inject_steering()
+                ):
+                    memory_step.is_final_answer = False
+                    yield ActionOutput(output=None, is_final_answer=False)
+                    continue
+                yield event
 
         def process_tool_calls(self, chat_message, memory_step):
             if not native_tools:

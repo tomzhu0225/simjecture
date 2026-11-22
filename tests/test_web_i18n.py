@@ -93,10 +93,12 @@ def language_page(language_browser):
 
 def choose_language(page, language):
     picker = page.locator("[data-language-select]")
-    if "/workspace" in page.url:
-        box = picker.bounding_box()
-        if box is None or box["x"] < 0:
-            page.locator("#rail-toggle").click()
+    # The workspace keeps interface language in Settings; return to the same view after.
+    if "/workspace" in page.url and not picker.is_visible():
+        page.locator("#rail-settings").click()
+        picker.select_option(language)
+        page.go_back()
+        return
     picker.select_option(language)
 
 
@@ -429,7 +431,7 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
     page.goto(base + f"/monitor?campaign={campaign}")
     expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
     expect(page.locator("html")).to_have_attribute("lang", "zh-CN")
-    expect(page.locator('[data-i18n="monitor.evidenceHelp"]')).to_contain_text("独立评估")
+    expect(page.locator('[data-i18n="ui.claims"]')).to_have_text("论断")
     expect(page.locator("#new-run-button")).to_have_text("新建假设")
     page.evaluate("renderExecutions()")
     expect(page.locator("#execution-list")).to_contain_text("尚未记录数值计算运行")
@@ -438,9 +440,7 @@ def test_language_round_trip_reload_and_navigation(language_site, language_page,
         path=str(tmp_path / f"monitor-zh-CN-{width}.png"), full_page=True, animations="disabled"
     )
     choose_language(page, "en")
-    expect(page.locator('[data-i18n="monitor.evidenceHelp"]')).to_contain_text(
-        "Recorded experiments"
-    )
+    expect(page.locator('[data-i18n="ui.claims"]')).to_have_text("Claims")
     expect(page.locator("#root-hypothesis")).to_have_text("Untranslated scientific hypothesis")
     page.go_back()
     expect(page.locator("html")).to_have_attribute("lang", "en")
@@ -482,9 +482,9 @@ def test_subagent_panel_and_micro_study_links_switch_in_place(language_site, lan
     href = row.get_attribute("href")
     for locale, count, status, detail, activity, summary, links in [
         ("zh-CN", "1 项进行中", "运行中", "隔离运行的子智能体", "正在运行子智能体任务",
-         "1 次操作 · 查看活动", ["子智能体任务", "微型研究"]),
+         "1 次操作", ["子智能体任务", "微型研究"]),
         ("en", "1 active", "running", "Isolated subagent", "Running subagents",
-         "1 action · view activity", ["SUBAGENT TASK", "MICRO-STUDY"]),
+         "1 action", ["SUBAGENT TASK", "MICRO-STUDY"]),
     ]:
         page.evaluate("locale => SimjectureI18n.setLanguage(locale)", locale)
         expect(row).to_be_focused()
@@ -954,7 +954,8 @@ def test_tour_and_model_summary_update_without_replacing_controls(language_site,
         WorkspaceComposer.refresh('home');
     }""")
     expect(page.locator("#home-agent-picker .agent-picker-summary")).to_have_text("my-exact-model")
-    choose_language(page, "zh-CN")
+    # Switch in place: this checks translation, not navigation to the Settings picker.
+    page.evaluate("SimjectureI18n.setLanguage('zh-CN')")
     expect(page.locator("#home-agent-picker .agent-picker-summary")).to_have_text("my-exact-model")
     expect(page.locator("#home-custom-model")).to_have_value("my-exact-model")
 
@@ -1457,7 +1458,7 @@ def test_model_notes_and_fragment_fixes_translate_cleanly(
     )
     assert "本地建议列表" in rendered["local"]
     assert "AGY CLI" in rendered["agy"]
-    assert "连接设置" in rendered["noApi"]
+    assert "“设置”" in rendered["noApi"]
     assert rendered["err"].startswith("无法列出模型，请输入服务商的模型 ID。")
     assert rendered["err"].endswith("Timed out after 5s")
     assert rendered["schedule"] == "时限 3 分钟 · 每个配置安排 5 次尝试"

@@ -137,7 +137,7 @@ function md(node, text) {
   window.WorkspaceRich.render(node, String(text || ""), state.project);
 }
 function view(name) {
-  if(hosted && (["settings","machines"].includes(name) ||
+  if(hosted && (name === "machines" ||
     (name === "knowledge" && !state.hosting?.permissions?.knowledge))) name="home";
   if (name !== "project") ++state.projectRequest;
   const changed = state.view !== name;
@@ -181,6 +181,8 @@ function renderStudyNavigation() {
     page: state.mode === "autonomous" ? "study" : "conversation",
     title: study?.question || "",
   });
+  // The Interactive / Autonomous switch already covers these peers in chat.
+  $("study-navigation").hidden = state.mode === "interactive" || !state.routeStudy;
   for (const card of $("study-runs").querySelectorAll(".study-card")) {
     const selected = card.id === `study-${state.routeStudy}`;
     card.classList.toggle("selected-study", selected);
@@ -257,7 +259,6 @@ function renderSettings() {
   $("api-key").value = "";
   SimjectureI18n.attribute($("api-key"), "placeholder", () => s.has_key ? SimjectureI18n.t("ui.saved-leave-blank-to-keep-this-key") : SimjectureI18n.t("ui.api-key-optional-for-a-local-server"));
   const installed = (s.clis || []).filter((c) => c.path);
-  SimjectureI18n.attribute($("connection-button"), "title", () => SimjectureI18n.t("ui.configure-api-connections"));
   $("connection-button").disabled = false;
   if(hosted) $("connection-button").hidden=true;
   SimjectureI18n.bindText($("connection-indicator"), () => installed.length ? SimjectureI18n.t("ui.cli-agents-detected", {p0: installed.length}) : (s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved") : SimjectureI18n.t("ui.choose-an-agent-in-your-project")));
@@ -277,8 +278,15 @@ function renderSettings() {
   );
   if (!$("detected-agents").children.length)
     SimjectureI18n.bindText($("detected-agents"), () => SimjectureI18n.t("ui.no-supported-cli-agents-found-you-can-use-the-built-in-api-agent"));
-  SimjectureI18n.bindText($("runtime-status"), () => s.runtime_installed ? SimjectureI18n.t("ui.built-in-agent-powered-by-hugging-face-smolagents-your-existing-simj") : SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
-  SimjectureI18n.bindText($("connection-result"), () => s.api_configured ? SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation") : SimjectureI18n.t("ui.optional-you-can-use-an-installed-cli-without-adding-an-api-key"));
+  $("runtime-status").hidden = !!s.runtime_installed;
+  if (!s.runtime_installed) SimjectureI18n.bindText($("runtime-status"), () => SimjectureI18n.t("ui.to-enable-the-built-in-api-agent-run-once-uv-sync-extra-workspace-in"));
+  if (s.api_configured) SimjectureI18n.bindText($("connection-result"), () => SimjectureI18n.t("ui.api-endpoint-saved-select-its-model-in-your-conversation"));
+  else SimjectureI18n.content($("connection-result"), "");
+  const steeringSelect = $("setting-steering-mode");
+  if (steeringSelect) {
+    steeringSelect.value = s.steering_mode || "steer";
+    steeringSelect.disabled = state.readonly || hosted;
+  }
 }
 let agentWrite = Promise.resolve();
 let bulkAgentPending = false;
@@ -289,6 +297,8 @@ function agentControls(scope = "conversation") {
     backend: $(home ? "home-backend" : "conversation-backend"),
     model: $(home ? "home-model" : "conversation-model"),
     effort: $(home ? "home-effort" : "conversation-effort"),
+    swarm: $(home ? "home-swarm" : "conversation-swarm"),
+    swarmBox: $(home ? "home-swarm-mode-control" : "swarm-mode-control"),
     custom: $(home ? "home-custom-model" : "custom-model"),
     customBox: $(home ? "home-custom-model-control" : "custom-model-control"),
     refresh: $(home ? "home-refresh-models" : "refresh-models"),
@@ -302,6 +312,8 @@ function mountHomeAgent() {
     "conversation-backend": "home-backend",
     "conversation-model": "home-model",
     "conversation-effort": "home-effort",
+    "conversation-swarm": "home-swarm",
+    "swarm-mode-control": "home-swarm-mode-control",
     "custom-model": "home-custom-model",
     "custom-model-control": "home-custom-model-control",
     "refresh-models": "home-refresh-models",
@@ -395,6 +407,11 @@ async function renderAgent(backend, scope = "conversation") {
   controls.effort.value = current?.reasoning_effort || "";
   controls.effort.disabled = selected === "agy" || state.readonly || hosted;
   if (selected === "agy") controls.effort.value = "";
+  if (controls.swarm) {
+    controls.swarm.value = home ? (controls.swarm.value || "off") : (p.swarm_mode || "off");
+    controls.swarm.disabled = state.readonly || hosted;
+  }
+  if (controls.swarmBox) controls.swarmBox.hidden = hosted;
   controls.model.disabled = state.readonly || hosted;
   if (!home) {
     if (!backend || backend === p.agent?.backend)
@@ -404,6 +421,8 @@ async function renderAgent(backend, scope = "conversation") {
   }
   if(hosted){controls.refresh.hidden=true;controls.customBox.hidden=true;}
   SimjectureI18n.content(controls.note, localizeModelNote(choices.note));
+  // Informational catalogue notes stay quiet; only actionable problems show.
+  controls.note.hidden = !choices.warning;
   globalThis.WorkspaceComposer?.refresh(scope);
   return true;
 }
@@ -415,11 +434,13 @@ function agentPayload(scope = "conversation") {
     model:
       c.model.value === "__custom__" ? c.custom.value.trim() : c.model.value,
     reasoning_effort: c.effort.value,
+    ...(c.swarm && !hosted ? { swarm_mode: c.swarm.value || "off" } : {}),
   };
 }
 function sameAgentSelection(left, right) {
   return !!left && left.project === right.project && left.backend === right.backend &&
-    left.model === right.model && left.reasoning_effort === (right.reasoning_effort || "");
+    left.model === right.model && left.reasoning_effort === (right.reasoning_effort || "") &&
+    (left.swarm_mode || "off") === (right.swarm_mode || "off");
 }
 async function saveConversationAgent(scope = "conversation", {updateAll = false, onlyIfChanged = false} = {}) {
   if(hosted) return state.settings.default_agent;
@@ -449,6 +470,7 @@ async function saveConversationAgent(scope = "conversation", {updateAll = false,
       if (current && (current.backend !== result.backend || current.model !== result.model))
         state.dismissedSwitches.delete(payload.project);
       state.project.agent = result;
+      if (payload.swarm_mode) state.project.swarm_mode = payload.swarm_mode;
       state.homeAgent = result;
       renderProject();
     }
@@ -517,6 +539,15 @@ async function openProject(id) {
   if (request !== state.projectRequest || state.project?.id !== id) return false;
   if (state.mode === "autonomous") await renderStudies();
   return request === state.projectRequest && state.project?.id === id;
+}
+async function refreshProject(id = state.project?.id) {
+  if (!id) return null;
+  const updated = await api(`project?id=${encodeURIComponent(id)}`);
+  if (state.project?.id === id) {
+    state.project = updated;
+    renderProject();
+  }
+  return updated;
 }
 function mode(name) {
   state.mode = name;
@@ -615,6 +646,8 @@ function renderProject(force = false) {
     }
   }
   monitor.render(p);
+  window.WorkspaceSteering?.render(p);
+  window.WorkspaceSwarm?.render(p);
   const revision = JSON.stringify([
     p.messages,
     p.files,
@@ -684,30 +717,51 @@ function renderProject(force = false) {
       }
       article.append(content);
       globalThis.WorkspaceKnowledge?.renderCitations(article, message.knowledge_citations);
+      window.WorkspaceSteering?.renderTimelineMarkers(article, message.events);
       const tools = (message.events || []).filter(
         (e) => e.type === "tool" || e.type === "observation",
       );
-      if (tools.length) {
-        const details = el("details");
+      const recent = message.activity?.recent_actions || [];
+      const recentList = () => {
+        const list = el("ol", undefined, "agent-activity-list");
+        for (const item of recent.slice(-5)) {
+          const row = el("li");
+          row.append(
+            el("strong", SimjectureI18n.live(() => activityLabel(item.label))),
+            el("small", SimjectureI18n.live(() => SimjectureI18n.label(item.status, item.status.replaceAll("_", " ")))),
+          );
+          if (item.detail) row.append(el("span", item.detail));
+          list.append(row);
+        }
+        return list;
+      };
+      // One quiet disclosure per turn: tool trace, or recent actions when no trace exists.
+      const finishedRecent = !message.running && !tools.length && recent.length;
+      if (tools.length || finishedRecent) {
+        const details = el("details", undefined, "turn-activity");
         details.dataset.turn = message.turn;
         details.open = openSteps.has(message.turn);
-        const actionCount = tools.filter((e) => e.type === "tool").length;
+        const actionCount = tools.length
+          ? tools.filter((e) => e.type === "tool").length
+          : recent.length;
         const key = actionCount === 1 ? "workspace.singleActionActivity" : "ui.actions-view-activity";
         details.append(el("summary", SimjectureI18n.message(key, {count: actionCount})));
-        const trace = el("div", undefined, "trace");
-        for (const item of tools) {
-          trace.append(el("p", item.type === "tool" ? item.name : item.text));
-          if (item.arguments)
-            trace.append(
-              el(
-                "pre",
-                typeof item.arguments === "string"
-                  ? item.arguments
-                  : JSON.stringify(item.arguments, null, 2),
-              ),
-            );
-        }
-        details.append(trace);
+        if (tools.length) {
+          const trace = el("div", undefined, "trace");
+          for (const item of tools) {
+            trace.append(el("p", item.type === "tool" ? item.name : item.text));
+            if (item.arguments)
+              trace.append(
+                el(
+                  "pre",
+                  typeof item.arguments === "string"
+                    ? item.arguments
+                    : JSON.stringify(item.arguments, null, 2),
+                ),
+              );
+          }
+          details.append(trace);
+        } else details.append(recentList());
         article.append(details);
       }
       for (const related of message.links || []) {
@@ -769,29 +823,9 @@ function renderProject(force = false) {
           ),
         );
       else if (message.status === "error") article.classList.add("error-text");
-      const recent = message.activity?.recent_actions || [];
-      if (recent.length) {
-        const history = el(
-          message.running ? "div" : "details",
-          undefined,
-          "agent-activity-history",
-        );
-        if (!message.running) {
-          history.dataset.turn = `recent-${message.turn}`;
-          history.open = openSteps.has(history.dataset.turn);
-          history.append(el("summary", SimjectureI18n.message("ui.recent-agent-activity")));
-        }
-        const list = el("ol", undefined, "agent-activity-list");
-        for (const item of recent.slice(-5)) {
-          const row = el("li");
-          row.append(
-            el("strong", SimjectureI18n.live(() => activityLabel(item.label))),
-            el("small", SimjectureI18n.live(() => SimjectureI18n.label(item.status, item.status.replaceAll("_", " ")))),
-          );
-          if (item.detail) row.append(el("span", item.detail));
-          list.append(row);
-        }
-        history.append(list);
+      if (message.running && recent.length) {
+        const history = el("div", undefined, "agent-activity-history");
+        history.append(recentList());
         article.append(history);
       }
       desiredArticles.push(article);
@@ -814,19 +848,23 @@ function renderProject(force = false) {
   const inspectorScroll = inspector.scrollTop;
   SimjectureI18n.content($("project-path"), p.files_directory);
   SimjectureI18n.content($("file-count"), p.files.length);
-  $("project-files").replaceChildren();
-  for (const file of p.files) {
-    const row = el("div", undefined, "file-row"),
-      link = el("a", file.name);
-    link.href = workspaceURL(`/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`);
-    SimjectureI18n.attribute(link, "title", () => file.name);
-    row.append(link, el("small", bytes(file.bytes)));
-    $("project-files").append(row);
+  if (window.WorkspaceFiles) {
+    window.WorkspaceFiles.render(p);
+  } else {
+    $("project-files").replaceChildren();
+    for (const file of p.files) {
+      const row = el("div", undefined, "file-row"),
+        link = el("a", file.name);
+      link.href = workspaceURL(`/api/workspace/file?id=${encodeURIComponent(p.id)}&path=${encodeURIComponent(file.name)}`);
+      SimjectureI18n.attribute(link, "title", () => file.name);
+      row.append(link, el("small", bytes(file.bytes)));
+      $("project-files").append(row);
+    }
+    if (!p.files.length)
+      $("project-files").append(
+        window.SimjectureI18n.text(el("p"), "workspace.fileEmpty"),
+      );
   }
-  if (!p.files.length)
-    $("project-files").append(
-      window.SimjectureI18n.text(el("p"), "workspace.fileEmpty"),
-    );
   $("brief-summary").replaceChildren(
     p.brief?.question
       ? el("p", p.brief.question)
@@ -2301,6 +2339,7 @@ for (const scope of ["home", "conversation"]) {
   };
   c.custom.onchange = saveSelection;
   c.effort.onchange = saveSelection;
+  if (c.swarm) c.swarm.onchange = saveSelection;
   c.refresh.onclick = () =>
     action(c.refresh, () => renderAgent(c.backend.value, scope));
 }
@@ -2365,6 +2404,7 @@ $("quick-start").onsubmit = (e) => {
     const p = await api("projects", {
       name: message.split("\n")[0].slice(0, 80),
       agent,
+      swarm_mode: $("home-swarm")?.value || "off",
       collection: globalThis.WorkspaceProjects?.selected(),
       knowledge_sources: globalThis.WorkspaceKnowledge?.selection(),
     });
@@ -2400,6 +2440,10 @@ $("dismiss-study-explainer").onclick = () => {
 };
 $("chat-form").onsubmit = (e) => {
   e.preventDefault();
+  if (window.WorkspaceSteering?.isActive()) {
+    window.WorkspaceSteering.submitFromKeyboard(false);
+    return;
+  }
   action($("send-message"), send);
 };
 for (const [input, form] of [
@@ -2414,6 +2458,10 @@ for (const [input, form] of [
       e.keyCode !== 229
     ) {
       e.preventDefault();
+      if (input === "chat-input" && window.WorkspaceSteering?.isActive()) {
+        window.WorkspaceSteering.submitFromKeyboard(e.ctrlKey || e.metaKey);
+        return;
+      }
       const submit = $(form).querySelector("button[type=submit]");
       if (!state.readonly && !submit.disabled) $(form).requestSubmit(submit);
     }
@@ -2554,6 +2602,42 @@ const monitor = window.WorkspaceMonitor.create({
   notify: toast,
   readonly: () => state.readonly,
 });
+const workspaceExtensionContext = {
+  api,
+  project: () => state.project,
+  settings: () => state.settings,
+  notify: toast,
+  readonly: () => state.readonly,
+  hosted,
+  action,
+  workspaceURL,
+  refreshProject,
+  openSimulation: (id) => monitor.open(id),
+  setSwarmMode: async (mode) => {
+    const select = $("conversation-swarm");
+    if (!select) return;
+    select.value = mode;
+    globalThis.WorkspaceComposer?.refresh("conversation");
+    await saveConversationAgent("conversation");
+    $("chat-input")?.focus();
+  },
+};
+window.WorkspaceFiles?.init(workspaceExtensionContext);
+window.WorkspaceSteering?.init(workspaceExtensionContext);
+window.WorkspaceSwarm?.init(workspaceExtensionContext);
+const settingSteeringSelect = $("setting-steering-mode");
+if (settingSteeringSelect) {
+  settingSteeringSelect.onchange = () => {
+    action(settingSteeringSelect, async () => {
+      state.settings = await api("steering-settings", {
+        steering_mode: settingSteeringSelect.value,
+      });
+      renderSettings();
+      if (state.project) window.WorkspaceSteering?.render(state.project);
+      toast(SimjectureI18n.message("workspace.steering.settingSaved"));
+    });
+  };
+}
 window.addEventListener("hashchange", () =>
   followRoute().catch((e) => toast(e.message, true)),
 );
@@ -2603,7 +2687,7 @@ setInterval(async () => {
         if (!hosted && pendingAgentWrite === agentWrite && project.agent?.model &&
             !agentControls().model.disabled &&
             sameAgentSelection(conversationAgentSelection, agentPayload()) &&
-            !sameAgentSelection(conversationAgentSelection, {project: id, ...project.agent})) {
+            !sameAgentSelection(conversationAgentSelection, {project: id, ...project.agent, swarm_mode: project.swarm_mode || "off"})) {
           await renderAgent();
         }
         globalThis.WorkspaceProjects?.render();

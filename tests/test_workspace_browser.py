@@ -134,7 +134,7 @@ def test_browser_setup_chat_files_and_autonomous_handoff(tmp_path, provider):
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.goto(f"http://127.0.0.1:{server.server_port}")
-            page.get_by_role("button", name="Connections").click()
+            page.locator("#connection-button").click()
             page.locator("#base-url").fill(url)
             page.locator("#api-key").fill("test-secret")
             assert page.locator("#model").count() == 0
