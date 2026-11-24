@@ -4,6 +4,13 @@ Start a conversation as usual. Simjecture opens the Personal workspace by
 default; creating a project or another workspace is optional. Existing
 conversations, file paths and study links continue to work.
 
+The browser takes the conversation title from the first line of your initial
+message. Its storage folder uses the date and a shortened, sanitized title;
+the title portion is limited to 65 UTF-8 bytes so long Chinese and other
+multibyte titles fit safely in generated filenames. This only shortens the
+folder name, not the displayed title. Existing conversation folders stay in
+place and can continue to receive messages.
+
 A **project** groups conversations around a question, device or programme. Its
 shared instructions and files provide context for those conversations. Each
 conversation can still have its own interactive work and autonomous studies.
