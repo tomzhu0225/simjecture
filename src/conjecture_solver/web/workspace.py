@@ -81,11 +81,15 @@ def load(path, default=None):
 
 def private_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
+    # Keep the temporary basename short even for existing long conversation IDs.
+    temporary = path.with_name("." + uuid.uuid4().hex + ".tmp")
     fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "w") as stream:
-        json.dump(value, stream)
-    temporary.replace(path)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            json.dump(value, stream)
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def text(payload, key, limit=20000, default="", *, allow_list=False):
@@ -193,7 +197,9 @@ def tool_estimate(history, action):
 
 
 def folder_name(value):
-    name = re.sub(r"[^\w-]+", "-", value.lower(), flags=re.UNICODE).strip("-_")[:65]
+    name = re.sub(r"[^\w-]+", "-", value.lower(), flags=re.UNICODE).strip("-_")
+    # Filesystems limit basename bytes; leave room for dates and derived suffixes.
+    name = name.encode("utf-8")[:65].decode("utf-8", errors="ignore").rstrip("-_")
     return name or "research"
 
 

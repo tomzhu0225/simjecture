@@ -2,6 +2,14 @@
 
 This project follows semantic versioning. Dates use ISO 8601.
 
+## Unreleased
+
+- Fix new conversations with long Chinese and other multibyte titles failing
+  with `File name too long`. Bound generated folder names by UTF-8 bytes and
+  use short temporary filenames for private connection records, including
+  existing conversations with long folder names. Preserve displayed titles
+  and existing conversation paths.
+
 ## 0.8.0 — 2026-11-22
 
 - **Integrated right-sidebar file viewer and edited-files tracking:** refactor
